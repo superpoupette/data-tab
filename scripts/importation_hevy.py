@@ -5,6 +5,9 @@ def load_workouts(filepath):
     workouts = pd.read_csv(filepath)
     return workouts
 
+def load_exercices(filepath):
+    exercices = pd.read_csv(filepath, sep=";")
+    return exercices
 
 def clean_dates(workouts):
     mois = {
@@ -46,6 +49,15 @@ def add_volume(workouts):
 
     return workouts
 
+def add_muscle(workouts, exercices):
+    workouts = workouts.merge(
+        exercices[["exercise_title", "muscle"]],
+        on="exercise_title",
+        how="left"
+    )
+
+    return workouts
+
 
 def create_sessions(workouts):
     sessions = workouts.groupby("start_time").agg(
@@ -70,10 +82,14 @@ def create_sessions(workouts):
     return sessions
 
 
-def prepare_data(filepath):
-    workouts = load_workouts(filepath)
+def prepare_data(workouts_filepath, exercices_filepath):
+    workouts = load_workouts(workouts_filepath)
+    exercices = load_exercices(exercices_filepath)
+
     workouts = clean_dates(workouts)
     workouts = add_volume(workouts)
+    workouts = add_muscle(workouts, exercices)
+
     sessions = create_sessions(workouts)
 
     return workouts, sessions
