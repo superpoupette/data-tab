@@ -64,7 +64,15 @@ def create_sessions(workouts):
         end_time=("end_time", "first"),
         nombre_series=("set_index", "count"),
         nombre_exercices=("exercise_title", "nunique"),
-        volume_total=("volume", "sum")
+        volume_total=("volume", "sum"),
+
+        # Liste des exercices de la séance
+        exercices=("exercise_title",
+                   lambda x: ", ".join(x.drop_duplicates())),
+
+        # Liste des groupes musculaires travaillés
+        muscles=("muscle",
+                 lambda x: ", ".join(x.dropna().drop_duplicates()))
     )
 
     sessions = sessions.reset_index()
