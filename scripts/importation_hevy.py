@@ -52,15 +52,9 @@ def create_sessions(workouts):
 
     return sessions
 
-
-if __name__ == "__main__":
-
-    workouts = load_workouts("../data/workouts.csv")
-
+def prepare_data(filepath):
+    workouts = load_workouts(filepath)
     workouts = clean_dates(workouts)
-
     workouts = add_volume(workouts)
-
     sessions = create_sessions(workouts)
-
-    print(sessions.head())
+    return workouts, sessions
