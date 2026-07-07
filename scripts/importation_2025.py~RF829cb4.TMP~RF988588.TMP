@@ -1,0 +1,28 @@
+import pandas as pd
+
+def load_csv(filepath):
+    data2025 = pd.read_csv(filepath)
+    return data2025
+
+
+def clean_csv(data2025):
+    # Conversion de la colonne Date
+    data2025["Date"] = pd.to_datetime(
+        data2025["Date"] + "/2025",
+        format="%d/%m/%Y"
+    )
+
+    # Remplacement de l'emoji par "bras"
+    data2025["Muscu-zone"] = data2025["Muscu-zone"].replace(
+        "??",
+        "bras"
+    )
+
+    return data2025
+
+
+def prepare_2025(filepath):
+    data2025 = load_csv(filepath)
+    data2025 = clean_csv(data2025)
+
+    return data2025

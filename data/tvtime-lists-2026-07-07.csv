@@ -1,0 +1,218 @@
+list_id,list_name,item_type,tvdb_id,uuid,name,custom_order
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,1533de7a-b620-4ce2-a72e-5f15ef96478d,Ratatouille,0
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,b708d326-c009-43ca-b630-4743e033717b,Coco,1
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,c388061b-6d59-4e12-a512-dc175dc6716e,Vice-Versa,2
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,15017f29-d16f-4141-9d04-04117b02c791,Toy Story 4,3
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,33be00a7-655d-4e9f-9b35-393873a7001b,Wall-E,4
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,91e579c9-7b9f-49a2-b63b-1e165f79d50b,Soul,5
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,e86ad74f-3e3d-45cf-8c55-c5a5f8938748,Les Indestructibles 2,6
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,9639167d-e53e-4a6e-9ec2-61628bc65858,Alerte rouge,7
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,3c0765b2-6958-401e-93eb-58ddaedf2e33,Cars 3,8
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,f6987486-5380-4f63-b80c-cd7a35b616eb,Toy Story,9
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,0796722a-aa1b-4cb1-90e7-cbcf579473a8,Toy Story 2,10
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,ea25eff1-d708-4db4-a5d9-3f75985b887c,Toy Story 3,11
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,e7792e9d-e603-4297-9f7e-150cdfa84bb8,Cendrillon,12
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,0c2975f5-e12c-4752-b0c8-aa46cf7c1397,Le Voyage de Chihiro,13
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,3597cc7e-ebad-429f-8152-26849d2a0feb,Princesse Mononoké,14
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,217b7fd0-cae6-48bf-b430-b66443185509,Le Château ambulant,15
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,9cf44f4a-a36f-4dac-8c32-886302f374f6,Le Château dans le ciel,16
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,0b72d5df-16fc-47cf-b307-0dd9f321b577,Ponyo sur la falaise,17
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,c8d407e2-a9db-4a88-b2ea-5e776dcd5f78,La Petite Sirène,18
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,fe9cd0a8-8139-4748-959b-917b99a6bd65,Aladdin,19
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,919bfa79-f34f-470d-9472-d04016613b23,La Reine des neiges,20
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,a0831e7e-ed0d-459e-89ae-f72b389470b5,"Vaiana, la légende du bout du monde",21
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,018caed3-b0f6-4342-a4e4-500a28fe3fad,"Encanto, la fantastique famille Madrigal",22
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,39015588-a5e4-4258-a1d7-4ec55664ff42,Cars,23
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,b483f82e-14c7-4f97-86b7-cd957ee89f87,Cars 2,24
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,02491330-2455-4652-a060-1142eb5ba5f9,"Arrietty, le petit monde des chapardeurs",25
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,0be8b8f5-1ded-4a66-ad5f-9a102bb52ecc,Hercule,26
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,11446b3a-e487-4e9f-8000-a9bed7a7aaac,Your Name.,27
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,14a63b04-c553-4e23-a9de-4fc8064176e9,Madagascar 2,28
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,2878452f-7535-4c7a-9f11-d8e11b0085f6,Frère des ours 2,29
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,a1f90731-6955-447d-9181-b2698ab16d19,Tous en scène,30
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,29d4a9a1-6d12-4428-aae7-857194f69951,Kung Fu Panda,31
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,1498d90c-d706-4e1f-b351-c815fb774b46,Kung Fu Panda 2,32
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,af628224-1fd9-4c8f-a135-b723a9dd102d,Kung Fu Panda 3,33
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,e0067488-637e-44fe-8192-1969e9773dd3,Shrek,34
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,4f0137c0-0c6b-41a5-a0ad-5309fdf617c1,Shrek 2,35
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,1f0f3d13-b7e2-4842-b079-76d83b7e22d0,Dragons,36
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,d91bc867-a7c5-4c3a-b087-ed071ff1a97a,Raya et le dernier dragon,37
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,b73936fb-4e59-4e5c-8a2c-abf301376ed8,Dragons 2,38
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,de9f4f37-5794-434e-88db-f4ac6508ff01,Les Indestructibles,39
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,5112cff4-e912-4e68-97d1-3ba37820a8a3,Alice au pays des merveilles,40
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,4da8eb61-4aa4-496d-948f-577c925d1c97,Porco Rosso,41
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,a8f9787d-4883-4974-a02b-6ac8337a7c5b,Madagascar,42
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,6fccd8ba-c7b8-4976-9a28-12901af4cf36,Madagascar 3 : Bons Baisers d'Europe,43
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,ccb08e41-8205-47dc-87fa-899b860dc28c,Shrek le troisième,44
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,cb30b49e-cc43-41ac-8bf2-7a56e7d870f6,L'Âge de glace : La dérive des continents,45
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,b6e70fdc-fbb7-49ea-bc21-2ed7c4f2a777,"Moi, moche et méchant",46
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,9e5e9ef7-8976-4b8c-8cda-8d4aad85b20a,Mulan,47
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,9722666f-dbc4-41cd-a917-2bd26e3ef21c,L'Âge de glace,48
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,893c636e-f7d2-4646-875f-872940c37cdb,Le Roi lion 2 : L'Honneur de la tribu,49
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,78bdccb1-7291-4d79-a4b3-d4e4e198348a,L'Âge de glace 2,50
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,780fa612-3916-40e9-a1c3-6b2e75197395,Là-haut,51
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,55294da6-56da-4d4f-bf85-7a33a4a3124f,L'Âge de glace : les lois de l'Univers,52
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,50321201-f5ab-4896-96c3-a36cc5ba1b47,Monstres & Cie,53
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,3ecbc558-fcc3-478e-87d0-c1ce052c1adb,"Kuzco, l'empereur mégalo",54
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,2f0e0702-f693-4adb-a0e0-1e175483cfae,L'Âge de glace 3 - Le Temps des dinosaures,55
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,225db875-0f01-4d6b-ae26-d6fe5b2d41d3,Monstres Academy,56
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,c681e57d-7df2-4d56-b038-ea8181160f02,Ma vie de courgette,57
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,f3b8c4f9-693e-4d8e-8107-9308e3c67262,Le Garçon et la Bête,58
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,1283ca83-4771-4355-9491-91553fe475cd,Silent Voice,59
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,a97a8227-5973-4c37-a516-be082eb7fbdb,Le tombeau des lucioles,60
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,a01c088d-3720-4e4b-936a-f58ecb0c4330,"Les Enfants Loups, Ame & Yuki",61
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,abf88efb-3cc4-4663-8dd3-1ffb8a7deb56,Peter Pan,62
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,da24691e-1338-415d-80a1-6009955e8182,La Princesse et la Grenouille,63
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,85447af1-ac34-476c-b5f6-411bb9d7c110,Hôtel Transylvanie,64
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,42212253-cdec-4f77-9f18-1352c05ea10a,Merlin l'Enchanteur,65
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,3a8d038c-f8bb-4c12-86ff-1bfff58cbc48,Les Aventures de Bernard et Bianca,66
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,2497dab7-fcd2-4399-a398-9b7dd2ba3260,Je veux manger ton pancréas,67
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,6e76fb73-0ea4-41ff-9350-2ed233a95980,Les Cinq légendes,68
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,67215e3d-5090-458b-8180-02216fd6135c,Klaus,69
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,5780c8c1-88fc-4249-9ff3-458a7d2dc63a,Robin des Bois,70
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,56efdd38-ff67-4bac-9f6f-bd48a837c7ac,La Belle au bois dormant,71
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,5491e4d2-3975-4dd6-a468-82186c243a47,1001 pattes,72
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,3c19bd5e-8afe-4a00-b9e0-68fbf3cac295,5 centimètres par seconde,73
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,3bc5166e-0b1a-4322-94f8-ee71639654ce,Les Nouveaux Héros,74
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,3b0539c3-f544-4d57-a066-f63614f94570,La Belle et la Bête,75
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,37fe11dc-0800-469e-a50c-3e5cfe885364,Dumbo,76
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,33a5696a-ccd0-4e8d-b8c7-5733f6a182b4,Zootopie,77
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,2f640e9a-8db2-471e-9971-2abbffb7b654,Kirikou et la sorcière,78
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,2f3f0146-d9ef-4f51-adc0-dee3db01c800,Rox et Rouky,79
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,21c4b865-2041-4e77-bf42-387f82691eb7,Robots,80
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,211906a7-f294-416e-ad04-6debf3e4ddc1,Amer béton,81
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,1f5a284a-cd0b-492a-bdd1-a10779fc4d6c,Happy Feet,82
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,1982801e-02d8-48c9-9321-71f378128151,Les Pingouins de Madagascar,83
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,0e18170a-cf5f-4652-afcc-d084a902c743,"Moi, moche et méchant 2",84
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,0d35e5e7-bed0-44f8-9af4-7482997e54ec,"Volt, star malgré lui",85
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,0cc377a1-5ea7-44ac-9066-aae7be749396,Wallace & Gromit : Le mystère du lapin-garou,86
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,015a7974-a0d9-4d7a-b022-15e90e6b841c,Kung Fu Panda : Les Secrets des 5 Cyclones,87
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,ee46e16b-a8e7-48ec-adf3-a74e87583eff,Bambi,88
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,cdaf647a-8ee6-417f-970c-ca9a3307b46d,Kiki la petite sorcière,89
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,6f1e718d-4acc-46d2-870c-82574625dce7,Mulan 2 : La Mission de l'Empereur,90
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,dfd601a5-c039-4053-96ad-28a4825853a5,Le conte de la princesse Kaguya,91
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,c914d8fe-81cb-4f09-bd7d-85d11cb1194f,Élémentaire,92
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,a78d9e93-aa57-464f-9b3b-674d1b23eb07,Tunnel to Summer,93
+5e29559d-6aa7-4cb0-b899-951e6647d25c,Films d'animation,movie,,deed5532-3ac6-4117-b75f-63363e89d4f5,Vaiana 2,94
+8ccb9a2c-012b-469c-94ea-ec4a9b6a5239,Club ciné,movie,,c681e57d-7df2-4d56-b038-ea8181160f02,Ma vie de courgette,0
+8ccb9a2c-012b-469c-94ea-ec4a9b6a5239,Club ciné,movie,,11bf414d-8d46-4ac0-81ff-06fb65451823,Spider-Man : New Generation,1
+8ccb9a2c-012b-469c-94ea-ec4a9b6a5239,Club ciné,movie,,0c2975f5-e12c-4752-b0c8-aa46cf7c1397,Le Voyage de Chihiro,2
+8ccb9a2c-012b-469c-94ea-ec4a9b6a5239,Club ciné,movie,,dfd601a5-c039-4053-96ad-28a4825853a5,Le conte de la princesse Kaguya,3
+8ccb9a2c-012b-469c-94ea-ec4a9b6a5239,Club ciné,movie,,92217a75-9946-4893-9e35-9e9483686122,Le Père Noël est une ordure,4
+8ccb9a2c-012b-469c-94ea-ec4a9b6a5239,Club ciné,movie,,d87bee8e-bac6-438b-9238-0a36034b831a,L'alchimie de Noël,5
+8ccb9a2c-012b-469c-94ea-ec4a9b6a5239,Club ciné,movie,,2d4ab44f-b844-4feb-a20a-634b6d586a02,Le Grinch,6
+8ccb9a2c-012b-469c-94ea-ec4a9b6a5239,Club ciné,movie,,eeca34eb-a4c3-4e35-be6e-6c31f875ce56,"Maman, j'ai raté l'avion !",7
+8ccb9a2c-012b-469c-94ea-ec4a9b6a5239,Club ciné,movie,,806dfa10-ad40-4e60-a878-ba49a8326f03,Everything Everywhere All at Once,8
+8ccb9a2c-012b-469c-94ea-ec4a9b6a5239,Club ciné,movie,,9c36ee87-baa8-4831-9012-bc3477014547,En corps,9
+8ccb9a2c-012b-469c-94ea-ec4a9b6a5239,Club ciné,movie,,bcd516ce-f4b8-4d20-9525-3eb194dc4d10,La Nuit du 12,10
+8ccb9a2c-012b-469c-94ea-ec4a9b6a5239,Club ciné,movie,,01d4581e-5764-4597-aad9-46fadc47ae62,The Batman,11
+8ccb9a2c-012b-469c-94ea-ec4a9b6a5239,Club ciné,movie,,914349d1-b360-4a94-b4b6-197fa8fe8ac7,Les Figures de l'ombre,12
+8ccb9a2c-012b-469c-94ea-ec4a9b6a5239,Club ciné,movie,,a3b12f56-415b-4148-9af7-dd3a6ce6b37b,West Side Story,13
+8ccb9a2c-012b-469c-94ea-ec4a9b6a5239,Club ciné,movie,,a6ad1268-4aea-4f7e-bbfd-07839ee5a1d5,The Rocky Horror Picture Show,14
+8ccb9a2c-012b-469c-94ea-ec4a9b6a5239,Club ciné,movie,,a42c0094-ca01-43fe-aac2-9cbc63a8ae19,Les Suffragettes,15
+8ccb9a2c-012b-469c-94ea-ec4a9b6a5239,Club ciné,movie,,922e3430-e472-4046-8144-c99cfe77ae59,Matilda : La comédie musicale,16
+8ccb9a2c-012b-469c-94ea-ec4a9b6a5239,Club ciné,movie,,8225f438-4146-43a3-b408-605c8af1e8fd,Le Fantôme de l'Opéra,17
+8ccb9a2c-012b-469c-94ea-ec4a9b6a5239,Club ciné,movie,,435cf819-bcc7-4eeb-a6f9-980fc7443621,Whiplash,18
+8ccb9a2c-012b-469c-94ea-ec4a9b6a5239,Club ciné,movie,,bfea00cd-5826-4b23-8f34-bf564a612988,8 Mile,19
+8ccb9a2c-012b-469c-94ea-ec4a9b6a5239,Club ciné,movie,,9452687a-d609-457f-a800-4fa62f32e3a6,The Lost Daughter,20
+8ccb9a2c-012b-469c-94ea-ec4a9b6a5239,Club ciné,movie,,a99aa70b-c241-4808-b9d6-131d73b16b3e,Good morning England,21
+8ccb9a2c-012b-469c-94ea-ec4a9b6a5239,Club ciné,movie,,273dd872-0e2c-4d21-88ec-a409b80e66c8,Le Placard,22
+8ccb9a2c-012b-469c-94ea-ec4a9b6a5239,Club ciné,movie,,988832d5-03f2-4599-83bd-e85cc22bd0cb,Monty Python - Sacré Graal !,23
+8ccb9a2c-012b-469c-94ea-ec4a9b6a5239,Club ciné,movie,,680456ad-78b1-453b-9005-a376faabb5ab,Les Blues Brothers,24
+2d2dd3b3-aa09-4655-a95d-69e485676f80,Sitcom,series,75760,,How I Met Your Mother,0
+2d2dd3b3-aa09-4655-a95d-69e485676f80,Sitcom,series,295648,,Superstore,1
+2d2dd3b3-aa09-4655-a95d-69e485676f80,Sitcom,series,94571,,Community,2
+2d2dd3b3-aa09-4655-a95d-69e485676f80,Sitcom,series,79168,,Friends,3
+2d2dd3b3-aa09-4655-a95d-69e485676f80,Sitcom,series,73244,,The Office (US),4
+2d2dd3b3-aa09-4655-a95d-69e485676f80,Sitcom,series,269586,,Brooklyn Nine-Nine,5
+2d2dd3b3-aa09-4655-a95d-69e485676f80,Sitcom,series,311711,,The Good Place,6
+2d2dd3b3-aa09-4655-a95d-69e485676f80,Sitcom,series,248682,,New Girl,7
+2d2dd3b3-aa09-4655-a95d-69e485676f80,Sitcom,series,281593,,Unbreakable Kimmy Schmidt,8
+2d2dd3b3-aa09-4655-a95d-69e485676f80,Sitcom,series,406256,,Pretty Smart,9
+d76e2575-49f4-45af-95f4-28449a6e1c2b,Comédies musicales,movie,,a3b12f56-415b-4148-9af7-dd3a6ce6b37b,West Side Story,0
+d76e2575-49f4-45af-95f4-28449a6e1c2b,Comédies musicales,movie,,a6ad1268-4aea-4f7e-bbfd-07839ee5a1d5,The Rocky Horror Picture Show,1
+d76e2575-49f4-45af-95f4-28449a6e1c2b,Comédies musicales,movie,,922e3430-e472-4046-8144-c99cfe77ae59,Matilda : La comédie musicale,2
+d76e2575-49f4-45af-95f4-28449a6e1c2b,Comédies musicales,movie,,8225f438-4146-43a3-b408-605c8af1e8fd,Le Fantôme de l'Opéra,3
+d76e2575-49f4-45af-95f4-28449a6e1c2b,Comédies musicales,movie,,aa3a43f2-fa9a-4a71-9298-ce0c9bfb3123,Wonka,4
+d76e2575-49f4-45af-95f4-28449a6e1c2b,Comédies musicales,movie,,373dea32-0aa6-4e3d-bee5-ae0f58b6de6c,D'où l'on vient,5
+d76e2575-49f4-45af-95f4-28449a6e1c2b,Comédies musicales,movie,,660e2dd1-3721-4f6a-93f4-38345bb6de91,Burlesque,6
+d76e2575-49f4-45af-95f4-28449a6e1c2b,Comédies musicales,movie,,8b7b147b-9df0-49d1-9ab2-3f01f340c813,Mean Girls : Lolita malgré moi,7
+d76e2575-49f4-45af-95f4-28449a6e1c2b,Comédies musicales,movie,,889d5437-441c-45f4-a572-44e563639c69,Chicago,8
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,722479e6-ad35-49dc-8cd3-cc7f47174599,Retour à Séoul,0
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,15da3646-58e8-4515-93a9-b0ffd34bd76a,Nos cérémonies,1
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,71455fc5-b068-4945-9478-1f5ab970e240,Je verrai toujours vos visages,2
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,2f6cfd70-9bc6-49f1-b8e7-469004bd11df,Spider-Man : Across the Spider-Verse,3
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,0247115f-7654-4e6d-a108-23fd55bf6232,Barbie,4
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,139c9b2c-4b90-4eb9-ac90-ec69ea6d0bde,Asteroid City,5
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,9adb5ec5-a5c7-4cc8-8b10-b69f8944bfbf,Oppenheimer,6
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,c914d8fe-81cb-4f09-bd7d-85d11cb1194f,Élémentaire,7
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,4e049945-9d93-42a2-a53d-c625ef2088b0,Persepolis,8
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,8ef12c09-c030-4ccf-ba3e-ed313393a427,Dune,9
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,72cd1fd5-d488-4cbb-9525-72f5c65c318e,Le Livre des solutions,10
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,c1b6c7fe-ab9a-4a68-87ad-270c3b93b677,Ninja Turtles : Teenage Years,11
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,ece0589d-ad8f-4811-a3d9-4fcbc87cb324,Hypnotic,12
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,5c539043-3845-4f20-9ffb-f5e62c717938,Anatomie d'une chute,13
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,c190620c-bac7-4de4-9326-383c6be8b934,Club Zero,14
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,2b9a44f9-2f87-4253-a9e3-f7c077b9b1cf,Marie-Line et son juge,15
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,8131c68e-406c-4d80-9d71-87c6056fd99b,S.O.S. Fantômes,16
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,61be6ff7-d472-4c4b-840e-26f0a7a16482,Le Consentement,17
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,cb9a6d19-49b2-4252-818d-255a45ca6b25,DogMan,18
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,8cff3f01-65e1-4e0f-a70a-82e08a218da5,The Creator,19
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,c61ffc3e-fdba-4748-a43f-029f1494b26a,Le Garçon et le Héron,20
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,13b9af24-e494-423a-8d88-0f4f92b1d912,Dumb Money,21
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,6efb539b-1d8f-4e8c-b32f-982f511ad119,Ça tourne à Séoul !,22
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,d29cd996-9e21-426f-a265-809c968c51a2,How to Have Sex,23
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,98bffba0-272a-49a9-9817-e9d3d02ba77b,La Tresse,24
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,54df8fc5-864e-4496-a21e-c34e98866104,Perfect Days,25
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,910814c2-127a-48ce-89a4-aa0b3567d18a,Mars Express,26
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,276fa679-9b59-465b-92e7-ac03c8d3e009,Bâtiment 5,27
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,ddca1056-0f21-4147-bd26-5b617b28a6c1,Wish : Asha et la Bonne étoile,28
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,aa3a43f2-fa9a-4a71-9298-ce0c9bfb3123,Wonka,29
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,ca4eee00-ea1d-4ded-b8c7-bb382ccaecae,Dunkerque,30
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,87ccba5d-e3b7-4382-a024-7221d7e5012f,Past Lives - Nos vies d'avant,31
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,99105da8-112a-460c-94d8-de1403921caf,L'Innocence,32
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,79a0606f-d9d1-4e15-9005-03446f2296a4,Les filles d’Olfa,33
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,36121448-bbf4-4b7f-8def-d311b995a6d3,Priscilla,34
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,03152034-a8ec-4d40-a18c-9dd1cecec6fa,Super Mario Bros. - Le Film,35
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,8b7b147b-9df0-49d1-9ab2-3f01f340c813,Mean Girls : Lolita malgré moi,36
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,992c1057-4532-4e29-9653-628b71e17563,Empire of Light,37
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,84143963-aa82-4f10-929d-111663bdb2fc,Pauvres créatures,38
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,b3a8b892-d160-4934-b69f-f0cea346af21,Argylle,39
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,7c141876-8bdd-483e-a8d3-32f5a2eb6caf,La couleur pourpre,40
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,d8e6102e-b9e4-4717-bb01-70d6243bc952,"Moi, Capitaine",41
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,2a87f153-781b-47fc-bad7-2dc7f97d89c6,La Zone d'intérêt,42
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,bbe9a23b-ee4b-417f-bc64-58e1bfae507d,A Man,43
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,13249f80-5a9e-4643-babe-38fc20e17d9e,Sans jamais nous connaître,44
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,3f64952b-b92e-4992-9aa5-ed6577a8996f,Bob Marley: One Love,45
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,7cd7ff4f-3d0d-4fea-b3e5-7b884a4a184f,Une vie,46
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,f3c95a3c-4636-44a7-9d00-e516c358ded7,Blue Giant,47
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,8fdf3731-753a-49ca-aee7-0e47b6df4114,Il reste encore demain,48
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,ec79e963-668a-445c-b1af-4d19e29f40c5,Vampire Humaniste Cherche Suicidaire Consentant,49
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,960fa26d-21c3-4363-9cba-63f06da7fc7a,Do the Right Thing,50
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,ac114e0f-46b0-4774-91f6-08d7e81cf040,Le mal n'existe pas,51
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,db5304c9-f39f-4ae0-a84b-5cf778552062,Drive-Away Dolls,52
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,49dbd909-d08b-415f-a9e8-4c51c6e6407f,Borgo,53
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,e1c4a961-c45d-4950-8cf7-d53f7c5dbc64,Pas de vagues,54
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,5e3a85ab-12d5-4af3-8fd0-eeb5c0163d6c,Challengers,55
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,c28561d9-b5a4-497c-b201-52806b0b7089,The Fall Guy,56
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,467d2950-cb96-47b2-89bf-9170b3f0d30a,Un p’tit truc en plus,57
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,5d17ad6d-9593-462f-aed0-a3747448dbc6,Comme Un Lundi,58
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,065d1be0-052b-4ebc-a805-1c1b55168411,Le Tableau volé,59
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,fa8f0304-f910-4fb0-a4dd-27e7d12fdda5,Memory,60
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,a78d9e93-aa57-464f-9b3b-674d1b23eb07,Tunnel to Summer,61
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,08498a84-69a4-4940-9b76-e941955f4419,Love Lies Bleeding,62
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,bb52ce42-a7e5-482c-8127-8a53283965ac,Vice-Versa 2,63
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,0c6d4359-88ef-4d5d-9803-e2705bf2fb4f,RoboCop,64
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,e6709677-59fd-40d4-a1eb-442a50e1e29b,Le Comte de Monte-Cristo,65
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,b7c658cc-d561-4129-9b68-ddddc50547c7,Deadpool 3,66
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,7bc1b69b-d2a0-42aa-891d-87434ca11faa,L'amour Ouf,67
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,8c4a0e12-e811-4729-b953-6f6074db9e5b,Gladiator,68
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,deed5532-3ac6-4117-b75f-63363e89d4f5,Vaiana 2,69
+6f972ced-a9d3-4749-86d7-4e33bae53ed6,Sorties ciné ,movie,,3a22e0c9-e52b-464f-9b27-b995a3690891,Bird,70
+60f29ac8-1f38-4e11-ade6-6899479b61b8,Thaï,movie,,2131acbc-7c3f-42f2-a702-533f176e9bed,Bad Genius,0
+60f29ac8-1f38-4e11-ade6-6899479b61b8,Thaï,movie,,7ef0a9b9-e6b3-4972-b0b1-1f4a5da50a26,Hunger,1
+60f29ac8-1f38-4e11-ade6-6899479b61b8,Thaï,series,444970,,"Ready, Set, Love",2
+60f29ac8-1f38-4e11-ade6-6899479b61b8,Thaï,movie,,043ba8c4-f26c-49a4-b028-f8725dbd6aad,RedLife,3
+364d3ad2-9d36-4cec-9fa3-b45974b1adee,à voir,movie,,88164b03-164e-4042-921e-2f5bbb9e829d,La Légende de Baahubali : 1ère Partie,0
+364d3ad2-9d36-4cec-9fa3-b45974b1adee,à voir,movie,,aa57b3c6-397a-4354-b1fa-160dc09ffa5f,Old Boy,1
+81988148-afd2-452e-baaa-884cbe56ba36,Documentaires,movie,,75f26a3b-9428-4603-81ba-eb216d6e20fc,Paris Is Burning,0
