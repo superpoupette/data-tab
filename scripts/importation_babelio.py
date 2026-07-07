@@ -3,6 +3,7 @@ import pandas as pd
 def load_babelio(filepath):
     livres = pd.read_csv(
         filepath,
+        sep=";",
         encoding="latin-1"
     )
     return livres
