@@ -4,7 +4,8 @@ def load_babelio(filepath):
     livres = pd.read_csv(
         filepath,
         sep=";",
-        encoding="latin-1"
+        encoding="cp1252",
+        quotechar='"'
     )
     return livres
 
