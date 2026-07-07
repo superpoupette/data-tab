@@ -2,6 +2,7 @@
 import pandas as pd
 import plotly.express as px
 
+from scripts.importation_2024 import prepare_2024
 from scripts.importation_2025 import prepare_2025
 from scripts.gestion_danses import create_danse_data
 from scripts.gestion_danses import create_danse_recap
@@ -9,11 +10,28 @@ from scripts.gestion_danses import create_danse_recap
 
 # Chargement des données
 
+data2024 = prepare_2024(
+    "data/2024.csv"
+)
+
 data2025 = prepare_2025(
     "data/2025.csv"
 )
 
-danse_data = create_danse_data(data2025)
+
+danse_2024 = create_danse_data(data2024)
+danse_2025 = create_danse_data(data2025)
+
+
+danse_data = pd.concat(
+    [
+        danse_2024,
+        danse_2025
+    ],
+    ignore_index=True
+)
+
+
 danse_recap = create_danse_recap(danse_data)
 
 
