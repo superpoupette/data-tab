@@ -27,10 +27,16 @@ def clean_series(series, series_episodes):
         "not_started_yet", "to_watch"
     )
 
+    series_episodes["watched_at"] = pd.to_datetime(
+        series_episodes["watched_at"],
+        errors="coerce"
+    )
+
     last_watched = (
         series_episodes.groupby("series_uuid")["watched_at"]
         .max()
         .reset_index()
+        .rename(columns={"watched_at": "last_watch"})
     )
 
     series = series.merge(

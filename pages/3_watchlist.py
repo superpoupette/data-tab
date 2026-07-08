@@ -18,11 +18,6 @@ nb_movies_watched = len(
     movies[movies["status"] == "watched"]
 )
 
-# Nombre de séries terminées
-nb_series_finished = len(
-    series[series["status"] == "up_to_date"]
-)
-
 
 col1, col2 = st.columns(2)
 
@@ -35,7 +30,6 @@ with col1:
 with col2:
     st.metric(
         "📺 Séries terminées",
-        nb_series_finished
     )
 
 # Films vus par année
