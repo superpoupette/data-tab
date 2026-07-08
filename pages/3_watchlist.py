@@ -240,7 +240,7 @@ with col_animes:
             )
 
 
-        total_episodes_watched = animes["episodes_watched"].sum()
+        total_episodes_watched = animes["episodes"].sum()
 
 
         c4, c5 = st.columns(2)
