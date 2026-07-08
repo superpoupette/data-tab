@@ -128,54 +128,50 @@ with col_series:
 # Animés
 # =====================
 
-# Graphique en haut
-import plotly.express as px
+        # Graphique en haut
+        import plotly.express as px
 
-stats_animes["Catégorie"] = "Total"
+        stats_animes["Catégorie"] = "Total"
 
-fig = px.bar(
-    stats_animes,
-    x="Pourcentage",
-    y="Catégorie",
-    color="Statut",
-    orientation="h",
-    height=45,
-    color_discrete_map={
-        "Plan to watch": "#A8D5BA",  # vert pastel
-        "Continuing": "#FFD6A5",     # pêche
-        "Watched": "#BDE0FE",        # bleu clair
-        "Stopped": "#FFADAD"         # rose pastel
-    }
-    )
-
-    fig.update_layout(
-        barmode="stack",
-        showlegend=False,
-        xaxis={
-            "range": [0, 100],
-            "title": None,
-            "showticklabels": False
-        },
-        yaxis={
-            "title": None,
-            "showticklabels": False
-        },
-        margin=dict(
-            l=0,
-            r=0,
-            t=0,
-            b=0
+        fig = px.bar(
+            stats_animes,
+            x="Pourcentage",
+            y="Catégorie",
+            color="Statut",
+            orientation="h",
+            height=45,
+            color_discrete_map={
+                "Plan to watch": "#A8D5BA",
+                "Continuing": "#FFD6A5",
+                "Watched": "#BDE0FE",
+                "Stopped": "#FFADAD"
+            }
         )
-    )
 
-    fig.update_traces(
-        textposition=None
-    )
+        fig.update_layout(
+            barmode="stack",
+            showlegend=False,
+            xaxis={
+                "range": [0, 100],
+                "title": None,
+                "showticklabels": False
+            },
+            yaxis={
+                "title": None,
+                "showticklabels": False
+            },
+            margin=dict(
+                l=0,
+                r=0,
+                t=0,
+                b=0
+            )
+        )
 
-    st.plotly_chart(
-        fig,
-        use_container_width=True
-    )
+        st.plotly_chart(
+            fig,
+            use_container_width=True
+        )
 
 
         c1, c2, c3 = st.columns(3)
