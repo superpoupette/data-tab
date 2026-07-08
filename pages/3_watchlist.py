@@ -1,10 +1,90 @@
 import streamlit as st
+import pandas as pd
 
 from scripts.importation_tvtime import tab_tv
 
 movies, series, series_episodes = tab_tv()
 
 st.title("🍿 Watchlist")
+
+
+# =====================
+# Dashboard
+# =====================
+
+st.subheader("📊 Statistiques")
+
+
+# Nombre de films vus
+nb_movies_watched = len(
+    movies[movies["status"] == "watched"]
+)
+
+# Nombre de séries terminées
+nb_series_finished = len(
+    series[series["status"] == "up_to_date"]
+)
+
+
+col1, col2 = st.columns(2)
+
+with col1:
+    st.metric(
+        "🎬 Films vus",
+        nb_movies_watched
+    )
+
+with col2:
+    st.metric(
+        "📺 Séries terminées",
+        nb_series_finished
+    )
+
+
+# Conversion des dates
+movies["watched_at"] = pd.to_datetime(
+    movies["watched_at"],
+    errors="coerce"
+)
+
+series["watched_at"] = pd.to_datetime(
+    series["watched_at"],
+    errors="coerce"
+)
+
+
+# Films vus par année
+movies_by_year = (
+    movies[movies["status"] == "watched"]
+    .assign(year=lambda x: x["watched_at"].dt.year)
+    .groupby("year")
+    .size()
+)
+
+
+# Séries terminées par année
+series_by_year = (
+    series[series["status"] == "up_to_date"]
+    .assign(year=lambda x: x["watched_at"].dt.year)
+    .groupby("year")
+    .size()
+)
+
+
+col1, col2 = st.columns(2)
+
+with col1:
+    st.subheader("🎬 Films vus par année")
+    st.bar_chart(movies_by_year)
+
+with col2:
+    st.subheader("📺 Séries terminées par année")
+    st.bar_chart(series_by_year)
+
+
+# =====================
+# Tableaux de données
+# =====================
 
 st.header("Films")
 st.dataframe(
