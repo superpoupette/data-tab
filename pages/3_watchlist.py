@@ -150,10 +150,6 @@ with col_animes:
             animes["status"] == "paused"
         ).sum()
 
-        dropped = (
-            animes["status"] == "dropped"
-        ).sum()
-
 
         stats_animes = pd.DataFrame({
             "Statut": [
@@ -244,6 +240,9 @@ with col_animes:
             )
 
 
+        total_episodes_watched = animes["episodes_watched"].sum()
+
+
         c4, c5 = st.columns(2)
 
         with c4:
@@ -254,8 +253,8 @@ with col_animes:
 
         with c5:
             st.metric(
-                "Abandonnés",
-                dropped
+                "Épisodes vus",
+                total_episodes_watched
             )
 
 # =====================
