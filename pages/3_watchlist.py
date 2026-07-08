@@ -18,6 +18,18 @@ nb_movies_watched = len(
     movies[movies["status"] == "watched"]
 )
 
+from scripts.gestion_watchlist import derniers_visionnages
+
+watchlist = derniers_visionnages(movies, series)
+
+st.header("🎬 Films et Séries visionnés")
+
+st.dataframe(
+    watchlist,
+    use_container_width=True,
+    hide_index=True
+)
+
 
 # =====================
 # Tableaux de données
