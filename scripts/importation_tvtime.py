@@ -32,31 +32,17 @@ def clean_series(series, series_episodes):
         errors="coerce"
     )
 
-    # Nombre d'épisodes vus par série
-    episode_count = (
+
+    # Nombre d'épisodes vus + dernier épisode vu
+    episode_stats = (
         series_episodes
+        .sort_values("watched_at")
         .groupby("series_uuid")
-        .size()
-        .reset_index(name="progress")
-    )
-
-    series = series.merge(
-        episode_count,
-        how="left",
-        left_on="uuid",
-        right_on="series_uuid"
-    )
-
-    series.drop(
-        columns=["series_uuid"],
-        inplace=True
-    )
-
-    # Les séries sans épisode vu auront 0
-    series["progress"] = (
-        series["progress"]
-        .fillna(0)
-        .astype(int)
+        .agg(
+            progress=("episode", "count"),
+            last_watch=("watched_at", "max")
+        )
+        .reset_index()
     )
 
 
@@ -75,23 +61,36 @@ def clean_series(series, series_episodes):
         + last_episode["episode"].astype(int).astype(str).str.zfill(2)
     )
 
-    last_episode = last_episode[
-        ["series_uuid", "watched_at", "last_episode"]
-    ].rename(
-        columns={"watched_at": "last_watch"}
+
+    episode_stats = episode_stats.merge(
+        last_episode[
+            ["series_uuid", "last_episode"]
+        ],
+        on="series_uuid",
+        how="left"
     )
 
-    if "last_watch" in series.columns:
-        series.drop(columns=["last_watch"], inplace=True)
 
     series = series.merge(
-        last_episode,
+        episode_stats,
         how="left",
         left_on="uuid",
         right_on="series_uuid"
     )
 
-    series.drop(columns=["series_uuid"], inplace=True)
+
+    series.drop(
+        columns=["series_uuid"],
+        inplace=True
+    )
+
+
+    series["progress"] = (
+        series["progress"]
+        .fillna(0)
+        .astype(int)
+    )
+
 
     return series
 
