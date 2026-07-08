@@ -51,7 +51,147 @@ with col3:
         nb_series_unfinished
     )
 
+# =====================
+# Cartes Anime / Séries
+# =====================
 
+st.header("📊 Statistiques")
+
+col_series, col_animes = st.columns(2)
+
+
+# =====================
+# Séries
+# =====================
+
+with col_series:
+    with st.container(border=True):
+        st.subheader("📺 Séries")
+
+        total_series = len(series)
+
+        finished = (
+            series["status"] == "up_to_date"
+        ).sum()
+
+        watching = (
+            series["status"] == "continuing"
+        ).sum()
+
+        stopped = (
+            series["status"] == "stopped"
+        ).sum()
+
+        to_watch = (
+            series["status"] == "to_watch"
+        ).sum()
+
+
+        c1, c2 = st.columns(2)
+
+        with c1:
+            st.metric(
+                "Total",
+                total_series
+            )
+
+        with c2:
+            st.metric(
+                "Terminées",
+                finished
+            )
+
+
+        stats_series = pd.DataFrame({
+            "Statut": [
+                "Terminées",
+                "En cours",
+                "Abandonnées",
+                "À voir"
+            ],
+            "Nombre": [
+                finished,
+                watching,
+                stopped,
+                to_watch
+            ]
+        })
+
+
+        st.bar_chart(
+            stats_series.set_index("Statut")
+        )
+
+
+
+# =====================
+# Animés
+# =====================
+
+with col_animes:
+    with st.container(border=True):
+        st.subheader("🍥 Animés")
+
+        total_animes = len(animes)
+
+        watched = (
+            animes["status"] == "watched"
+        ).sum()
+
+        watching = (
+            animes["status"] == "continuing"
+        ).sum()
+
+        dropped = (
+            animes["status"] == "stopped"
+        ).sum()
+
+        paused = (
+            animes["status"] == "paused"
+        ).sum()
+
+        to_watch = (
+            animes["status"] == "to_watch"
+        ).sum()
+
+
+        c1, c2 = st.columns(2)
+
+        with c1:
+            st.metric(
+                "Total",
+                total_animes
+            )
+
+        with c2:
+            st.metric(
+                "Score moyen",
+                round(animes["score"].mean(),2)
+            )
+
+
+        stats_animes = pd.DataFrame({
+            "Statut": [
+                "Vus",
+                "En cours",
+                "Abandonnés",
+                "En pause",
+                "À voir"
+            ],
+            "Nombre": [
+                watched,
+                watching,
+                dropped,
+                paused,
+                to_watch
+            ]
+        })
+
+
+        st.bar_chart(
+            stats_animes.set_index("Statut")
+        )
+        
 # =====================
 # Films vus par mois
 # =====================
