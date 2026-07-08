@@ -131,3 +131,9 @@ st.dataframe(
     series_episodes,
     use_container_width=True
 )
+
+from scripts.importation_anilist import load_anilist
+
+anime = load_anilist("ton_username")
+
+st.dataframe(anime)
