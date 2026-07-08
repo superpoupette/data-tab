@@ -231,27 +231,48 @@ with col_animes:
             )
 
         with c2:
-            st.metric(
-                "Terminés",
-                watched
+            st.markdown(
+                f"""
+                <div style="font-size: 14px;">
+                    <span style="color:#BDE0FE; font-size:22px;">●</span>
+                    Terminés
+                </div>
+                <div style="font-size: 28px; font-weight: 600;">
+                    {watched}
+                </div>
+                """,
+                unsafe_allow_html=True
             )
 
         with c3:
-            st.metric(
-                "Stoppés",
-                stopped
+            st.markdown(
+                f"""
+                <div style="font-size: 14px;">
+                    <span style="color:#FFADAD; font-size:22px;">●</span>
+                    Stoppés
+                </div>
+                <div style="font-size: 28px; font-weight: 600;">
+                    {stopped}
+                </div>
+                """,
+                unsafe_allow_html=True
             )
-
-
-        total_episodes_watched = animes["progress"].sum()
 
 
         c4, c5 = st.columns(2)
 
         with c4:
-            st.metric(
-                "En pause",
-                paused
+            st.markdown(
+                f"""
+                <div style="font-size: 14px;">
+                    <span style="color:#FFD6A5; font-size:22px;">●</span>
+                    En pause
+                </div>
+                <div style="font-size: 28px; font-weight: 600;">
+                    {paused}
+                </div>
+                """,
+                unsafe_allow_html=True
             )
 
         with c5:
