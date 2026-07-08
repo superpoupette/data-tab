@@ -1,4 +1,4 @@
-mport streamlit as st
+import streamlit as st
 import pandas as pd
 
 from scripts.importation_tvtime import tab_tv
