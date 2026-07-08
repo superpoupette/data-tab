@@ -133,19 +133,19 @@ import plotly.express as px
 
 stats_animes["Catégorie"] = "Total"
 
-    fig = px.bar(
-        stats_animes,
-        x="Pourcentage",
-        y="Catégorie",
-        color="Statut",
-        orientation="h",
-        height=45,
-        color_discrete_map={
-            "Plan to watch": "#A8D5BA",  # vert pastel
-            "Continuing": "#FFD6A5",     # pêche
-            "Watched": "#BDE0FE",        # bleu clair
-            "Stopped": "#FFADAD"         # rose pastel
-        }
+fig = px.bar(
+    stats_animes,
+    x="Pourcentage",
+    y="Catégorie",
+    color="Statut",
+    orientation="h",
+    height=45,
+    color_discrete_map={
+        "Plan to watch": "#A8D5BA",  # vert pastel
+        "Continuing": "#FFD6A5",     # pêche
+        "Watched": "#BDE0FE",        # bleu clair
+        "Stopped": "#FFADAD"         # rose pastel
+    }
     )
 
     fig.update_layout(
