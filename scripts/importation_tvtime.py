@@ -39,6 +39,10 @@ def clean_series(series, series_episodes):
         .rename(columns={"watched_at": "last_watch"})
     )
 
+    # Supprime une éventuelle ancienne colonne
+    if "last_watch" in series.columns:
+        series.drop(columns=["last_watch"], inplace=True)
+
     series = series.merge(
         last_watched,
         how="left",
