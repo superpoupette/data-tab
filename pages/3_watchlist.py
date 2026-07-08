@@ -39,23 +39,10 @@ with col1:
         nb_movies_watched
     )
 
-with col2:
-    st.metric(
-        "Séries terminées",
-        nb_series_finished
-    )
-
-with col3:
-    st.metric(
-        "Séries non terminées",
-        nb_series_unfinished
-    )
-
 # =====================
 # Cartes Anime / Séries
 # =====================
 
-st.header("📊 Statistiques")
 
 col_series, col_animes = st.columns(2)
 
