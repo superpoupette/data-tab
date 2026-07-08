@@ -8,10 +8,62 @@ movies, series, series_episodes = tab_tv()
 
 st.title("🍿 Watchlist")
 
+
 # =====================
 # Dashboard
 # =====================
 
+# Nombre de films vus
+nb_movies_watched = (
+    movies["status"] == "watched"
+).sum()
+
+# Nombre de séries terminées
+nb_series_finished = (
+    series["status"] == "up_to_date"
+).sum()
+
+# Nombre de séries jamais terminées
+nb_series_unfinished = (
+    series["status"].isin(["continuing", "stopped"])
+).sum()
+
+
+col1, col2, col3 = st.columns(3)
+
+with col1:
+    st.metric(
+        "🎬 Films vus",
+        nb_movies_watched
+    )
+
+with col2:
+    st.metric(
+        "📺 Séries terminées",
+        nb_series_finished
+    )
+
+with col3:
+    st.metric(
+        "📚 Séries non terminées",
+        nb_series_unfinished
+    )
+
+
+# =====================
+# Films vus par mois
+# =====================
+
+movies_by_month = (
+    movies[movies["status"] == "watched"]
+    .assign(month=lambda x: x["watched_at"].dt.to_period("M").astype(str))
+    .groupby("month")
+    .size()
+)
+
+st.subheader("📈 Films vus par mois")
+
+st.line_chart(movies_by_month)
 
 # Nombre de films vus
 nb_movies_watched = len(
@@ -22,7 +74,7 @@ from scripts.gestion_watchlist import derniers_visionnages
 
 watchlist = derniers_visionnages(movies, series)
 
-st.header("🎬 Films et Séries visionnés")
+st.header("Derniers visionnages")
 
 st.dataframe(
     watchlist,
