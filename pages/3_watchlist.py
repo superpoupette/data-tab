@@ -155,12 +155,14 @@ with col_animes:
 
         stats_animes = pd.DataFrame({
             "Statut": [
-                "Watched",
-                "Paused",
-                "Stopped"
+                "Terminés",
+                "En cours",
+                "En pause",
+                "Stoppés"
             ],
             "Nombre": [
                 watched,
+                watching,
                 paused,
                 stopped
             ]
@@ -185,9 +187,10 @@ with col_animes:
             orientation="h",
             height=45,
             color_discrete_map={
-                "Continuing": "#FACE5F",
-                "Watched": "#9DEDDA",
-                "Stopped": "#FFADAD"
+                "Terminés": "#4CAF50",
+                "En cours": "#2196F3",
+                "En pause": "#FFC107",
+                "Stoppés": "#F44336"
             }
         )
 
@@ -229,7 +232,7 @@ with col_animes:
             st.markdown(
                 f"""
                 <div style="font-size:14px;">
-                    <span style="color:#BDE0FE; font-size:22px;">●</span>
+                    <span style="color:#4CAF50; font-size:22px;">●</span>
                     Terminés
                 </div>
                 <div style="font-size:28px; font-weight:600;">
@@ -243,24 +246,24 @@ with col_animes:
             st.markdown(
                 f"""
                 <div style="font-size:14px;">
-                    <span style="color:#FFADAD; font-size:22px;">●</span>
-                    Stoppés
+                    <span style="color:#2196F3; font-size:22px;">●</span>
+                    En cours
                 </div>
                 <div style="font-size:28px; font-weight:600;">
-                    {stopped}
+                    {watching}
                 </div>
                 """,
                 unsafe_allow_html=True
             )
 
 
-        c4, c5 = st.columns(2)
+        c4, c5, c6 = st.columns(3)
 
         with c4:
             st.markdown(
                 f"""
                 <div style="font-size:14px;">
-                    <span style="color:#FFD6A5; font-size:22px;">●</span>
+                    <span style="color:#FFC107; font-size:22px;">●</span>
                     En pause
                 </div>
                 <div style="font-size:28px; font-weight:600;">
@@ -271,6 +274,20 @@ with col_animes:
             )
 
         with c5:
+            st.markdown(
+                f"""
+                <div style="font-size:14px;">
+                    <span style="color:#F44336; font-size:22px;">●</span>
+                    Stoppés
+                </div>
+                <div style="font-size:28px; font-weight:600;">
+                    {stopped}
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+
+        with c6:
             st.metric(
                 "Épisodes vus",
                 int(total_episodes_watched)
