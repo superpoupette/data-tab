@@ -27,7 +27,7 @@ def load_anilist(username):
               month
               day
             }
-            completedAt {
+            updatedAt {
               year
               month
               day
@@ -65,7 +65,10 @@ def load_anilist(username):
                 "episodes": media["episodes"],
                 "duration": media["duration"],
                 "progress": entry["progress"],
-                "watched_at": entry["completedAt"]
+                "lastwatch_at": pd.to_datetime(
+                    entry["updatedAt"],
+                    unit="s"
+                )
             })
 
     return pd.DataFrame(entries)
