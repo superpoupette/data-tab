@@ -1,0 +1,40 @@
+# =====================
+# Tableaux de données
+# =====================
+st.header("Animes")
+
+st.dataframe(
+    animes,
+    use_container_width=True,
+    hide_index=True
+)
+
+st.header("Séries")
+st.dataframe(
+    series,
+    use_container_width=True
+)
+
+st.header("Épisodes de séries")
+st.dataframe(
+    series_episodes,
+    use_container_width=True
+)
+
+st.header("Animés")
+
+from scripts.importation_anilist import load_anilist
+
+anime = load_anilist("Poupette")
+
+st.dataframe(anime)
+
+
+
+
+
+st.header("Films")
+st.dataframe(
+    movies,
+    use_container_width=True
+)

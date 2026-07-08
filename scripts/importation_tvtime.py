@@ -32,13 +32,73 @@ def clean_series(series, series_episodes):
         errors="coerce"
     )
 
-    last_episode = (
+
+    # Nombre total d'épisodes disponibles
+    episode_count = (
         series_episodes
+        .groupby("series_uuid")
+        .size()
+        .reset_index(name="episodes")
+    )
+
+
+    # Nombre d'épisodes réellement vus
+    watched_count = (
+        series_episodes[
+            series_episodes["watched_at"].notna()
+        ]
+        .groupby("series_uuid")
+        .size()
+        .reset_index(name="progress")
+    )
+
+
+    # Fusion des deux informations
+    episode_stats = episode_count.merge(
+        watched_count,
+        on="series_uuid",
+        how="left"
+    )
+
+
+    series = series.merge(
+        episode_stats,
+        how="left",
+        left_on="uuid",
+        right_on="series_uuid"
+    )
+
+
+    series.drop(
+        columns=["series_uuid"],
+        inplace=True
+    )
+
+
+    series["episodes"] = (
+        series["episodes"]
+        .fillna(0)
+        .astype(int)
+    )
+
+    series["progress"] = (
+        series["progress"]
+        .fillna(0)
+        .astype(int)
+    )
+
+
+    # Dernier épisode regardé
+    last_episode = (
+        series_episodes[
+            series_episodes["watched_at"].notna()
+        ]
         .sort_values("watched_at")
         .groupby("series_uuid")
         .last()
         .reset_index()
     )
+
 
     last_episode["last_episode"] = (
         "S"
@@ -47,23 +107,29 @@ def clean_series(series, series_episodes):
         + last_episode["episode"].astype(int).astype(str).str.zfill(2)
     )
 
+
     last_episode = last_episode[
         ["series_uuid", "watched_at", "last_episode"]
     ].rename(
-        columns={"watched_at": "last_watch"}
+        columns={
+            "watched_at": "last_watch"
+        }
     )
 
-    if "last_watch" in series.columns:
-        series.drop(columns=["last_watch"], inplace=True)
 
     series = series.merge(
-    last_episode,
-    how="left",
-    left_on="uuid",
-    right_on="series_uuid"
+        last_episode,
+        how="left",
+        left_on="uuid",
+        right_on="series_uuid"
     )
 
-    series.drop(columns=["series_uuid"], inplace=True)
+
+    series.drop(
+        columns=["series_uuid"],
+        inplace=True
+    )
+
 
     return series
 
