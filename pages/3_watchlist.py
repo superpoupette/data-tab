@@ -175,10 +175,12 @@ with col_animes:
         # Graphique en haut
         import plotly.express as px
 
+        stats_animes["Catégorie"] = "Total"
+
         fig = px.bar(
             stats_animes,
             x="Pourcentage",
-            y=[""],
+            y="Catégorie",
             color="Statut",
             orientation="h",
             text=stats_animes["Pourcentage"].apply(
