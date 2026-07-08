@@ -6,12 +6,23 @@ def load_tv(filepath):
 
 def clean_movies(movies):
     movies["type"] = "movie"
+
+    movies["status"] = movies["is_watched"].apply(
+        lambda x: "watched" if x else "to_watch"
+    )
+
+    movies.drop(columns=["is_watched"], inplace=True)
+
     return movies
 
 def clean_series(series):
     series["type"] = "series"
-    return series
 
+    series["status"] = series["status"].replace(
+        "not_started_yet", "to_watch"
+    )
+
+    return series
 
 def tab_tv():
     movies=load_tv("data/tvtime-movies-2026-07-07.csv")
