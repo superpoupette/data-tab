@@ -4,6 +4,7 @@ import pandas as pd
 from scripts.importation_tvtime import tab_tv
 
 movies, series, series_episodes = tab_tv()
+animes = tab_myanimelist()
 
 
 st.title("🍿 Watchlist")
@@ -118,9 +119,6 @@ anime = load_anilist("Poupette")
 st.dataframe(anime)
 
 from scripts.importation_myanimelist import tab_myanimelist
-
-animes = tab_myanimelist()
-
 
 
 
