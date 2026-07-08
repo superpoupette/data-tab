@@ -115,3 +115,15 @@ from scripts.importation_anilist import load_anilist
 anime = load_anilist("Poupette")
 
 st.dataframe(anime)
+
+from scripts.importation_myanimelist import tab_myanimelist
+
+animes = tab_myanimelist()
+
+st.header("Animes")
+
+st.dataframe(
+    animes,
+    use_container_width=True,
+    hide_index=True
+)
