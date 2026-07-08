@@ -33,19 +33,19 @@ col1, col2, col3 = st.columns(3)
 
 with col1:
     st.metric(
-        "🎬 Films vus",
+        "Films vus",
         nb_movies_watched
     )
 
 with col2:
     st.metric(
-        "📺 Séries terminées",
+        "Séries terminées",
         nb_series_finished
     )
 
 with col3:
     st.metric(
-        "📚 Séries non terminées",
+        "Séries non terminées",
         nb_series_unfinished
     )
 
@@ -64,7 +64,7 @@ movies_by_month = (
     .size()
 )
 
-st.subheader("📈 Films vus par mois")
+st.subheader("Films vus par mois")
 
 st.line_chart(movies_by_month)
 
