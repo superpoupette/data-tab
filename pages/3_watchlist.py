@@ -55,7 +55,10 @@ with col3:
 # =====================
 
 movies_by_month = (
-    movies[movies["status"] == "watched"]
+    movies[
+        (movies["status"] == "watched")
+        & (movies["watched_at"] >= "2023-01-01")
+    ]
     .assign(month=lambda x: x["watched_at"].dt.to_period("M").astype(str))
     .groupby("month")
     .size()
