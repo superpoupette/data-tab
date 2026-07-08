@@ -15,12 +15,32 @@ def clean_movies(movies):
 
     return movies
 
-def clean_series(series):
+def clean_series(series, series_episodes):
     series["type"] = "series"
 
     series["status"] = series["status"].replace(
         "not_started_yet", "to_watch"
     )
+
+    last_watched = (
+        series_episodes.groupby("series_uuid")["watched_at"]
+        .max()
+        .reset_index()
+    )
+
+    last_watched.rename(
+        columns={"watched_at": "watched_at"},
+        inplace=True
+    )
+
+    series = series.merge(
+        last_watched,
+        how="left",
+        left_on="uuid",
+        right_on="series_uuid"
+    )
+
+    series.drop(columns=["series_uuid"], inplace=True)
 
     return series
 
@@ -29,5 +49,5 @@ def tab_tv():
     series=load_tv("data/tvtime-series-2026-07-07.csv")
     series_episodes=load_tv("data/tvtime-series-episodes-2026-07-07.csv")
     movies = clean_movies(movies)
-    series = clean_series(series)
+    series = clean_series(series, series_episodes)
     return movies, series, series_episodes
