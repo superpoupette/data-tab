@@ -128,6 +128,54 @@ with col_series:
 # Animés
 # =====================
 
+with col_animes:
+    with st.container(border=True):
+        st.subheader("🍥 Animés")
+
+        total_animes = len(animes)
+
+        watched = (
+            animes["status"] == "watched"
+        ).sum()
+
+        watching = (
+            animes["status"] == "continuing"
+        ).sum()
+
+        stopped = (
+            animes["status"] == "stopped"
+        ).sum()
+
+        paused = (
+            animes["status"] == "paused"
+        ).sum()
+
+        to_watch = (
+            animes["status"] == "to_watch"
+        ).sum()
+
+
+        stats_animes = pd.DataFrame({
+            "Statut": [
+                "Plan to watch",
+                "Continuing",
+                "Watched",
+                "Stopped"
+            ],
+            "Nombre": [
+                to_watch,
+                watching,
+                watched,
+                stopped
+            ]
+        })
+
+
+        stats_animes["Pourcentage"] = (
+            stats_animes["Nombre"] / total_animes * 100
+        )
+
+
         # Graphique en haut
         import plotly.express as px
 
