@@ -1,12 +1,12 @@
-import streamlit as st
+mport streamlit as st
 import pandas as pd
 
 from scripts.importation_tvtime import tab_tv
 
 movies, series, series_episodes = tab_tv()
 
-st.title("🍿 Watchlist")
 
+st.title("🍿 Watchlist")
 
 # =====================
 # Dashboard
@@ -65,6 +65,49 @@ with col1:
 with col2:
     st.subheader("Séries terminées par année")
     st.bar_chart(series_by_year)
+
+# =====================
+# Films et séries visionnés
+# =====================
+
+watched_movies = movies[
+    movies["status"] == "watched"
+]
+
+watched_series = series[
+    series["status"] == "up_to_date"
+]
+
+
+watched = pd.concat(
+    [watched_movies, watched_series],
+    ignore_index=True
+)
+
+
+watched = watched[
+    [
+        "title",
+        "year",
+        "type",
+        "watched_at"
+    ]
+]
+
+
+watched = watched.sort_values(
+    by="watched_at",
+    ascending=False
+)
+
+
+st.header("🎬 Films et Séries visionnés")
+
+st.dataframe(
+    watched,
+    use_container_width=True,
+    hide_index=True
+)
 
 
 # =====================
