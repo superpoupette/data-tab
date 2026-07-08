@@ -191,10 +191,11 @@ with col_animes:
 
         fig.update_layout(
             barmode="stack",
-            showlegend=True,
+            showlegend=False,
             xaxis={
                 "range": [0, 100],
-                "title": None
+                "title": None,
+                "showticklabels": False
             },
             yaxis={
                 "title": None,
@@ -203,8 +204,8 @@ with col_animes:
             margin=dict(
                 l=0,
                 r=0,
-                t=10,
-                b=10
+                t=5,
+                b=5
             )
         )
 
