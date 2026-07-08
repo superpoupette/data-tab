@@ -142,17 +142,78 @@ with col_animes:
             animes["status"] == "continuing"
         ).sum()
 
-        dropped = (
+        stopped = (
             animes["status"] == "stopped"
-        ).sum()
-
-        paused = (
-            animes["status"] == "paused"
         ).sum()
 
         to_watch = (
             animes["status"] == "to_watch"
         ).sum()
+
+
+        stats_animes = pd.DataFrame({
+            "Statut": [
+                "Plan to watch",
+                "Continuing",
+                "Watched",
+                "Stopped"
+            ],
+            "Nombre": [
+                to_watch,
+                watching,
+                watched,
+                stopped
+            ]
+        })
+
+
+        stats_animes["Pourcentage"] = (
+            stats_animes["Nombre"] / total_animes * 100
+        )
+
+
+        # Graphique en haut
+        import plotly.express as px
+
+        fig = px.bar(
+            stats_animes,
+            x="Pourcentage",
+            y=[""],
+            color="Statut",
+            orientation="h",
+            text=stats_animes["Pourcentage"].apply(
+                lambda x: f"{x:.1f}%"
+            ),
+            height=100
+        )
+
+        fig.update_layout(
+            barmode="stack",
+            showlegend=True,
+            xaxis={
+                "range": [0, 100],
+                "title": None
+            },
+            yaxis={
+                "title": None,
+                "showticklabels": False
+            },
+            margin=dict(
+                l=0,
+                r=0,
+                t=10,
+                b=10
+            )
+        )
+
+        fig.update_traces(
+            textposition="inside"
+        )
+
+        st.plotly_chart(
+            fig,
+            use_container_width=True
+        )
 
 
         c1, c2 = st.columns(2)
@@ -166,32 +227,9 @@ with col_animes:
         with c2:
             st.metric(
                 "Score moyen",
-                round(animes["score"].mean(),2)
+                round(animes["score"].mean(), 2)
             )
 
-
-        stats_animes = pd.DataFrame({
-            "Statut": [
-                "Vus",
-                "En cours",
-                "Abandonnés",
-                "En pause",
-                "À voir"
-            ],
-            "Nombre": [
-                watched,
-                watching,
-                dropped,
-                paused,
-                to_watch
-            ]
-        })
-
-
-        st.bar_chart(
-            stats_animes.set_index("Statut")
-        )
-        
 # =====================
 # Films vus par mois
 # =====================
