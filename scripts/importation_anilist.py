@@ -61,7 +61,7 @@ def load_anilist(username):
                 "episodes": media["episodes"],
                 "duration": media["duration"],
                 "progress": entry["progress"],
-                "lastwatch_at": pd.to_datetime(
+                "watch_at": pd.to_datetime(
                     entry["updatedAt"],
                     unit="s"
                 )
