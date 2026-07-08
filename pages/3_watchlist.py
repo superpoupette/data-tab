@@ -19,57 +19,40 @@ nb_movies_watched = len(
 )
 
 
-col1, col2 = st.columns(2)
-
-with col1:
-    st.metric(
-        "🎬 Films vus",
-        nb_movies_watched
-    )
-
-with col2:
-    st.metric(
-        "📺 Séries terminées",
-    )
-
-# Films vus par année
-movies_by_year = (
-    movies[movies["status"] == "watched"]
-    .assign(year=lambda x: x["watched_at"].dt.year)
-    .groupby("year")
-    .size()
-)
-
-
-# Séries terminées par année
-series_by_year = (
-    series[series["status"] == "up_to_date"]
-    .assign(year=lambda x: x["watched_at"].dt.year)
-    .groupby("year")
-    .size()
-)
-
-
-col1, col2 = st.columns(2)
-
-with col1:
-    st.subheader("Films vus par année")
-    st.bar_chart(movies_by_year)
-
-with col2:
-    st.subheader("Séries terminées par année")
-    st.bar_chart(series_by_year)
-
 # =====================
 # Films et séries visionnés
 # =====================
 
 watched_movies = movies[
     movies["status"] == "watched"
-]
+].copy()
+
+watched_movies = watched_movies.rename(
+    columns={"watched_at": "last_watch"}
+)
+
 
 watched_series = series[
     series["status"] == "up_to_date"
+].copy()
+
+
+watched_movies = watched_movies[
+    [
+        "title",
+        "year",
+        "type",
+        "last_watch"
+    ]
+]
+
+watched_series = watched_series[
+    [
+        "title",
+        "year",
+        "type",
+        "last_watch"
+    ]
 ]
 
 
@@ -79,18 +62,8 @@ watched = pd.concat(
 )
 
 
-watched = watched[
-    [
-        "title",
-        "year",
-        "type",
-        "watched_at"
-    ]
-]
-
-
 watched = watched.sort_values(
-    by="watched_at",
+    by="last_watch",
     ascending=False
 )
 
