@@ -4,7 +4,7 @@ from scripts.importation_tvtime import tab_tv
 
 movies, series, series_episodes = tab_tv()
 
-st.title("Données TV Time")
+st.title("🍿 Watchlist")
 
 st.header("Films")
 st.dataframe(
