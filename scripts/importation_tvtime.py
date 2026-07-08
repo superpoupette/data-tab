@@ -57,10 +57,10 @@ def clean_series(series, series_episodes):
         series.drop(columns=["last_watch"], inplace=True)
 
     series = series.merge(
-        last_episode,
-        how="left",
-        left_on="uuid",
-        right_on="series_uuid"
+    last_episode,
+    how="left",
+    left_on="uuid",
+    right_on="series_uuid"
     )
 
     series.drop(columns=["series_uuid"], inplace=True)
