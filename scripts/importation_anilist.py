@@ -10,23 +10,18 @@ def load_anilist(username):
             lists {
                 entries {
                     media {
-                    title {
-                        romaji
-                        english
-                    }
-                    type
-                    episodes
-                    duration
-                    seasonYear
+                        title {
+                            romaji
+                            english
+                        }
+                        type
+                        episodes
+                        duration
+                        seasonYear
                     }
                     status
                     score
                     progress
-                    startedAt {
-                    year
-                    month
-                    day
-                    }
                     updatedAt
                 }
             }
@@ -57,14 +52,18 @@ def load_anilist(username):
             entries.append({
                 "title": media["title"]["romaji"],
                 "year": media["seasonYear"],
+                "type": "anime",
                 "status": entry["status"],
-                "episodes": media["episodes"],
-                "duration": media["duration"],
-                "progress": entry["progress"],
                 "last_watch": pd.to_datetime(
                     entry["updatedAt"],
                     unit="s"
-                )
+                ),
+                "episodes": media["episodes"],
+                "duration": media["duration"],
+                "progress": entry["progress"],
+                "score": entry["score"]
             })
 
-    return pd.DataFrame(entries)
+    anime = pd.DataFrame(entries)
+
+    return anime

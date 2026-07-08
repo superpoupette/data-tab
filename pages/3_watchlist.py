@@ -19,9 +19,6 @@ nb_movies_watched = len(
 )
 
 
-
-
-
 # =====================
 # Tableaux de données
 # =====================
