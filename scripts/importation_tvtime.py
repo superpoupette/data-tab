@@ -32,30 +32,38 @@ def clean_series(series, series_episodes):
         errors="coerce"
     )
 
-    last_watched = (
-        series_episodes.groupby("series_uuid")["watched_at"]
-        .max()
+    last_episode = (
+        series_episodes
+        .sort_values("watched_at")
+        .groupby("series_uuid")
+        .last()
         .reset_index()
-        .rename(columns={"watched_at": "last_watch"})
     )
 
-    # Supprime une éventuelle ancienne colonne
+    last_episode["last_episode"] = (
+        "S"
+        + last_episode["season"].astype(int).astype(str).str.zfill(2)
+        + "E"
+        + last_episode["episode"].astype(int).astype(str).str.zfill(2)
+    )
+
+    last_episode = last_episode[
+        ["series_uuid", "watched_at", "last_episode"]
+    ].rename(
+        columns={"watched_at": "last_watch"}
+    )
+
     if "last_watch" in series.columns:
         series.drop(columns=["last_watch"], inplace=True)
 
     series = series.merge(
-        last_watched,
+        last_episode,
         how="left",
         left_on="uuid",
         right_on="series_uuid"
     )
 
     series.drop(columns=["series_uuid"], inplace=True)
-
-    series["last_watch"] = pd.to_datetime(
-        series["last_watch"],
-        errors="coerce"
-    )
 
     return series
 
