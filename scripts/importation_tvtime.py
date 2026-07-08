@@ -42,8 +42,8 @@ def clean_series(series, series_episodes):
 
     series.drop(columns=["series_uuid"], inplace=True)
 
-    series["watched_at"] = pd.to_datetime(
-        series["watched_at"],
+    series["last_watch"] = pd.to_datetime(
+        series["last_watch"],
         errors="coerce"
     )
 
