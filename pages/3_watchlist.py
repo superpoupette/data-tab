@@ -187,10 +187,10 @@ with col_animes:
             orientation="h",
             height=45,
             color_discrete_map={
-                "Terminés": "#85AAED",
-                "En cours": "#99DECE",
-                "En pause": "#F0D592",
-                "Stoppés": "#F086B6"
+                "Terminés": "#7987E8",
+                "En cours": "#86D474",
+                "En pause": "#FACD6B",
+                "Stoppés": "#F55BA3"
             }
         )
 
