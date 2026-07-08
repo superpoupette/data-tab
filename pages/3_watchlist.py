@@ -128,95 +128,54 @@ with col_series:
 # Animés
 # =====================
 
-with col_animes:
-    with st.container(border=True):
-        st.subheader("🍥 Animés")
+# Graphique en haut
+import plotly.express as px
 
-        total_animes = len(animes)
+stats_animes["Catégorie"] = "Total"
 
-        watched = (
-            animes["status"] == "watched"
-        ).sum()
+    fig = px.bar(
+        stats_animes,
+        x="Pourcentage",
+        y="Catégorie",
+        color="Statut",
+        orientation="h",
+        height=45,
+        color_discrete_map={
+            "Plan to watch": "#A8D5BA",  # vert pastel
+            "Continuing": "#FFD6A5",     # pêche
+            "Watched": "#BDE0FE",        # bleu clair
+            "Stopped": "#FFADAD"         # rose pastel
+        }
+    )
 
-        watching = (
-            animes["status"] == "continuing"
-        ).sum()
-
-        stopped = (
-            animes["status"] == "stopped"
-        ).sum()
-
-        paused = (
-            animes["status"] == "paused"
-        ).sum()
-
-
-        stats_animes = pd.DataFrame({
-            "Statut": [
-                "Plan to watch",
-                "Continuing",
-                "Watched",
-                "Stopped"
-            ],
-            "Nombre": [
-                to_watch,
-                watching,
-                watched,
-                stopped
-            ]
-        })
-
-
-        stats_animes["Pourcentage"] = (
-            stats_animes["Nombre"] / total_animes * 100
+    fig.update_layout(
+        barmode="stack",
+        showlegend=False,
+        xaxis={
+            "range": [0, 100],
+            "title": None,
+            "showticklabels": False
+        },
+        yaxis={
+            "title": None,
+            "showticklabels": False
+        },
+        margin=dict(
+            l=0,
+            r=0,
+            t=0,
+            b=0
         )
+    )
 
+    fig.update_traces(
+        textposition=None
+    )
 
-        # Graphique en haut
-        import plotly.express as px
-
-        stats_animes["Catégorie"] = "Total"
-
-        fig = px.bar(
-            stats_animes,
-            x="Pourcentage",
-            y="Catégorie",
-            color="Statut",
-            orientation="h",
-            text=stats_animes["Pourcentage"].apply(
-                lambda x: f"{x:.1f}%"
-            ),
-            height=100
-        )
-
-        fig.update_layout(
-            barmode="stack",
-            showlegend=False,
-            xaxis={
-                "range": [0, 100],
-                "title": None,
-                "showticklabels": False
-            },
-            yaxis={
-                "title": None,
-                "showticklabels": False
-            },
-            margin=dict(
-                l=0,
-                r=0,
-                t=5,
-                b=5
-            )
-        )
-
-        fig.update_traces(
-            textposition="inside"
-        )
-
-        st.plotly_chart(
-            fig,
-            use_container_width=True
-        )
+    st.plotly_chart(
+        fig,
+        use_container_width=True
+    )
 
 
         c1, c2, c3 = st.columns(3)
