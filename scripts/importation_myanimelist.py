@@ -24,8 +24,10 @@ def clean_animes(animes):
     animes["status"] = animes["status"].replace(
         {
             "Completed": "watched",
-            "Watching": "watching",
-            "Plan to Watch": "to_watch"
+            "Watching": "continuing",
+            "Plan to Watch": "to_watch",
+            "On-Hold": "paused",
+            "Dropped": "stopped"
         }
     )
 

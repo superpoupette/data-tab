@@ -89,11 +89,12 @@ st.dataframe(
 # =====================
 # Tableaux de données
 # =====================
+st.header("Animes")
 
-st.header("Films")
 st.dataframe(
-    movies,
-    use_container_width=True
+    animes,
+    use_container_width=True,
+    hide_index=True
 )
 
 st.header("Séries")
@@ -120,10 +121,11 @@ from scripts.importation_myanimelist import tab_myanimelist
 
 animes = tab_myanimelist()
 
-st.header("Animes")
 
+
+
+st.header("Films")
 st.dataframe(
-    animes,
-    use_container_width=True,
-    hide_index=True
+    movies,
+    use_container_width=True
 )
