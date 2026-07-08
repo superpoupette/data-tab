@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 
 from scripts.importation_tvtime import tab_tv
+from scripts.importation_myanimelist import tab_myanimelist
 
 movies, series, series_episodes = tab_tv()
 animes = tab_myanimelist()
@@ -118,7 +119,7 @@ anime = load_anilist("Poupette")
 
 st.dataframe(anime)
 
-from scripts.importation_myanimelist import tab_myanimelist
+
 
 
 
