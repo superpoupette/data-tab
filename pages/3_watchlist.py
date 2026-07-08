@@ -232,7 +232,7 @@ with col_animes:
             st.markdown(
                 f"""
                 <div style="font-size:14px;">
-                    <span style="color:#4CAF50; font-size:22px;">●</span>
+                    <span style="color:#7987E8; font-size:22px;">●</span>
                     Terminés
                 </div>
                 <div style="font-size:28px; font-weight:600;">
@@ -246,7 +246,7 @@ with col_animes:
             st.markdown(
                 f"""
                 <div style="font-size:14px;">
-                    <span style="color:#2196F3; font-size:22px;">●</span>
+                    <span style="color:#86D474; font-size:22px;">●</span>
                     En cours
                 </div>
                 <div style="font-size:28px; font-weight:600;">
@@ -263,7 +263,7 @@ with col_animes:
             st.markdown(
                 f"""
                 <div style="font-size:14px;">
-                    <span style="color:#FFC107; font-size:22px;">●</span>
+                    <span style="color:#FACD6B; font-size:22px;">●</span>
                     En pause
                 </div>
                 <div style="font-size:28px; font-weight:600;">
@@ -277,7 +277,7 @@ with col_animes:
             st.markdown(
                 f"""
                 <div style="font-size:14px;">
-                    <span style="color:#F44336; font-size:22px;">●</span>
+                    <span style="color:#F55BA3; font-size:22px;">●</span>
                     Stoppés
                 </div>
                 <div style="font-size:28px; font-weight:600;">
