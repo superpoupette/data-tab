@@ -44,6 +44,8 @@ st.dataframe(
     use_container_width=True
 )
 
+st.header("Animés")
+
 from scripts.importation_anilist import load_anilist
 
 anime = load_anilist("Poupette")
