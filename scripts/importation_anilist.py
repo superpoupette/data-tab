@@ -6,35 +6,31 @@ def load_anilist(username):
 
     query = """
     query ($userName: String) {
-      MediaListCollection(userName: $userName, type: ANIME) {
-        lists {
-          entries {
-            media {
-              title {
-                romaji
-                english
-              }
-              type
-              episodes
-              duration
-              seasonYear
+        MediaListCollection(userName: $userName, type: ANIME) {
+            lists {
+                entries {
+                    media {
+                    title {
+                        romaji
+                        english
+                    }
+                    type
+                    episodes
+                    duration
+                    seasonYear
+                    }
+                    status
+                    score
+                    progress
+                    startedAt {
+                    year
+                    month
+                    day
+                    }
+                    updatedAt
+                }
             }
-            status
-            score
-            progress
-            startedAt {
-              year
-              month
-              day
-            }
-            updatedAt {
-              year
-              month
-              day
-            }
-          }
         }
-      }
     }
     """
 
