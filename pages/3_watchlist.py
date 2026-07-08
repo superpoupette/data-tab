@@ -12,8 +12,6 @@ st.title("🍿 Watchlist")
 # Dashboard
 # =====================
 
-st.subheader("📊 Statistiques")
-
 
 # Nombre de films vus
 nb_movies_watched = len(
@@ -40,19 +38,6 @@ with col2:
         nb_series_finished
     )
 
-
-# Conversion des dates
-movies["watched_at"] = pd.to_datetime(
-    movies["watched_at"],
-    errors="coerce"
-)
-
-series["watched_at"] = pd.to_datetime(
-    series["watched_at"],
-    errors="coerce"
-)
-
-
 # Films vus par année
 movies_by_year = (
     movies[movies["status"] == "watched"]
@@ -74,11 +59,11 @@ series_by_year = (
 col1, col2 = st.columns(2)
 
 with col1:
-    st.subheader("🎬 Films vus par année")
+    st.subheader("Films vus par année")
     st.bar_chart(movies_by_year)
 
 with col2:
-    st.subheader("📺 Séries terminées par année")
+    st.subheader("Séries terminées par année")
     st.bar_chart(series_by_year)
 
 

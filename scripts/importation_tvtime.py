@@ -13,6 +13,11 @@ def clean_movies(movies):
 
     movies.drop(columns=["is_watched"], inplace=True)
 
+    movies["watched_at"] = pd.to_datetime(
+        movies["watched_at"],
+        errors="coerce"
+    )
+
     return movies
 
 def clean_series(series, series_episodes):
@@ -28,11 +33,6 @@ def clean_series(series, series_episodes):
         .reset_index()
     )
 
-    last_watched.rename(
-        columns={"watched_at": "watched_at"},
-        inplace=True
-    )
-
     series = series.merge(
         last_watched,
         how="left",
@@ -41,6 +41,11 @@ def clean_series(series, series_episodes):
     )
 
     series.drop(columns=["series_uuid"], inplace=True)
+
+    series["watched_at"] = pd.to_datetime(
+        series["watched_at"],
+        errors="coerce"
+    )
 
     return series
 
