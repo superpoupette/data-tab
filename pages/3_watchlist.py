@@ -82,12 +82,72 @@ with col_series:
             series["status"] == "stopped"
         ).sum()
 
-        to_watch = (
-            series["status"] == "to_watch"
-        ).sum()
+
+        stats_series = pd.DataFrame({
+            "Statut": [
+                "Terminés",
+                "En cours",
+                "Stoppés"
+            ],
+            "Nombre": [
+                finished,
+                watching,
+                stopped
+            ]
+        })
 
 
-        c1, c2 = st.columns(2)
+        stats_series["Pourcentage"] = (
+            stats_series["Nombre"] / total_series * 100
+        )
+
+
+        # Graphique en haut
+        import plotly.express as px
+
+        stats_series["Catégorie"] = "Total"
+
+        fig = px.bar(
+            stats_series,
+            x="Pourcentage",
+            y="Catégorie",
+            color="Statut",
+            orientation="h",
+            height=45,
+            color_discrete_map={
+                "Terminés": "#7987E8",
+                "En cours": "#86D474",
+                "Stoppés": "#F55BA3"
+            }
+        )
+
+        fig.update_layout(
+            barmode="stack",
+            showlegend=False,
+            xaxis={
+                "range": [0, 100],
+                "title": None,
+                "showticklabels": False
+            },
+            yaxis={
+                "title": None,
+                "showticklabels": False
+            },
+            margin=dict(
+                l=0,
+                r=0,
+                t=0,
+                b=0
+            )
+        )
+
+        st.plotly_chart(
+            fig,
+            use_container_width=True
+        )
+
+
+        c1, c2, c3 = st.columns(3)
 
         with c1:
             st.metric(
@@ -96,31 +156,49 @@ with col_series:
             )
 
         with c2:
-            st.metric(
-                "Terminées",
-                finished
+            st.markdown(
+                f"""
+                <div style="font-size:14px;">
+                    <span style="color:#7987E8; font-size:22px;">●</span>
+                    Terminés
+                </div>
+                <div style="font-size:28px; font-weight:600;">
+                    {finished}
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+
+        with c3:
+            st.markdown(
+                f"""
+                <div style="font-size:14px;">
+                    <span style="color:#86D474; font-size:22px;">●</span>
+                    En cours
+                </div>
+                <div style="font-size:28px; font-weight:600;">
+                    {watching}
+                </div>
+                """,
+                unsafe_allow_html=True
             )
 
 
-        stats_series = pd.DataFrame({
-            "Statut": [
-                "Terminées",
-                "En cours",
-                "Abandonnées",
-                "À voir"
-            ],
-            "Nombre": [
-                finished,
-                watching,
-                stopped,
-                to_watch
-            ]
-        })
+        c4, c5 = st.columns(2)
 
-
-        st.bar_chart(
-            stats_series.set_index("Statut")
-        )
+        with c4:
+            st.markdown(
+                f"""
+                <div style="font-size:14px;">
+                    <span style="color:#F55BA3; font-size:22px;">●</span>
+                    Stoppés
+                </div>
+                <div style="font-size:28px; font-weight:600;">
+                    {stopped}
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
 
 
 
