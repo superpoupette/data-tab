@@ -150,20 +150,16 @@ with col_animes:
             animes["status"] == "paused"
         ).sum()
 
-        to_watch = (
-            animes["status"] == "to_watch"
-        ).sum()
+        total_episodes_watched = animes["progress"].sum()
 
 
         stats_animes = pd.DataFrame({
             "Statut": [
-                "Plan to watch",
                 "Continuing",
                 "Watched",
                 "Stopped"
             ],
             "Nombre": [
-                to_watch,
                 watching,
                 watched,
                 stopped
@@ -189,7 +185,6 @@ with col_animes:
             orientation="h",
             height=45,
             color_discrete_map={
-                "Plan to watch": "#A8D5BA",
                 "Continuing": "#FFD6A5",
                 "Watched": "#BDE0FE",
                 "Stopped": "#FFADAD"
@@ -233,11 +228,11 @@ with col_animes:
         with c2:
             st.markdown(
                 f"""
-                <div style="font-size: 14px;">
+                <div style="font-size:14px;">
                     <span style="color:#BDE0FE; font-size:22px;">●</span>
                     Terminés
                 </div>
-                <div style="font-size: 28px; font-weight: 600;">
+                <div style="font-size:28px; font-weight:600;">
                     {watched}
                 </div>
                 """,
@@ -247,11 +242,11 @@ with col_animes:
         with c3:
             st.markdown(
                 f"""
-                <div style="font-size: 14px;">
+                <div style="font-size:14px;">
                     <span style="color:#FFADAD; font-size:22px;">●</span>
                     Stoppés
                 </div>
-                <div style="font-size: 28px; font-weight: 600;">
+                <div style="font-size:28px; font-weight:600;">
                     {stopped}
                 </div>
                 """,
@@ -264,11 +259,11 @@ with col_animes:
         with c4:
             st.markdown(
                 f"""
-                <div style="font-size: 14px;">
+                <div style="font-size:14px;">
                     <span style="color:#FFD6A5; font-size:22px;">●</span>
                     En pause
                 </div>
-                <div style="font-size: 28px; font-weight: 600;">
+                <div style="font-size:28px; font-weight:600;">
                     {paused}
                 </div>
                 """,
@@ -278,7 +273,7 @@ with col_animes:
         with c5:
             st.metric(
                 "Épisodes vus",
-                total_episodes_watched
+                int(total_episodes_watched)
             )
 
 # =====================
