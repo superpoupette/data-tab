@@ -134,6 +134,6 @@ st.dataframe(
 
 from scripts.importation_anilist import load_anilist
 
-anime = load_anilist("ton_username")
+anime = load_anilist("Poupette")
 
 st.dataframe(anime)
