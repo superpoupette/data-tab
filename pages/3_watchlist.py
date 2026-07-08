@@ -155,13 +155,13 @@ with col_animes:
 
         stats_animes = pd.DataFrame({
             "Statut": [
-                "Continuing",
                 "Watched",
+                "Paused",
                 "Stopped"
             ],
             "Nombre": [
-                watching,
                 watched,
+                paused,
                 stopped
             ]
         })
@@ -185,8 +185,8 @@ with col_animes:
             orientation="h",
             height=45,
             color_discrete_map={
-                "Continuing": "#FFD6A5",
-                "Watched": "#BDE0FE",
+                "Continuing": "#FACE5F",
+                "Watched": "#9DEDDA",
                 "Stopped": "#FFADAD"
             }
         )
