@@ -146,8 +146,12 @@ with col_animes:
             animes["status"] == "stopped"
         ).sum()
 
-        to_watch = (
-            animes["status"] == "to_watch"
+        paused = (
+            animes["status"] == "paused"
+        ).sum()
+
+        dropped = (
+            animes["status"] == "dropped"
         ).sum()
 
 
@@ -219,7 +223,7 @@ with col_animes:
         )
 
 
-        c1, c2 = st.columns(2)
+        c1, c2, c3 = st.columns(3)
 
         with c1:
             st.metric(
@@ -229,8 +233,29 @@ with col_animes:
 
         with c2:
             st.metric(
-                "Score moyen",
-                round(animes["score"].mean(), 2)
+                "Terminés",
+                watched
+            )
+
+        with c3:
+            st.metric(
+                "Stoppés",
+                stopped
+            )
+
+
+        c4, c5 = st.columns(2)
+
+        with c4:
+            st.metric(
+                "En pause",
+                paused
+            )
+
+        with c5:
+            st.metric(
+                "Abandonnés",
+                dropped
             )
 
 # =====================
