@@ -146,6 +146,11 @@ def add_movie_rating(movies):
         on="uuid",
         how="left"
     )
+    movies["vote_key"] = (
+    movies["vote_key"]
+    .str.split("-")
+    .str[-1]
+)
 
     return movies
 
