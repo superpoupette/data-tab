@@ -3,8 +3,9 @@
     "",
     "\\pages",
     "\\scripts",
+    "\\scripts\\danse",
     "\\scripts\\watchlist"
   ],
-  "SelectedNode": "\\scripts\\watchlist\\load_watchlist.py",
+  "SelectedNode": "\\scripts\\danse\\gestion_danses.py",
   "PreviewInSolutionExplorer": false
 }
