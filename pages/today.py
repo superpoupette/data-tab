@@ -106,7 +106,15 @@ if st.button("💾 Sauvegarder"):
         )
 
 
-        save_dataframe_csv(df)
+        save_to_google_sheet([
+            today,
+            best_moment,
+            people_seen,
+            int(people_work),
+            sommeil_val,
+            Choree1_morceau,
+            Choree1_duree
+        ])
 
 
         st.success("Donnée enregistrée !")

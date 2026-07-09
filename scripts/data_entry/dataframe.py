@@ -1,6 +1,8 @@
 import pandas as pd
 import os
-
+import streamlit as st
+import gspread
+from google.oauth2.service_account import Credentials
 
 CSV_FILE = "today_data.csv"
 
@@ -67,3 +69,19 @@ def save_dataframe_csv(df):
         index=False,
         encoding="utf-8-sig"
     )
+
+
+def save_to_google_sheet(row):
+
+    credentials = Credentials.from_service_account_info(
+        st.secrets["gcp_service_account"],
+        scopes=[
+            "https://www.googleapis.com/auth/spreadsheets"
+        ]
+    )
+
+    client = gspread.authorize(credentials)
+
+    sheet = client.open("Today_database").sheet1
+
+    sheet.append_row(row)
