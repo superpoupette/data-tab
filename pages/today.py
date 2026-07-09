@@ -78,6 +78,8 @@ if st.button("💾 Sauvegarder"):
             people_seen,
             int(people_work),
             sommeil_val,
+            Choree1_morceau,
+            Choree1_duree
         )
 
         st.success("Donnée enregistrée !")
