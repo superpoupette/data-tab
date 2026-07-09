@@ -134,17 +134,31 @@ with col_droite:
 st.subheader("Évolution de la charge moyenne par exercice")
 
 
-# Liste des exercices disponibles
+# Liste des exercices disponibles avec assez de données
+
+exercices_valides = (
+    workouts
+    .dropna(subset=["weight_kg"])
+    .groupby("exercise_title")["weight_kg"]
+    .agg(["count"])
+    .reset_index()
+)
+
+# Garder uniquement les exercices avec au moins 2 charges renseignées
+exercices_valides = exercices_valides[
+    exercices_valides["count"] >= 2
+]
+
+
 liste_exercices = (
-    workouts["exercise_title"]
-    .dropna()
-    .drop_duplicates()
+    exercices_valides["exercise_title"]
     .sort_values()
     .tolist()
 )
 
 
-# Sélecteur
+# Sélecteur d'exercice
+
 exercice_selectionne = st.selectbox(
     "Choisir un exercice",
     liste_exercices
@@ -152,12 +166,21 @@ exercice_selectionne = st.selectbox(
 
 
 # Filtrer l'exercice choisi
+
 evolution_exercice = workouts[
     workouts["exercise_title"] == exercice_selectionne
-]
+].copy()
+
+
+# Supprimer les lignes sans charge
+
+evolution_exercice = evolution_exercice.dropna(
+    subset=["weight_kg"]
+)
 
 
 # Calcul de la charge moyenne par séance
+
 evolution_exercice = (
     evolution_exercice
     .groupby("start_time", as_index=False)
@@ -169,12 +192,14 @@ evolution_exercice = (
 
 
 # Trier par date
+
 evolution_exercice = evolution_exercice.sort_values(
     "start_time"
 )
 
 
-# Création du graphique
+# Graphique
+
 chart_evolution = alt.Chart(
     evolution_exercice
 ).mark_line(point=True).encode(
