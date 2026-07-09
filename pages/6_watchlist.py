@@ -459,24 +459,10 @@ st.dataframe(
 )
 
 # =====================
-# Informations films 
+# Informations films
 # =====================
+
 from scripts.tmdb import get_movie_info
-movies_info = pd.DataFrame({
-    "imdb_id": [
-        "tt10229982",
-        "tt1790864"
-    ]
-})
-
-
-movies_info["title"] = (
-    movies_info["imdb_id"]
-    .apply(get_movie_title)
-)
-
-
-st.header("🎬 Movies info")
 
 movies_info = pd.DataFrame({
     "imdb_id": [
