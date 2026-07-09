@@ -30,7 +30,8 @@ def clean_movies(movies):
 
 
 def add_movie_rating(movies):
-    ratings = load_tv("data/ratings-live-votes.csv")
+
+    ratings = pd.read_csv("data/ratings-live-votes.csv")
 
     ratings = ratings[
         ["uuid", "vote_key"]
@@ -41,11 +42,14 @@ def add_movie_rating(movies):
         on="uuid",
         how="left"
     )
+
     movies["vote_key"] = (
         movies["vote_key"]
+        .astype(str)
         .str.split("-")
         .str[-1]
     )
+
     rating_map = {
         "1": 1,
         "27": 2,
@@ -54,9 +58,6 @@ def add_movie_rating(movies):
         "3": 5
     }
 
-    movies["rating"] = (
-        movies["vote_key"]
-        .map(rating_map)
-    )
+    movies["rating"] = movies["vote_key"].map(rating_map)
 
     return movies
