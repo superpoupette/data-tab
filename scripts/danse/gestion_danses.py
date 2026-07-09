@@ -1,4 +1,6 @@
-﻿import pandas as pd
+﻿# -*- coding: utf-8 -*-
+
+import pandas as pd
 from scripts.danse.google_sheet import save_danse_google_sheet
 
 def load_danses(filepath):
