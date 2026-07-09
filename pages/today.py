@@ -23,7 +23,11 @@ best_moment = st.text_input("Meilleur moment du jour :")
 col1, col2 = st.columns([1, 5])
 
 with col1:
-    people_work = st.checkbox("💼")
+    st.write("Travail")
+    people_work = st.checkbox(
+        " ",
+        label_visibility="collapsed"
+    )
 
 with col2:
     people_seen = st.text_input(
