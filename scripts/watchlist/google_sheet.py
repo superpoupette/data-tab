@@ -1,13 +1,11 @@
+import pandas as pd
 import gspread
 import streamlit as st
 
 from google.oauth2.service_account import Credentials
 
 
-SHEET_ID = (
-    "1r-cWFbD68vRs3FNTeI3w11Dq--ZeucvMvRKbrq9k24A"
-)
-
+SHEET_ID = "1r-cWFbD68vRs3FNTeI3w11Dq--ZeucvMvRKbrq9k24A"
 
 
 def save_movies_google_sheet(df):
@@ -23,15 +21,27 @@ def save_movies_google_sheet(df):
 
     df = df.copy()
 
-    # Conversion des dates
-    for col in df.select_dtypes(include=["datetime64[ns]"]).columns:
-        df[col] = df[col].dt.strftime("%Y-%m-%d")
+    # Conversion de chaque cellule en type compatible Google Sheets
+    def convert_value(value):
 
-    # Remplacement des NaN
-    df = df.fillna("")
+        if pd.isna(value):
+            return ""
 
-    # Effacer uniquement le contenu
+        if isinstance(value, pd.Timestamp):
+            return value.strftime("%Y-%m-%d")
+
+        if hasattr(value, "item"):
+            return value.item()
+
+        return value
+
+    values = [
+        [convert_value(v) for v in row]
+        for row in df.itertuples(index=False, name=None)
+    ]
+
     sheet.clear()
 
-    # Réécrire les en-têtes + les données
-    sheet.update([df.columns.tolist()] + df.values.tolist())
+    sheet.update(
+        [df.columns.tolist()] + values
+    )
