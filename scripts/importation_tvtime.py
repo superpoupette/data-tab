@@ -133,36 +133,43 @@ def clean_series(series, series_episodes):
 
     return series
 
-def tab_tv():
-    movies = load_tv("data/tvtime-movies-2026-07-07.csv")
-    series = load_tv("data/tvtime-series-2026-07-07.csv")
-    series_episodes = load_tv("data/tvtime-series-episodes-2026-07-07.csv")
-    movies_like = load_tv("data/ratings-live-votes.csv")
 
-    # Correspondance des codes TV Time -> note /5
+def add_movie_rating(movies):
+    ratings = load_tv("data/ratings-live-votes.csv")
+
     rating_map = {
         1: 1,
         27: 2,
-        28: 3,
+        4a591eb3-1528-4ca7-b425-dc836cad17bf-64798203-28: 3,
         29: 4,
         3: 5
     }
 
-    movies_like["note"] = (
-        movies_like["vote_key"]
-        .str.split("-")
-        .str[-1]
+    ratings["note"] = (
+        ratings["vote_key"]
+        .str.extract(r"-(\d+)$")[0]
         .astype(int)
         .map(rating_map)
     )
 
-    movies_like = movies_like[["uuid", "note"]]
+    ratings = ratings[
+        ["uuid", "note"]
+    ]
 
     movies = movies.merge(
-        movies_like,
+        ratings,
         on="uuid",
         how="left"
     )
+
+    return movies
+
+def tab_tv():
+    movies = load_tv("data/tvtime-movies-2026-07-07.csv")
+    series = load_tv("data/tvtime-series-2026-07-07.csv")
+    series_episodes = load_tv("data/tvtime-series-episodes-2026-07-07.csv")
+
+    movies = add_movie_rating(movies)
 
     movies = clean_movies(movies)
     series = clean_series(series, series_episodes)
