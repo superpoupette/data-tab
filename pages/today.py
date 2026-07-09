@@ -18,6 +18,10 @@ st.subheader("Mood")
 
 best_moment = st.text_input("Meilleur moment du jour :")
 
+st.subheader("Social")
+
+people_seen = st.text_input("Personnes vues aujourd'hui :")
+
 
 # Création du dataframe
 df = create_today_dataframe()
