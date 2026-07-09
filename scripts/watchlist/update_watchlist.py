@@ -1,7 +1,7 @@
-from scripts.tvtime.import_tvtime import load_tvtime_movies
-from scripts.tvtime.clean_tvtime import clean_movies
-from scripts.tvtime.tmdb import add_tmdb_info
-from scripts.tvtime.google_sheet import save_movies_google_sheet
+from scripts.watchlist.import_tvtime import load_tvtime_movies
+from scripts.watchlist.clean_tvtime import clean_movies
+from scripts.watchlist.tmdb import add_tmdb_info
+from scripts.watchlist.google_sheet import save_movies_google_sheet
 
 
 
