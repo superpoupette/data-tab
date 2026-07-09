@@ -37,8 +37,8 @@ def clean_danse_recap(danses_recap):
         "titre",
         "choregraphe",
         "Style",
-        "Durée (s)",
-        "Difficultée",
+        "Duree (s)",
+        "Difficultee",
         "Estimation",
         "Note"
     ]
