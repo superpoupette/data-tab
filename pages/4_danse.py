@@ -4,8 +4,8 @@ import plotly.express as px
 
 from scripts.importation_2024 import prepare_2024
 from scripts.importation_2025 import prepare_2025
-from scripts.gestion_danses import create_danse_data
-from scripts.gestion_danses import create_danse_recap
+from scripts.danse.gestion_danses import create_danse_data
+from scripts.danse.gestion_danses import create_danse_recap
 
 
 # Chargement des données
