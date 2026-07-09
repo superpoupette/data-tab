@@ -4,7 +4,7 @@ import streamlit as st
 from scripts.data_entry.dataframe import (
     create_today_dataframe,
     add_today_entry,
-    save_dataframe_csv
+    save_to_google_sheet
 )
 
 
