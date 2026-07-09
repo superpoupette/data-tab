@@ -125,3 +125,89 @@ with col_gauche:
 with col_droite:
     st.subheader("Autre information")
     st.write("Ton autre contenu ici")
+
+
+
+
+# Evolution de la charge moyenne par exercice
+
+st.subheader("Évolution de la charge moyenne par exercice")
+
+
+# Liste des exercices disponibles
+liste_exercices = (
+    workouts["exercise_title"]
+    .dropna()
+    .drop_duplicates()
+    .sort_values()
+    .tolist()
+)
+
+
+# Sélecteur
+exercice_selectionne = st.selectbox(
+    "Choisir un exercice",
+    liste_exercices
+)
+
+
+# Filtrer l'exercice choisi
+evolution_exercice = workouts[
+    workouts["exercise_title"] == exercice_selectionne
+]
+
+
+# Calcul de la charge moyenne par séance
+evolution_exercice = (
+    evolution_exercice
+    .groupby("start_time", as_index=False)
+    .agg(
+        charge_moyenne=("weight_kg", "mean"),
+        nombre_series=("set_index", "count")
+    )
+)
+
+
+# Trier par date
+evolution_exercice = evolution_exercice.sort_values(
+    "start_time"
+)
+
+
+# Création du graphique
+chart_evolution = alt.Chart(
+    evolution_exercice
+).mark_line(point=True).encode(
+
+    x=alt.X(
+        "start_time:T",
+        title="Date"
+    ),
+
+    y=alt.Y(
+        "charge_moyenne:Q",
+        title="Charge moyenne (kg)"
+    ),
+
+    tooltip=[
+        alt.Tooltip(
+            "start_time:T",
+            title="Date"
+        ),
+        alt.Tooltip(
+            "charge_moyenne:Q",
+            title="Charge moyenne",
+            format=".1f"
+        ),
+        alt.Tooltip(
+            "nombre_series:Q",
+            title="Nombre de séries"
+        )
+    ]
+)
+
+
+st.altair_chart(
+    chart_evolution,
+    use_container_width=True
+)
