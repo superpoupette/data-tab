@@ -10,6 +10,8 @@ st.set_page_config(page_title="Today")
 
 st.title("Données du jour")
 
+st.subheader("Général")
+
 today = date.today().strftime('%d/%m/%Y')
 
 st.write(f"📅 Aujourd'hui : {today}")
@@ -38,6 +40,27 @@ with col3:
         "Sommeil (heures) :",
         placeholder="Ex : 7,5"
     )
+
+
+#partie danse
+
+st.subheader("Danse")
+col4, col5 = st.columns([3,1])
+
+with col4:
+    st.write("Chorée :")
+    Choree1_morceau = st.checkbox(
+        " ",
+        label_visibility="collapsed"
+    )
+
+with col5:
+    Choree1_duree= st.text_input(
+        "Durée :",
+        placeholder="En minutes"
+    )
+
+
 
 # Création du dataframe
 df = create_today_dataframe()
