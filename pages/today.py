@@ -48,8 +48,8 @@ if st.button("💾 Sauvegarder"):
         today,
         best_moment,
         people_seen,
-        int(people_work)
-        int(sommeil),
+        int(people_work),
+        int(sommeil)
     )
 
 
