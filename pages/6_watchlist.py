@@ -458,5 +458,9 @@ st.dataframe(
     hide_index=True
 )
 
-
+st.header("Films")
+st.dataframe(
+    movies,
+    use_container_width=True
+)
 

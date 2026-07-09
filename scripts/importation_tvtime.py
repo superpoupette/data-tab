@@ -33,7 +33,7 @@ def clean_series(series, series_episodes):
     )
 
 
-    # Nombre total d'épisodes disponibles
+    # Nombre total d'episodes disponibles
     episode_count = (
         series_episodes
         .groupby("series_uuid")
@@ -42,7 +42,7 @@ def clean_series(series, series_episodes):
     )
 
 
-    # Nombre d'épisodes réellement vus
+    # Nombre d'episodes rellement vus
     watched_count = (
         series_episodes[
             series_episodes["watched_at"].notna()
@@ -88,7 +88,7 @@ def clean_series(series, series_episodes):
     )
 
 
-    # Dernier épisode regardé
+    # Dernier episode regarde
     last_episode = (
         series_episodes[
             series_episodes["watched_at"].notna()
