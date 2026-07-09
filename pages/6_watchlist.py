@@ -488,6 +488,13 @@ movies_info = pd.concat(
 )
 
 
+# Création de l'URL complète des affiches
+movies_info["poster_url"] = (
+    "https://image.tmdb.org/t/p/w500"
+    + movies_info["poster_path"]
+)
+
+
 st.header("🎬 Movies info")
 
 st.dataframe(
@@ -495,3 +502,24 @@ st.dataframe(
     use_container_width=True,
     hide_index=True
 )
+
+
+# =====================
+# Affiches films
+# =====================
+
+st.subheader("🖼️ Affiches")
+
+cols = st.columns(len(movies_info))
+
+for col, (_, movie) in zip(cols, movies_info.iterrows()):
+
+    with col:
+        st.image(
+            movie["poster_url"],
+            use_container_width=True
+        )
+
+        st.caption(
+            movie["title"]
+        )
