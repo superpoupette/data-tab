@@ -10,7 +10,7 @@ def derniers_visionnages(movies, series):
     )
 
     watched_series = (
-        series[series["status"] == "up_to_date"]
+        series[series["status"].isin(["up_to_date", "continuing"])]
         .rename(columns={"last_watch": "date",
                          "last_episode": "episode"})
         .assign(rating=pd.NA)
