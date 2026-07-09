@@ -1,6 +1,14 @@
 import streamlit as st
 
-st.set_page_config(page_title="Mon application")
+st.set_page_config(page_title="today")
 
-st.title("Accueil")
-st.write("Bienvenue sur l'application.")
+st.title("Données du jour")
+
+
+st.subheader("Moment du jour")
+
+texte = st.text_area(
+    "Notes du jour",
+    placeholder="Écris ici...",
+    height=200
+)
