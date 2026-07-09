@@ -1,6 +1,6 @@
 ﻿import streamlit as st
 
-from scripts.update_watchlist import update_movies
+from scripts.watchlist.update_watchlist import update_movies
 
 
 st.set_page_config(
