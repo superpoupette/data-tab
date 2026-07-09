@@ -18,24 +18,32 @@ st.subheader("Mood")
 
 best_moment = st.text_input("Meilleur moment du jour :")
 
-people_seen = st.text_input(
-    "Personnes vues aujourd'hui :",
-    placeholder="Ex : Alice, Marc, Julie"
-)
+
+# Ligne personnes vues + travail
+col1, col2 = st.columns([1, 5])
+
+with col1:
+    people_work = st.checkbox("💼")
+
+with col2:
+    people_seen = st.text_input(
+        "Personnes vues aujourd'hui :",
+        placeholder="Ex : Alice, Marc, Julie"
+    )
 
 
 # Création du dataframe
 df = create_today_dataframe()
 
 
-# Bouton sauvegarde
 if st.button("💾 Sauvegarder"):
 
     df = add_today_entry(
         df,
         today,
         best_moment,
-        people_seen
+        people_seen,
+        int(people_work)
     )
 
 
