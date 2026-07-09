@@ -48,10 +48,9 @@ st.subheader("Danse")
 col4, col5 = st.columns([3,1])
 
 with col4:
-    st.write("Chorée :")
-    Choree1_morceau = st.checkbox(
-        " ",
-        label_visibility="collapsed"
+    Choree1_morceau = st.text_input(
+        "Morceau :",
+        placeholder="Nom de la musique"
     )
 
 with col5:
