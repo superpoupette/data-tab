@@ -134,19 +134,20 @@ with col_droite:
 st.subheader("Évolution de la charge moyenne par exercice")
 
 
-# Liste des exercices disponibles avec assez de données
+# Liste des exercices disponibles avec assez d'historique
 
 exercices_valides = (
     workouts
     .dropna(subset=["weight_kg"])
-    .groupby("exercise_title")["weight_kg"]
-    .agg(["count"])
-    .reset_index()
+    .groupby("exercise_title")["start_time"]
+    .nunique()
+    .reset_index(name="nombre_seances")
 )
 
-# Garder uniquement les exercices avec au moins 2 charges renseignées
+# Garder uniquement les exercices présents dans au moins 2 séances différentes
+
 exercices_valides = exercices_valides[
-    exercices_valides["count"] >= 2
+    exercices_valides["nombre_seances"] >= 2
 ]
 
 
