@@ -1,4 +1,5 @@
 ﻿import pandas as pd
+from scripts.danse.google_sheet import save_danse_google_sheet
 
 def load_danses(filepath):
 
@@ -159,12 +160,11 @@ def create_danse_recap(danse_data):
         ]
     ]
 
-    from scripts.danse.google_sheet import save_danse_google_sheet
+    
 
 
     save_danse_google_sheet(
         danse_recap
     )
-
 
     return danse_recap
