@@ -1,5 +1,6 @@
 ﻿import streamlit as st
 import pandas as pd
+import plotly.express as px
 
 from scripts.watchlist.load_watchlist import load_movies_google_sheet
 
