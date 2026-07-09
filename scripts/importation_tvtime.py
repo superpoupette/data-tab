@@ -137,15 +137,13 @@ def clean_series(series, series_episodes):
 def add_movie_rating(movies):
     ratings = load_tv("data/ratings-live-votes.csv")
 
-    ratings["rating"] = (
-        ratings["vote_key"]
-        .str.split("-")
-        .str[-1]
-    )
-
     ratings = ratings[
-        ["uuid", "rating"]
-    ]
+        ["uuid", "vote_key"]
+    ].rename(
+        columns={
+            "vote_key": "note"
+        }
+    )
 
     movies = movies.merge(
         ratings,
