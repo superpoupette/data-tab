@@ -18,9 +18,10 @@ st.subheader("Mood")
 
 best_moment = st.text_input("Meilleur moment du jour :")
 
-st.subheader("Social")
-
-people_seen = st.text_input("Personnes vues aujourd'hui :")
+people_seen = st.text_input(
+    "Personnes vues aujourd'hui :",
+    placeholder="Ex : Alice, Marc, Julie"
+)
 
 
 # Création du dataframe
@@ -33,10 +34,9 @@ if st.button("💾 Sauvegarder"):
     df = add_today_entry(
         df,
         today,
-        best_moment
+        best_moment,
+        people_seen
     )
-
-    st.success("Donnée ajoutée !")
 
 
 st.subheader("Tableau des données")
