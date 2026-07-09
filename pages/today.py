@@ -23,7 +23,7 @@ best_moment = st.text_input("Meilleur moment du jour :")
 col1, col2 = st.columns([1, 5])
 
 with col1:
-    st.write("Travail")
+    st.write("Travail :")
     people_work = st.checkbox(
         " ",
         label_visibility="collapsed"
@@ -35,6 +35,7 @@ with col2:
         placeholder="Ex : Alice, Marc, Julie"
     )
 
+sommeil = st.text_input("Sommeil :")
 
 # Création du dataframe
 df = create_today_dataframe()
@@ -48,6 +49,7 @@ if st.button("💾 Sauvegarder"):
         best_moment,
         people_seen,
         int(people_work)
+        int(sommeil),
     )
 
 
