@@ -478,6 +478,32 @@ movies_info["title"] = (
 
 st.header("🎬 Movies info")
 
+movies_info = pd.DataFrame({
+    "imdb_id": [
+        "tt10229982",
+        "tt1790864"
+    ]
+})
+
+
+infos = (
+    movies_info["imdb_id"]
+    .apply(get_movie_info)
+    .apply(pd.Series)
+)
+
+
+movies_info = pd.concat(
+    [
+        movies_info,
+        infos
+    ],
+    axis=1
+)
+
+
+st.header("🎬 Movies info")
+
 st.dataframe(
     movies_info,
     use_container_width=True,
