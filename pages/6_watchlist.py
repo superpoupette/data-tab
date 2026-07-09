@@ -12,37 +12,94 @@ st.title("🍿 Watchlist")
 
 
 # =====================
-# Dashboard
+# Films
 # =====================
 
-# Nombre de films vus
-nb_movies_watched = (
-    movies["status"] == "watched"
-).sum()
+with st.container():
+    st.subheader("🎬 Films")
 
-# Nombre de séries terminées
-nb_series_finished = (
-    series["status"] == "up_to_date"
-).sum()
+    nb_movies_watched = (
+        movies["status"] == "watched"
+    ).sum()
 
-# Nombre de séries jamais terminées
-nb_series_unfinished = (
-    series["status"].isin(["continuing", "stopped"])
-).sum()
+    nb_movies_to_watch = (
+        movies["status"] == "to_watch"
+    ).sum()
 
 
-col1, col2, col3 = st.columns(3)
-
-with col1:
-    st.metric(
-        "Films vus",
-        nb_movies_watched
+    # Dernier film vu
+    watched_movies = movies[
+        movies["status"] == "watched"
+    ].sort_values(
+        "watched_at",
+        ascending=False
     )
+
+    if len(watched_movies) > 0:
+        last_movie = watched_movies.iloc[0]["title"]
+    else:
+        last_movie = "Aucun film vu"
+
+
+    col1, col2, col3 = st.columns(3)
+
+
+    with col1:
+        st.metric(
+            "Films vus",
+            nb_movies_watched
+        )
+
+
+    with col2:
+        st.metric(
+            "Films à voir",
+            nb_movies_to_watch
+        )
+
+
+    with col3:
+        st.markdown(
+            f"""
+            <div style="font-size:14px;">
+                Dernier film vu
+            </div>
+            <div style="font-size:22px; font-weight:600;">
+                {last_movie}
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+# =====================
+# Films vus par mois
+# =====================
+
+movies_by_month = (
+    movies[
+        (movies["status"] == "watched")
+        & (movies["watched_at"] >= "2023-01-01")
+    ]
+    .assign(month=lambda x: x["watched_at"].dt.to_period("M").astype(str))
+    .groupby("month")
+    .size()
+)
+
+st.subheader("Films vus par mois")
+
+st.line_chart(movies_by_month)
+
+# Nombre de films vus
+nb_movies_watched = len(
+    movies[movies["status"] == "watched"]
+)
+
+
 
 # =====================
 # Cartes Anime / Séries
 # =====================
 
+st.header("📺 Épisodes")
 
 col_series, col_animes = st.columns(2)
 
@@ -53,7 +110,7 @@ col_series, col_animes = st.columns(2)
 
 with col_series:
     with st.container(border=True):
-        st.subheader("📺 Séries")
+        st.subheader("Séries")
 
         total_series = len(series)
 
@@ -69,16 +126,24 @@ with col_series:
             series["status"] == "stopped"
         ).sum()
 
+        paused = (
+            series["status"] == "watch_later"
+        ).sum()
+
+        total_series_episodes_watched = series["progress"].sum()
+
 
         stats_series = pd.DataFrame({
             "Statut": [
                 "Terminés",
                 "En cours",
+                "En pause",
                 "Stoppés"
             ],
             "Nombre": [
                 finished,
                 watching,
+                paused,
                 stopped
             ]
         })
@@ -104,6 +169,7 @@ with col_series:
             color_discrete_map={
                 "Terminés": "#7987E8",
                 "En cours": "#86D474",
+                "En pause": "#FACD6B",
                 "Stoppés": "#F55BA3"
             }
         )
@@ -171,9 +237,23 @@ with col_series:
             )
 
 
-        c4, c5 = st.columns(2)
+        c4, c5, c6 = st.columns(3)
 
         with c4:
+            st.markdown(
+                f"""
+                <div style="font-size:14px;">
+                    <span style="color:#FACD6B; font-size:22px;">●</span>
+                    En pause
+                </div>
+                <div style="font-size:28px; font-weight:600;">
+                    {paused}
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+
+        with c5:
             st.markdown(
                 f"""
                 <div style="font-size:14px;">
@@ -187,6 +267,12 @@ with col_series:
                 unsafe_allow_html=True
             )
 
+        with c6:
+            st.metric(
+                "Épisodes vus",
+                int(total_series_episodes_watched)
+            )
+
 
 
 # =====================
@@ -195,7 +281,7 @@ with col_series:
 
 with col_animes:
     with st.container(border=True):
-        st.subheader("🍥 Animés")
+        st.subheader("Animés")
 
         total_animes = len(animes)
 
@@ -358,34 +444,13 @@ with col_animes:
                 int(total_episodes_watched)
             )
 
-# =====================
-# Films vus par mois
-# =====================
 
-movies_by_month = (
-    movies[
-        (movies["status"] == "watched")
-        & (movies["watched_at"] >= "2023-01-01")
-    ]
-    .assign(month=lambda x: x["watched_at"].dt.to_period("M").astype(str))
-    .groupby("month")
-    .size()
-)
-
-st.subheader("Films vus par mois")
-
-st.line_chart(movies_by_month)
-
-# Nombre de films vus
-nb_movies_watched = len(
-    movies[movies["status"] == "watched"]
-)
 
 from scripts.gestion_watchlist import derniers_visionnages
 
 watchlist = derniers_visionnages(movies, series)
 
-st.header("Derniers visionnages")
+st.header("📌 Derniers visionnages")
 
 st.dataframe(
     watchlist,
@@ -394,43 +459,4 @@ st.dataframe(
 )
 
 
-# =====================
-# Tableaux de données
-# =====================
-st.header("Animes")
 
-st.dataframe(
-    animes,
-    use_container_width=True,
-    hide_index=True
-)
-
-st.header("Séries")
-st.dataframe(
-    series,
-    use_container_width=True
-)
-
-st.header("Épisodes de séries")
-st.dataframe(
-    series_episodes,
-    use_container_width=True
-)
-
-st.header("Animés")
-
-from scripts.importation_anilist import load_anilist
-
-anime = load_anilist("Poupette")
-
-st.dataframe(anime)
-
-
-
-
-
-st.header("Films")
-st.dataframe(
-    movies,
-    use_container_width=True
-)
