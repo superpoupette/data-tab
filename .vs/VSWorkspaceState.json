@@ -2,7 +2,9 @@
   "ExpandedNodes": [
     "",
     "\\pages",
-    "\\scripts"
+    "\\scripts",
+    "\\scripts\\watchlist"
   ],
+  "SelectedNode": "\\scripts\\watchlist\\load_watchlist.py",
   "PreviewInSolutionExplorer": false
 }

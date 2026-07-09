@@ -1,39 +1,49 @@
-import streamlit as st
+﻿import streamlit as st
 import pandas as pd
+import plotly.express as px
 
-from scripts.importation_tvtime import tab_tv
-from scripts.importation_myanimelist import tab_myanimelist
-
-movies, series, series_episodes = tab_tv()
-animes = tab_myanimelist()
-
-
-st.title("🍿 Watchlist")
+from scripts.watchlist.load_watchlist import load_movies_google_sheet
 
 
 # =====================
-# Films
+# Chargement données
 # =====================
+
+movies = load_movies_google_sheet()
+
+
+st.title("🍿 Watchlist Films")
+
+
+# =====================
+# FILMS
+# =====================
+
+st.header("🎬 Films")
+
 
 with st.container():
-    st.subheader("🎬 Films")
 
     nb_movies_watched = (
         movies["status"] == "watched"
     ).sum()
+
 
     nb_movies_to_watch = (
         movies["status"] == "to_watch"
     ).sum()
 
 
-    # Dernier film vu
-    watched_movies = movies[
-        movies["status"] == "watched"
-    ].sort_values(
-        "watched_at",
-        ascending=False
+    watched_movies = (
+        movies[
+            movies["status"] == "watched"
+        ]
+        .sort_values(
+            "watched_at",
+            ascending=False
+        )
     )
+
 
     if len(watched_movies) > 0:
         last_movie = watched_movies.iloc[0]["title"]
@@ -59,409 +69,181 @@ with st.container():
 
 
     with col3:
+
         st.markdown(
             f"""
             <div style="font-size:14px;">
                 Dernier film vu
             </div>
-            <div style="font-size:22px; font-weight:600;">
+
+            <div style="font-size:22px;font-weight:600;">
                 {last_movie}
             </div>
             """,
             unsafe_allow_html=True
         )
+
+
+
 # =====================
-# Films vus par mois
+# FILMS VUS PAR MOIS
 # =====================
 
-movies_by_month = (
+st.subheader("📈 Films vus par mois")
+
+
+movies_month = (
     movies[
         (movies["status"] == "watched")
-        & (movies["watched_at"] >= "2023-01-01")
+        &
+        (movies["watched_at"].notna())
+        &
+        (movies["watched_at"] >= "2023-01-01")
     ]
-    .assign(month=lambda x: x["watched_at"].dt.to_period("M").astype(str))
+    .assign(
+        month=lambda x:
+        x["watched_at"]
+        .dt.to_period("M")
+        .astype(str)
+    )
     .groupby("month")
     .size()
 )
 
-st.subheader("Films vus par mois")
 
-st.line_chart(movies_by_month)
-
-# Nombre de films vus
-nb_movies_watched = len(
-    movies[movies["status"] == "watched"]
+st.line_chart(
+    movies_month
 )
 
 
 
 # =====================
-# Cartes Anime / Séries
+# STYLES + RATINGS
 # =====================
 
-st.header("📺 Épisodes")
 
-col_series, col_animes = st.columns(2)
-
-
-# =====================
-# Séries
-# =====================
-
-with col_series:
-    with st.container(border=True):
-        st.subheader("Séries")
-
-        total_series = len(series)
-
-        finished = (
-            series["status"] == "up_to_date"
-        ).sum()
-
-        watching = (
-            series["status"] == "continuing"
-        ).sum()
-
-        stopped = (
-            series["status"] == "stopped"
-        ).sum()
-
-        paused = (
-            series["status"] == "watch_later"
-        ).sum()
-
-        total_series_episodes_watched = series["progress"].sum()
-
-
-        stats_series = pd.DataFrame({
-            "Statut": [
-                "Terminés",
-                "En cours",
-                "En pause",
-                "Stoppés"
-            ],
-            "Nombre": [
-                finished,
-                watching,
-                paused,
-                stopped
-            ]
-        })
-
-
-        stats_series["Pourcentage"] = (
-            stats_series["Nombre"] / total_series * 100
-        )
-
-
-        # Graphique en haut
-        import plotly.express as px
-
-        stats_series["Catégorie"] = "Total"
-
-        fig = px.bar(
-            stats_series,
-            x="Pourcentage",
-            y="Catégorie",
-            color="Statut",
-            orientation="h",
-            height=45,
-            color_discrete_map={
-                "Terminés": "#7987E8",
-                "En cours": "#86D474",
-                "En pause": "#FACD6B",
-                "Stoppés": "#F55BA3"
-            }
-        )
-
-        fig.update_layout(
-            barmode="stack",
-            showlegend=False,
-            xaxis={
-                "range": [0, 100],
-                "title": None,
-                "showticklabels": False
-            },
-            yaxis={
-                "title": None,
-                "showticklabels": False
-            },
-            margin=dict(
-                l=0,
-                r=0,
-                t=0,
-                b=0
-            )
-        )
-
-        st.plotly_chart(
-            fig,
-            use_container_width=True
-        )
-
-
-        c1, c2, c3 = st.columns(3)
-
-        with c1:
-            st.metric(
-                "Total",
-                total_series
-            )
-
-        with c2:
-            st.markdown(
-                f"""
-                <div style="font-size:14px;">
-                    <span style="color:#7987E8; font-size:22px;">●</span>
-                    Terminés
-                </div>
-                <div style="font-size:28px; font-weight:600;">
-                    {finished}
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
-
-        with c3:
-            st.markdown(
-                f"""
-                <div style="font-size:14px;">
-                    <span style="color:#86D474; font-size:22px;">●</span>
-                    En cours
-                </div>
-                <div style="font-size:28px; font-weight:600;">
-                    {watching}
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
-
-
-        c4, c5, c6 = st.columns(3)
-
-        with c4:
-            st.markdown(
-                f"""
-                <div style="font-size:14px;">
-                    <span style="color:#FACD6B; font-size:22px;">●</span>
-                    En pause
-                </div>
-                <div style="font-size:28px; font-weight:600;">
-                    {paused}
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
-
-        with c5:
-            st.markdown(
-                f"""
-                <div style="font-size:14px;">
-                    <span style="color:#F55BA3; font-size:22px;">●</span>
-                    Stoppés
-                </div>
-                <div style="font-size:28px; font-weight:600;">
-                    {stopped}
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
-
-        with c6:
-            st.metric(
-                "Épisodes vus",
-                int(total_series_episodes_watched)
-            )
+col_style, col_rating = st.columns(2)
 
 
 
 # =====================
-# Animés
+# CAMEMBERT STYLES
 # =====================
 
-with col_animes:
-    with st.container(border=True):
-        st.subheader("Animés")
+with col_style:
 
-        total_animes = len(animes)
-
-        watched = (
-            animes["status"] == "watched"
-        ).sum()
-
-        watching = (
-            animes["status"] == "continuing"
-        ).sum()
-
-        stopped = (
-            animes["status"] == "stopped"
-        ).sum()
-
-        paused = (
-            animes["status"] == "paused"
-        ).sum()
-
-        total_episodes_watched = animes["progress"].sum()
+    st.subheader("🎭 Répartition des styles")
 
 
-        stats_animes = pd.DataFrame({
-            "Statut": [
-                "Terminés",
-                "En cours",
-                "En pause",
-                "Stoppés"
-            ],
-            "Nombre": [
-                watched,
-                watching,
-                paused,
-                stopped
-            ]
-        })
+    styles = (
+        movies[
+            movies["status"] == "watched"
+        ]
+        ["style"]
+        .dropna()
+        .str.split(", ")
+        .explode()
+        .value_counts()
+    )
 
 
-        stats_animes["Pourcentage"] = (
-            stats_animes["Nombre"] / total_animes * 100
+    # Garder les 10 styles principaux
+    top_styles = styles.head(10)
+
+
+    # Regrouper le reste
+    other = styles.iloc[10:].sum()
+
+
+    if other > 0:
+        top_styles.loc["Autre"] = other
+
+
+    styles_df = (
+        top_styles
+        .reset_index()
+    )
+
+
+    styles_df.columns = [
+        "style",
+        "count"
+    ]
+
+
+    fig_style = px.pie(
+        styles_df,
+        names="style",
+        values="count",
+        hole=0
+    )
+
+
+    fig_style.update_layout(
+        height=400,
+        margin=dict(
+            l=0,
+            r=0,
+            t=0,
+            b=0
         )
+    )
 
 
-        # Graphique en haut
-        import plotly.express as px
+    st.plotly_chart(
+        fig_style,
+        use_container_width=True
+    )
 
-        stats_animes["Catégorie"] = "Total"
+# =====================
+# REPARTITION RATINGS
+# =====================
 
-        fig = px.bar(
-            stats_animes,
-            x="Pourcentage",
-            y="Catégorie",
-            color="Statut",
-            orientation="h",
-            height=45,
-            color_discrete_map={
-                "Terminés": "#7987E8",
-                "En cours": "#86D474",
-                "En pause": "#FACD6B",
-                "Stoppés": "#F55BA3"
-            }
+with col_rating:
+
+    st.subheader("⭐ Répartition des notes")
+
+
+    ratings = (
+        movies[
+            movies["status"] == "watched"
+        ]
+        ["rating"]
+        .dropna()
+        .value_counts()
+        .sort_index()
+        .reset_index()
+    )
+
+
+    ratings.columns = [
+        "rating",
+        "count"
+    ]
+
+
+    fig_rating = px.bar(
+        ratings,
+        x="rating",
+        y="count",
+        text="count"
+    )
+
+
+    fig_rating.update_layout(
+        height=400,
+        xaxis_title="Note",
+        yaxis_title="Nombre de films",
+        margin=dict(
+            l=0,
+            r=0,
+            t=0,
+            b=0
         )
-
-        fig.update_layout(
-            barmode="stack",
-            showlegend=False,
-            xaxis={
-                "range": [0, 100],
-                "title": None,
-                "showticklabels": False
-            },
-            yaxis={
-                "title": None,
-                "showticklabels": False
-            },
-            margin=dict(
-                l=0,
-                r=0,
-                t=0,
-                b=0
-            )
-        )
-
-        st.plotly_chart(
-            fig,
-            use_container_width=True
-        )
+    )
 
 
-        c1, c2, c3 = st.columns(3)
-
-        with c1:
-            st.metric(
-                "Total",
-                total_animes
-            )
-
-        with c2:
-            st.markdown(
-                f"""
-                <div style="font-size:14px;">
-                    <span style="color:#7987E8; font-size:22px;">●</span>
-                    Terminés
-                </div>
-                <div style="font-size:28px; font-weight:600;">
-                    {watched}
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
-
-        with c3:
-            st.markdown(
-                f"""
-                <div style="font-size:14px;">
-                    <span style="color:#86D474; font-size:22px;">●</span>
-                    En cours
-                </div>
-                <div style="font-size:28px; font-weight:600;">
-                    {watching}
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
-
-
-        c4, c5, c6 = st.columns(3)
-
-        with c4:
-            st.markdown(
-                f"""
-                <div style="font-size:14px;">
-                    <span style="color:#FACD6B; font-size:22px;">●</span>
-                    En pause
-                </div>
-                <div style="font-size:28px; font-weight:600;">
-                    {paused}
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
-
-        with c5:
-            st.markdown(
-                f"""
-                <div style="font-size:14px;">
-                    <span style="color:#F55BA3; font-size:22px;">●</span>
-                    Stoppés
-                </div>
-                <div style="font-size:28px; font-weight:600;">
-                    {stopped}
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
-
-        with c6:
-            st.metric(
-                "Épisodes vus",
-                int(total_episodes_watched)
-            )
-
-
-
-from scripts.gestion_watchlist import derniers_visionnages
-
-watchlist = derniers_visionnages(movies, series)
-
-st.header("📌 Derniers visionnages")
-
-st.dataframe(
-    watchlist,
-    use_container_width=True,
-    hide_index=True
-)
-
-
-st.header("Films")
-st.dataframe(
-    movies,
-    use_container_width=True
-)
-
+    st.plotly_chart(
+        fig_rating,
+        use_container_width=True
+    )
