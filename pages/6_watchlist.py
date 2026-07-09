@@ -461,7 +461,7 @@ st.dataframe(
 # =====================
 # Informations films 
 # =====================
-from scripts.tmdb import get_movie_title
+from scripts.tmdb import get_movie_info
 movies_info = pd.DataFrame({
     "imdb_id": [
         "tt10229982",
