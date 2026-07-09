@@ -147,10 +147,22 @@ def add_movie_rating(movies):
         how="left"
     )
     movies["vote_key"] = (
-    movies["vote_key"]
-    .str.split("-")
-    .str[-1]
-)
+        movies["vote_key"]
+        .str.split("-")
+        .str[-1]
+    )
+    rating_map = {
+        "1": 1,
+        "27": 2,
+        "28": 3,
+        "29": 4,
+        "3": 5
+    }
+
+    movies["rating"] = (
+        movies["vote_key"]
+        .map(rating_map)
+    )
 
     return movies
 
