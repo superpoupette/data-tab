@@ -14,6 +14,9 @@ best_moment = st.text_input("Meilleur moment du jour :")
 
 st.write(best_moment)
 
+
+st.button("💾 Sauvegarder", type="primary")
+
 # Création du tableau
 df = create_today_dataframe()
 
