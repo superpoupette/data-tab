@@ -14,8 +14,6 @@ today = date.today().strftime('%d/%m/%Y')
 
 st.write(f"📅 Aujourd'hui : {today}")
 
-st.subheader("Mood")
-
 best_moment = st.text_input("Meilleur moment du jour :")
 
 
