@@ -10,11 +10,10 @@ st.set_page_config(page_title="Today")
 
 st.title("Données du jour")
 
-st.subheader("Général")
-
 today = date.today().strftime('%d/%m/%Y')
-
 st.write(f"📅 Aujourd'hui : {today}")
+
+st.subheader("Général")
 
 best_moment = st.text_input("Meilleur moment du jour :")
 
