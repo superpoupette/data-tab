@@ -96,6 +96,8 @@ movies_month = (
         (movies["status"] == "watched")
         &
         (movies["watched_at"].notna())
+        &
+        (movies["watched_at"] >= "2023-01-01")
     ]
     .assign(
         month=lambda x:
@@ -115,74 +117,117 @@ st.line_chart(
 
 
 # =====================
-# GENRES
+# STYLES + RATINGS
 # =====================
 
-st.subheader("🎭 Genres vus")
 
-
-genres = (
-    movies[
-        movies["status"] == "watched"
-    ]
-    ["style"]
-    .dropna()
-    .str.split(", ")
-    .explode()
-    .value_counts()
-)
-
-
-st.bar_chart(
-    genres
-)
+col_style, col_rating = st.columns(2)
 
 
 
 # =====================
-# DERNIERS VISIONNAGES
+# CAMEMBERT STYLES
 # =====================
 
-st.header("📌 Derniers visionnages")
+with col_style:
+
+    st.subheader("🎭 Répartition des styles")
 
 
-last_seen = (
-    movies[
-        movies["status"] == "watched"
-    ]
-    [
-        [
-            "title",
-            "style",
-            "watched_at",
-            "rating",
-            "tmdb_rating"
+    styles = (
+        movies[
+            movies["status"] == "watched"
         ]
-    ]
-    .sort_values(
-        "watched_at",
-        ascending=False
+        ["style"]
+        .dropna()
+        .str.split(", ")
+        .explode()
+        .value_counts()
+        .reset_index()
     )
-)
 
 
-st.dataframe(
-    last_seen,
-    use_container_width=True,
-    hide_index=True
-)
+    styles.columns = [
+        "style",
+        "count"
+    ]
+
+
+    fig_style = px.pie(
+        styles,
+        names="style",
+        values="count",
+        hole=0
+    )
+
+
+    fig_style.update_layout(
+        height=400,
+        margin=dict(
+            l=0,
+            r=0,
+            t=0,
+            b=0
+        )
+    )
+
+
+    st.plotly_chart(
+        fig_style,
+        use_container_width=True
+    )
 
 
 
 # =====================
-# BASE COMPLETE
+# REPARTITION RATINGS
 # =====================
 
-st.header("🎞️ Base films")
+with col_rating:
+
+    st.subheader("⭐ Répartition des notes")
 
 
-st.dataframe(
-    movies,
-    use_container_width=True,
-    hide_index=True
-)
+    ratings = (
+        movies[
+            movies["status"] == "watched"
+        ]
+        ["rating"]
+        .dropna()
+        .value_counts()
+        .sort_index()
+        .reset_index()
+    )
+
+
+    ratings.columns = [
+        "rating",
+        "count"
+    ]
+
+
+    fig_rating = px.bar(
+        ratings,
+        x="rating",
+        y="count",
+        text="count"
+    )
+
+
+    fig_rating.update_layout(
+        height=400,
+        xaxis_title="Note",
+        yaxis_title="Nombre de films",
+        margin=dict(
+            l=0,
+            r=0,
+            t=0,
+            b=0
+        )
+    )
+
+
+    st.plotly_chart(
+        fig_rating,
+        use_container_width=True
+    )
