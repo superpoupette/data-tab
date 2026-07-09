@@ -1,5 +1,8 @@
 import pandas as pd
 
+
+from scripts.tmdb import get_movie_info
+
 def load_tv(filepath):
     tv = pd.read_csv(filepath)
     return tv
@@ -166,12 +169,39 @@ def add_movie_rating(movies):
 
     return movies
 
+def add_tmdb_info(movies):
+
+    infos = []
+
+    for _, movie in movies.iterrows():
+
+        info = get_movie_info(
+            movie["imdb_id"]
+        )
+
+        if info:
+            info["uuid"] = movie["uuid"]
+            infos.append(info)
+
+
+    tmdb_df = pd.DataFrame(infos)
+
+
+    movies = movies.merge(
+        tmdb_df,
+        on="uuid",
+        how="left"
+    )
+
+    return movies
+
 def tab_tv():
     movies = load_tv("data/tvtime-movies-2026-07-07.csv")
     series = load_tv("data/tvtime-series-2026-07-07.csv")
     series_episodes = load_tv("data/tvtime-series-episodes-2026-07-07.csv")
 
     movies = add_movie_rating(movies)
+    movies = add_tmdb_info(movies)
 
     movies = clean_movies(movies)
     series = clean_series(series, series_episodes)

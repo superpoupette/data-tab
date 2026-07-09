@@ -5,16 +5,8 @@ import streamlit as st
 TMDB_API_KEY = st.secrets["TMDB_API_KEY"]
 
 
-import requests
-import streamlit as st
-
-
-TMDB_API_KEY = st.secrets["TMDB_API_KEY"]
-
-
 def get_movie_info(imdb_id):
 
-    # Recherche du film avec imdb_id
     url = (
         f"https://api.themoviedb.org/3/find/{imdb_id}"
         f"?api_key={TMDB_API_KEY}"
@@ -37,7 +29,6 @@ def get_movie_info(imdb_id):
 
     tmdb_id = movie["id"]
 
-    # Récupération des détails + crédits
     details_url = (
         f"https://api.themoviedb.org/3/movie/{tmdb_id}"
         f"?api_key={TMDB_API_KEY}"
@@ -47,7 +38,6 @@ def get_movie_info(imdb_id):
     details = requests.get(details_url).json()
 
 
-    # Réalisateur
     director = None
 
     for person in details.get("credits", {}).get("crew", []):
@@ -56,7 +46,6 @@ def get_movie_info(imdb_id):
             break
 
 
-    # Pays d'origine
     countries = [
         country["name"]
         for country in details.get("production_countries", [])
@@ -64,8 +53,6 @@ def get_movie_info(imdb_id):
 
 
     return {
-        "tmdb_id": tmdb_id,
-        "title": details.get("title"),
         "release_date": details.get("release_date"),
         "director": director,
         "country": ", ".join(countries),
