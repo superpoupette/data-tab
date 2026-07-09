@@ -20,7 +20,7 @@ best_moment = st.text_input("Meilleur moment du jour :")
 
 
 # Ligne personnes vues + travail
-col1, col2 = st.columns([1, 5])
+col1, col2, col3 = st.columns([1, 3, 3])
 
 with col1:
     st.write("Travail :")
@@ -35,7 +35,8 @@ with col2:
         placeholder="Ex : Alice, Marc, Julie"
     )
 
-sommeil = st.text_input("Sommeil :")
+with col3:
+    sommeil = st.text_input("Sommeil :")
 
 # Création du dataframe
 df = create_today_dataframe()
