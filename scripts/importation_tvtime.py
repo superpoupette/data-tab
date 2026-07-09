@@ -137,7 +137,7 @@ def tab_tv():
     movies = load_tv("data/tvtime-movies-2026-07-07.csv")
     series = load_tv("data/tvtime-series-2026-07-07.csv")
     series_episodes = load_tv("data/tvtime-series-episodes-2026-07-07.csv")
-    movies_like = load_tv("ratings-live-votes.csv")
+    movies_like = load_tv("data/ratings-live-votes.csv")
 
     # Correspondance des codes TV Time -> note /5
     rating_map = {
