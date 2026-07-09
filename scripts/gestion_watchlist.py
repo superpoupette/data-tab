@@ -6,14 +6,15 @@ def derniers_visionnages(movies, series):
         movies[movies["status"] == "watched"]
         .rename(columns={"watched_at": "date"})
         .assign(episode=pd.NA)
-        [["title", "type", "status", "episode", "date"]]
+        [["title", "type", "status", "episode", "date", "rating"]]
     )
 
     watched_series = (
         series[series["status"] == "up_to_date"]
         .rename(columns={"last_watch": "date",
                          "last_episode": "episode"})
-        [["title", "type", "status", "episode", "date"]]
+        .assign(rating=pd.NA)
+        [["title", "type", "status", "episode", "date", "rating"]]
     )
 
     derniers_visionnages = pd.concat(
