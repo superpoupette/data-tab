@@ -1,14 +1,19 @@
-from datetime import date
 import streamlit as st
+from datetime import date
 
-st.set_page_config(page_title="today")
+from scripts.data_entry.dataframe import create_today_dataframe
 
-st.title("Données du jour")
+st.title("Today")
+
 st.write(f"📅 Aujourd'hui : {date.today().strftime('%d/%m/%Y')}")
 
-st.subheader("Mood")
+best_moment = st.text_area(
+    "Best moment",
+    placeholder="Quel a été le meilleur moment de ta journée ?"
+)
 
-best_moment = st.text_input("Meilleur moment du jour :")
+df = create_today_dataframe()
 
+st.subheader("Tableau des données")
 
-st.write(best_moment)
+st.dataframe(df, use_container_width=True)
