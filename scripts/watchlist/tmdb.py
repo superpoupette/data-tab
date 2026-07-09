@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+ï»¿# -*- coding: utf-8 -*-
 
 import requests
 import pandas as pd
@@ -12,7 +12,7 @@ GENRES_FR = {
     "Action": "Action",
     "Adventure": "Aventure",
     "Animation": "Animation",
-    "Comedy": "Comédie",
+    "Comedy": "ComÃ©die",
     "Crime": "Policier",
     "Documentary": "Documentaire",
     "Drama": "Drame",
@@ -21,10 +21,10 @@ GENRES_FR = {
     "History": "Historique",
     "Horror": "Horreur",
     "Music": "Musique",
-    "Mystery": "Mystère",
+    "Mystery": "MystÃ¨re",
     "Romance": "Romance",
     "Science Fiction": "Science-fiction",
-    "TV Movie": "Téléfilm",
+    "TV Movie": "TÃ©lÃ©film",
     "Thriller": "Thriller",
     "War": "Guerre",
     "Western": "Western"
