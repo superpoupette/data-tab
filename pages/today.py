@@ -36,7 +36,10 @@ with col2:
     )
 
 with col3:
-    sommeil = st.text_input("Sommeil :")
+    sommeil = st.text_input(
+        "Sommeil (heures) :",
+        placeholder="Ex : 7,5"
+    )
 
 # Création du dataframe
 df = create_today_dataframe()
@@ -44,14 +47,22 @@ df = create_today_dataframe()
 
 if st.button("💾 Sauvegarder"):
 
-    df = add_today_entry(
-        df,
-        today,
-        best_moment,
-        people_seen,
-        int(people_work),
-        int(sommeil)
-    )
+    try:
+        sommeil_val = float(sommeil.replace(",", "."))
+
+        df = add_today_entry(
+            df,
+            today,
+            best_moment,
+            people_seen,
+            int(people_work),
+            sommeil_val,
+        )
+
+        st.success("Donnée enregistrée !")
+
+    except ValueError:
+        st.error("⚠️ Format incorrect pour le sommeil. Exemple attendu : 7 ou 7,5")
 
 
 st.subheader("Tableau des données")
