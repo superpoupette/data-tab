@@ -459,15 +459,22 @@ st.dataframe(
 )
 
 # =====================
-# Informations films (test)
+# Informations films 
 # =====================
-
+from scripts.tmdb import get_movie_title
 movies_info = pd.DataFrame({
     "imdb_id": [
         "tt10229982",
         "tt1790864"
     ]
 })
+
+
+movies_info["title"] = (
+    movies_info["imdb_id"]
+    .apply(get_movie_title)
+)
+
 
 st.header("🎬 Movies info")
 
@@ -476,4 +483,3 @@ st.dataframe(
     use_container_width=True,
     hide_index=True
 )
-
