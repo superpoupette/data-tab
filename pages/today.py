@@ -7,8 +7,7 @@ st.title("Données du jour")
 
 st.subheader("Moment du jour")
 
-texte = st.text_area(
-    "Notes du jour",
-    placeholder="Écris ici...",
-    height=200
-)
+best_moment = st.text_input("Nom")
+
+
+st.write(best_moment)
