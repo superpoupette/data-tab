@@ -1,5 +1,8 @@
 from scripts.watchlist.import_tvtime import load_tvtime_movies
-from scripts.watchlist.clean_tvtime import clean_movies
+from scripts.watchlist.clean_tvtime import (
+    clean_movies,
+    add_movie_rating
+    )
 from scripts.watchlist.tmdb import add_tmdb_info
 from scripts.watchlist.google_sheet import save_movies_google_sheet
 
@@ -16,12 +19,13 @@ def update_movies():
     movies = clean_movies(
         movies
     )
-
+    movies = add_movie_rating(movies)
 
     movies = add_tmdb_info(
         movies
     )
 
+    
 
     columns = [
         "tvdb_id",
