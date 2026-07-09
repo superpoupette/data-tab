@@ -137,6 +137,9 @@ def clean_series(series, series_episodes):
 def add_movie_rating(movies):
     ratings = load_tv("data/ratings-live-votes.csv")
 
+    ratings = ratings[
+        ["uuid", "vote_key"]
+    ]
 
     movies = movies.merge(
         ratings,
