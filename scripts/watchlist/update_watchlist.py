@@ -9,7 +9,7 @@ def update_movies():
 
 
     movies = load_tvtime_movies(
-        "data/tvtime-movies.csv"
+        "data/tvtime-movies-2026-07-07.csv"
     )
 
 
