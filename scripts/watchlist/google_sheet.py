@@ -12,38 +12,26 @@ SHEET_ID = (
 
 def save_movies_google_sheet(df):
 
-
     credentials = Credentials.from_service_account_info(
-
         st.secrets["gcp_service_account"],
-
-        scopes=[
-            "https://www.googleapis.com/auth/spreadsheets"
-        ]
-
+        scopes=["https://www.googleapis.com/auth/spreadsheets"]
     )
 
+    client = gspread.authorize(credentials)
 
-    client = gspread.authorize(
-        credentials
-    )
+    sheet = client.open_by_key(SHEET_ID).sheet1
 
+    df = df.copy()
 
-    sheet = client.open_by_key(
-        SHEET_ID
-    ).sheet1
+    # Conversion des dates
+    for col in df.select_dtypes(include=["datetime64[ns]"]).columns:
+        df[col] = df[col].dt.strftime("%Y-%m-%d")
 
+    # Remplacement des NaN
+    df = df.fillna("")
 
-
+    # Effacer uniquement le contenu
     sheet.clear()
 
-
-    data = [
-        df.columns.tolist()
-    ] + df.values.tolist()
-
-
-
-    sheet.update(
-        data
-    )
+    # Réécrire les en-têtes + les données
+    sheet.update([df.columns.tolist()] + df.values.tolist())
