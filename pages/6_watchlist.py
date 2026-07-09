@@ -458,4 +458,22 @@ st.dataframe(
     hide_index=True
 )
 
+# =====================
+# Informations films (test)
+# =====================
+
+movies_info = pd.DataFrame({
+    "imdb_id": [
+        "tt10229982",
+        "tt1790864"
+    ]
+})
+
+st.header("🎬 Movies info")
+
+st.dataframe(
+    movies_info,
+    use_container_width=True,
+    hide_index=True
+)
 
