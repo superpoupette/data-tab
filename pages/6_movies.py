@@ -144,18 +144,35 @@ with col_style:
         .str.split(", ")
         .explode()
         .value_counts()
+    )
+
+
+    # Garder les 10 styles principaux
+    top_styles = styles.head(10)
+
+
+    # Regrouper le reste
+    other = styles.iloc[10:].sum()
+
+
+    if other > 0:
+        top_styles.loc["Autre"] = other
+
+
+    styles_df = (
+        top_styles
         .reset_index()
     )
 
 
-    styles.columns = [
+    styles_df.columns = [
         "style",
         "count"
     ]
 
 
     fig_style = px.pie(
-        styles,
+        styles_df,
         names="style",
         values="count",
         hole=0
@@ -177,8 +194,6 @@ with col_style:
         fig_style,
         use_container_width=True
     )
-
-
 
 # =====================
 # REPARTITION RATINGS
