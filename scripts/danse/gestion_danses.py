@@ -177,8 +177,4 @@ def create_danse_recap(danse_data):
         ]
     ]
 
-    save_danse_google_sheet(
-        danse_recap
-    )
-
     return danse_recap

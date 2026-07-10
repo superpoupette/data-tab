@@ -66,6 +66,7 @@ from scripts.danse.gestion_danses import (
     create_danse_data,
     create_danse_recap
 )
+from scripts.danse.google_sheet import save_danse_google_sheet
 
 st.title("Dashboard Danse")
 
@@ -75,7 +76,7 @@ st.title("Dashboard Danse")
 
 if st.button("🔄 Mettre à jour la base de danse"):
 
-    with st.spinner("Mise à jour en cours..."):
+    with st.spinner("Mise à jour..."):
 
         data2024 = prepare_2024("data/2024.csv")
         data2025 = prepare_2025("data/2025.csv")
@@ -88,7 +89,8 @@ if st.button("🔄 Mettre à jour la base de danse"):
             ignore_index=True
         )
 
-        # Cette fonction met déjà à jour le Google Sheet
-        create_danse_recap(danse_data)
+        danse_recap = create_danse_recap(danse_data)
 
-    st.success("✅ Base Google Sheet mise à jour.")
+        save_danse_google_sheet(danse_recap)
+
+    st.success("✅ Google Sheet mis à jour.")
