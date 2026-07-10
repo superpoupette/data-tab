@@ -3,7 +3,6 @@ import gspread
 import streamlit as st
 
 from google.oauth2.service_account import Credentials
-from scripts.watchlist.load_watchlist import add_movie_google_sheet
 
 SHEET_ID = "1r-cWFbD68vRs3FNTeI3w11Dq--ZeucvMvRKbrq9k24A"
 
