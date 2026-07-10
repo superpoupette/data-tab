@@ -88,3 +88,60 @@ def load_danse_google_sheet():
     )
 
     return df
+
+
+import gspread
+import streamlit as st
+
+from google.oauth2.service_account import Credentials
+
+
+SHEET_ID = "1EXdUL-iCTtOU-qBEyvKxN3qZzb2OMR4CdJ3RjddmERI"
+
+
+def get_danse_sheet():
+
+    credentials = Credentials.from_service_account_info(
+        st.secrets["gcp_service_account"],
+        scopes=[
+            "https://www.googleapis.com/auth/spreadsheets"
+        ]
+    )
+
+    client = gspread.authorize(credentials)
+
+    return client.open_by_key(
+        SHEET_ID
+    ).sheet1
+
+
+
+def add_danse_google_sheet(
+    artiste,
+    titre,
+    choregraphe,
+    duree
+):
+
+    sheet = get_danse_sheet()
+
+
+    row = [
+        artiste,
+        titre,
+        choregraphe,
+        "",              # date_debut
+        "",              # date_fin
+        0,               # duree_apprentissage
+        0,               # nombre_seance
+        0,               # duree_seance
+        "",              # style
+        duree,           # duree
+        "",              # difficulte
+        "",              # estimation
+        "",              # note
+        "en cours"       # statut
+    ]
+
+
+    sheet.append_row(row)

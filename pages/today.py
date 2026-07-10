@@ -7,6 +7,7 @@ from scripts.data_entry.dataframe import (
     save_to_google_sheet
 )
 
+from scripts.danse.google_sheet import add_danse_google_sheet
 
 st.set_page_config(page_title="Today")
 
@@ -160,7 +161,29 @@ with col9:
         key="new_choreo_duree"
     )
 
+if st.button("➕ Ajouter la chorégraphie"):
 
+    if (
+        new_artiste.strip()
+        and new_titre.strip()
+    ):
+
+        add_danse_google_sheet(
+            new_artiste,
+            new_titre,
+            new_choregraphe,
+            new_duree
+        )
+
+        st.success(
+            "Nouvelle chorégraphie ajoutée !"
+        )
+
+    else:
+
+        st.error(
+            "L'artiste et le titre sont obligatoires."
+        )
 
 st.subheader("Tableau des données")
 
