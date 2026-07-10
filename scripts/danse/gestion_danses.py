@@ -129,8 +129,12 @@ def create_danse_recap(danse_data):
         ]
     )
 
-    # Temps d'apprentissage
-    duree_apprentissage = (
+
+    # ==========================
+    # Statistiques apprentissage
+    # ==========================
+
+    stats_apprentissage = (
         danse_data
         .groupby(
             [
@@ -138,16 +142,28 @@ def create_danse_recap(danse_data):
                 "titre"
             ],
             as_index=False
-        )["duree_min"]
-        .sum()
-        .rename(
-            columns={
-                "duree_min": "duree_apprentissage"
-            }
+        )
+        .agg(
+            duree_apprentissage=(
+                "duree_min",
+                "sum"
+            ),
+            nombre_seance=(
+                "duree_min",
+                "count"
+            ),
+            duree_seance=(
+                "duree_min",
+                "mean"
+            )
         )
     )
 
-    # Première et dernière session
+
+    # ==========================
+    # Dates apprentissage
+    # ==========================
+
     dates = (
         danse_data
         .groupby(
@@ -158,19 +174,27 @@ def create_danse_recap(danse_data):
             as_index=False
         )
         .agg(
-            date_debut=("date", "min"),
-            date_fin=("date", "max")
+            date_debut=(
+                "date",
+                "min"
+            ),
+            date_fin=(
+                "date",
+                "max"
+            )
         )
     )
 
+
     danse_recap = danse_recap.merge(
-        duree_apprentissage,
+        stats_apprentissage,
         on=[
             "artiste",
             "titre"
         ],
         how="left"
     )
+
 
     danse_recap = danse_recap.merge(
         dates,
@@ -181,17 +205,37 @@ def create_danse_recap(danse_data):
         how="left"
     )
 
+
+    # Valeurs par défaut
     danse_recap["duree_apprentissage"] = (
         danse_recap["duree_apprentissage"]
         .fillna(0)
     )
 
+    danse_recap["nombre_seance"] = (
+        danse_recap["nombre_seance"]
+        .fillna(0)
+        .astype(int)
+    )
+
+    danse_recap["duree_seance"] = (
+        danse_recap["duree_seance"]
+        .fillna(0)
+        .round(1)
+    )
+
+
+    # ==========================
     # Statut
+    # ==========================
+
     today = pd.Timestamp.today().normalize()
 
     danse_recap["statut"] = (
         (
-            today - pd.to_datetime(danse_recap["date_fin"])
+            today - pd.to_datetime(
+                danse_recap["date_fin"]
+            )
         ).dt.days <= 90
     )
 
@@ -202,14 +246,24 @@ def create_danse_recap(danse_data):
         }
     )
 
-    # Format des dates
+
+    # ==========================
+    # Format dates
+    # ==========================
+
     danse_recap["date_debut"] = pd.to_datetime(
         danse_recap["date_debut"]
     ).dt.strftime("%Y-%m-%d")
 
+
     danse_recap["date_fin"] = pd.to_datetime(
         danse_recap["date_fin"]
     ).dt.strftime("%Y-%m-%d")
+
+
+    # ==========================
+    # Colonnes finales
+    # ==========================
 
     danse_recap = danse_recap[
         [
@@ -219,6 +273,8 @@ def create_danse_recap(danse_data):
             "date_debut",
             "date_fin",
             "duree_apprentissage",
+            "nombre_seance",
+            "duree_seance",
             "style",
             "duree",
             "difficulte",
@@ -227,5 +283,6 @@ def create_danse_recap(danse_data):
             "statut"
         ]
     ]
+
 
     return danse_recap

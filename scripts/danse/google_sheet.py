@@ -42,13 +42,16 @@ def save_danse_google_sheet(df):
     if "statut" not in df.columns:
         df["statut"] = ""
 
-    columns = [
+    danse_recap = danse_recap[
+    [
         "artiste",
         "titre",
         "choregraphe",
         "date_debut",
         "date_fin",
         "duree_apprentissage",
+        "nombre_seance",
+        "duree_seance",
         "style",
         "duree",
         "difficulte",
@@ -56,6 +59,7 @@ def save_danse_google_sheet(df):
         "note",
         "statut"
     ]
+]
 
     df = df.reindex(columns=columns)
 
