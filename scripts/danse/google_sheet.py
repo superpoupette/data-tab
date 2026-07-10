@@ -77,25 +77,27 @@ def add_danse_google_sheet(
     choregraphe,
     style,
     duree
-    ):
+):
 
     sheet = get_sheet()
 
+    aujourd_hui = date.today().strftime("%Y-%m-%d")
+
     row = [
-        artiste,
-        titre,
-        choregraphe,
-        "",
-        "",
-        0,
-        0,
-        0,
-        "",
-        duree,
-        "",
-        "",
-        "",
-        "en cours"
+        artiste,          # artiste
+        titre,            # titre
+        choregraphe,      # choregraphe
+        aujourd_hui,      # date_debut
+        "",               # date_fin
+        0,                # duree_apprentissage
+        0,                # nombre_seance
+        0,                # duree_seance
+        style,            # style
+        duree,            # duree
+        "",               # difficulte
+        "",               # estimation
+        "",               # note
+        "en cours"        # statut
     ]
 
     sheet.append_row(row)
