@@ -19,22 +19,16 @@ def get_sheet():
 
     client = gspread.authorize(credentials)
 
-    sheet = client.open_by_key(
+    return client.open_by_key(
         SHEET_ID
     ).sheet1
-
-    return sheet
-
 
 
 def save_danse_google_sheet(df):
 
     sheet = get_sheet()
 
-    df = df.copy()
-
-    df = df.fillna("")
-
+    df = df.copy().fillna("")
 
     columns = [
         "artiste",
@@ -53,28 +47,19 @@ def save_danse_google_sheet(df):
         "statut"
     ]
 
-
     for col in columns:
         if col not in df.columns:
             df[col] = ""
 
-
-    df = df.reindex(
-        columns=columns
-    )
-
+    df = df.reindex(columns=columns)
 
     data = [
         df.columns.tolist()
     ] + df.values.tolist()
 
-
     sheet.clear()
 
-    sheet.update(
-        data
-    )
-
+    sheet.update(data)
 
 
 def load_danse_google_sheet():
@@ -83,37 +68,7 @@ def load_danse_google_sheet():
 
     data = sheet.get_all_records()
 
-    df = pd.DataFrame(
-        data
-    )
-
-    return df
-
-
-import gspread
-import streamlit as st
-
-from google.oauth2.service_account import Credentials
-
-
-SHEET_ID = "1EXdUL-iCTtOU-qBEyvKxN3qZzb2OMR4CdJ3RjddmERI"
-
-
-def get_danse_sheet():
-
-    credentials = Credentials.from_service_account_info(
-        st.secrets["gcp_service_account"],
-        scopes=[
-            "https://www.googleapis.com/auth/spreadsheets"
-        ]
-    )
-
-    client = gspread.authorize(credentials)
-
-    return client.open_by_key(
-        SHEET_ID
-    ).sheet1
-
+    return pd.DataFrame(data)
 
 
 def add_danse_google_sheet(
@@ -123,57 +78,26 @@ def add_danse_google_sheet(
     duree
 ):
 
-    sheet = get_danse_sheet()
-
+    sheet = get_sheet()
 
     row = [
         artiste,
         titre,
         choregraphe,
-        "",              # date_debut
-        "",              # date_fin
-        0,               # duree_apprentissage
-        0,               # nombre_seance
-        0,               # duree_seance
-        "",              # style
-        duree,           # duree
-        "",              # difficulte
-        "",              # estimation
-        "",              # note
-        "en cours"       # statut
+        "",
+        "",
+        0,
+        0,
+        0,
+        "",
+        duree,
+        "",
+        "",
+        "",
+        "en cours"
     ]
 
-
     sheet.append_row(row)
-
-
-    def get_danse_sheet():
-
-    credentials = Credentials.from_service_account_info(
-        st.secrets["gcp_service_account"],
-        scopes=[
-            "https://www.googleapis.com/auth/spreadsheets"
-        ]
-    )
-
-    client = gspread.authorize(credentials)
-
-    return client.open_by_key(
-        SHEET_ID
-    ).sheet1
-
-
-
-def load_danse_google_sheet():
-
-    sheet = get_danse_sheet()
-
-    data = sheet.get_all_records()
-
-    df = pd.DataFrame(data)
-
-    return df
-
 
 
 def add_practice_time(
@@ -182,10 +106,9 @@ def add_practice_time(
     temps
 ):
 
-    sheet = get_danse_sheet()
+    sheet = get_sheet()
 
     records = sheet.get_all_records()
-
 
     for index, row in enumerate(records, start=2):
 
@@ -195,24 +118,64 @@ def add_practice_time(
         ):
 
             ancienne_duree = float(
-                row["duree_apprentissage"]
-                or 0
+                row.get(
+                    "duree_apprentissage",
+                    0
+                ) or 0
+            )
+
+            ancien_nb = int(
+                row.get(
+                    "nombre_seance",
+                    0
+                ) or 0
             )
 
             nouvelle_duree = (
-                ancienne_duree
-                + temps
+                ancienne_duree + temps
             )
 
+            nouveau_nb = (
+                ancien_nb + 1
+            )
 
+            nouvelle_moyenne = round(
+                nouvelle_duree / nouveau_nb,
+                1
+            )
+
+            aujourd_hui = pd.Timestamp.today().strftime(
+                "%Y-%m-%d"
+            )
+
+            # date_fin
             sheet.update_cell(
                 index,
-                6,   # colonne duree_apprentissage
+                5,
+                aujourd_hui
+            )
+
+            # duree_apprentissage
+            sheet.update_cell(
+                index,
+                6,
                 nouvelle_duree
             )
 
+            # nombre_seance
+            sheet.update_cell(
+                index,
+                7,
+                nouveau_nb
+            )
+
+            # duree_seance
+            sheet.update_cell(
+                index,
+                8,
+                nouvelle_moyenne
+            )
 
             return True
-
 
     return False
