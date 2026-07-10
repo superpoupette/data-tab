@@ -77,7 +77,7 @@ def add_danse_google_sheet(
     choregraphe,
     style,
     duree
-):
+    ):
 
     sheet = get_sheet()
 
@@ -105,7 +105,7 @@ def add_practice_time(
     artiste,
     titre,
     temps
-):
+    ):
 
     sheet = get_sheet()
 
