@@ -348,7 +348,8 @@ if "movie_results" in st.session_state:
 
 
         if st.button(
-            "🎬 Ajouter ce film"
+            "🎬 Ajouter ce film",
+            key="add_movie_button"
         ):
 
 
