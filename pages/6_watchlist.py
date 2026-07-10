@@ -247,3 +247,65 @@ with col_rating:
         fig_rating,
         use_container_width=True
     )
+
+
+# =====================
+# DERNIERS FILMS VUS
+# =====================
+
+st.subheader("🎬 Mes 6 derniers films vus")
+
+
+last_6_movies = (
+    movies[
+        movies["status"] == "watched"
+    ]
+    .sort_values(
+        "watched_at",
+        ascending=False
+    )
+    .head(6)
+)
+
+
+cols = st.columns(6)
+
+
+for col, (_, movie) in zip(
+    cols,
+    last_6_movies.iterrows()
+):
+
+    with col:
+
+        if pd.notna(movie.get("poster_path")):
+
+            poster_url = (
+                "https://image.tmdb.org/t/p/w500"
+                + movie["poster_path"]
+            )
+
+            st.image(
+                poster_url,
+                use_container_width=True
+            )
+
+        else:
+
+            st.write(
+                "Pas d'affiche"
+            )
+
+
+        st.markdown(
+            f"""
+            <div style="
+                text-align:center;
+                font-size:14px;
+                font-weight:600;
+            ">
+                {movie["title"]}
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
