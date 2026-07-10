@@ -72,6 +72,7 @@ with col5:
     Choree1_duree = st.text_input(
         "Durée :",
         placeholder="Minutes"
+        key="today_choree_duree"
     )
 
 
@@ -102,6 +103,7 @@ with col9:
     new_duree=st.text_input(
         "Durée :",
         placeholder="Minutes"
+        key="new_choreo_duree"
     )
 
 
