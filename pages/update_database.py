@@ -1,4 +1,6 @@
-﻿import streamlit as st
+﻿# -*- coding: utf-8 -*-
+
+import streamlit as st
 
 from scripts.watchlist.update_watchlist import (
     add_movie_google_sheet
