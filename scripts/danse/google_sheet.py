@@ -1,4 +1,5 @@
 import gspread
+import pandas as pd
 import streamlit as st
 
 from google.oauth2.service_account import Credentials
@@ -84,3 +85,28 @@ def save_danse_google_sheet(df):
     sheet.update(
         data
     )
+
+
+    def load_danse_google_sheet():
+
+    credentials = Credentials.from_service_account_info(
+        st.secrets["gcp_service_account"],
+        scopes=[
+            "https://www.googleapis.com/auth/spreadsheets"
+        ]
+    )
+
+    client = gspread.authorize(credentials)
+
+    sheet = client.open_by_key(
+        SHEET_ID
+    ).sheet1
+
+
+    data = sheet.get_all_records()
+
+
+    df = pd.DataFrame(data)
+
+
+    return df
