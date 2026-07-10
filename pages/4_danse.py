@@ -210,11 +210,11 @@ with col2:
 
 
 # =========================
-# Evolution des apprentissages
+# Evolution des chorégraphies terminées
 # =========================
 
 st.subheader(
-    "Chorégraphies commencées par mois"
+    "Chorégraphies terminées par mois"
 )
 
 
@@ -222,12 +222,12 @@ evolution = (
     danse_recap
     .dropna(
         subset=[
-            "date_debut"
+            "date_fin"
         ]
     )
     .assign(
         mois=lambda x:
-            x["date_debut"]
+            x["date_fin"]
             .dt.to_period("M")
             .astype(str)
     )
@@ -248,7 +248,7 @@ fig_mois = px.line(
         "mois":
             "Mois",
         "nombre":
-            "Nouvelles chorégraphies"
+            "Chorégraphies terminées"
     }
 )
 
