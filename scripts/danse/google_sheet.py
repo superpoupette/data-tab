@@ -46,6 +46,8 @@ def save_danse_google_sheet(df):
         "artiste",
         "titre",
         "choregraphe",
+        "date_debut",
+        "date_fin",
         "duree_apprentissage",
         "style",
         "duree",

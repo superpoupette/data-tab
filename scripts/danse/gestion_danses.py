@@ -1,7 +1,5 @@
 ﻿import pandas as pd
 
-from scripts.danse.google_sheet import save_danse_google_sheet
-
 
 def load_danses(filepath):
 
@@ -89,8 +87,8 @@ def create_danse_data(data):
                 choregraphe = morceaux_split[2] if len(morceaux_split) > 2 else ""
 
                 lignes.append({
-                    "date": row["Date"],
-                    "annee": row["Date"].year,
+                    "date": pd.to_datetime(row["Date"]),
+                    "annee": pd.to_datetime(row["Date"]).year,
                     "artiste": artiste,
                     "titre": titre,
                     "choregraphe": choregraphe,
@@ -149,8 +147,33 @@ def create_danse_recap(danse_data):
         )
     )
 
+    # Première et dernière session
+    dates = (
+        danse_data
+        .groupby(
+            [
+                "artiste",
+                "titre"
+            ],
+            as_index=False
+        )
+        .agg(
+            date_debut=("date", "min"),
+            date_fin=("date", "max")
+        )
+    )
+
     danse_recap = danse_recap.merge(
         duree_apprentissage,
+        on=[
+            "artiste",
+            "titre"
+        ],
+        how="left"
+    )
+
+    danse_recap = danse_recap.merge(
+        dates,
         on=[
             "artiste",
             "titre"
@@ -163,17 +186,45 @@ def create_danse_recap(danse_data):
         .fillna(0)
     )
 
+    # Statut
+    today = pd.Timestamp.today().normalize()
+
+    danse_recap["statut"] = (
+        (
+            today - pd.to_datetime(danse_recap["date_fin"])
+        ).dt.days <= 90
+    )
+
+    danse_recap["statut"] = danse_recap["statut"].map(
+        {
+            True: "en cours",
+            False: "termine"
+        }
+    )
+
+    # Format des dates
+    danse_recap["date_debut"] = pd.to_datetime(
+        danse_recap["date_debut"]
+    ).dt.strftime("%Y-%m-%d")
+
+    danse_recap["date_fin"] = pd.to_datetime(
+        danse_recap["date_fin"]
+    ).dt.strftime("%Y-%m-%d")
+
     danse_recap = danse_recap[
         [
             "artiste",
             "titre",
             "choregraphe",
+            "date_debut",
+            "date_fin",
             "duree_apprentissage",
             "style",
             "duree",
             "difficulte",
             "estimation",
-            "note"
+            "note",
+            "statut"
         ]
     ]
 
