@@ -145,3 +145,74 @@ def add_danse_google_sheet(
 
 
     sheet.append_row(row)
+
+
+    def get_danse_sheet():
+
+    credentials = Credentials.from_service_account_info(
+        st.secrets["gcp_service_account"],
+        scopes=[
+            "https://www.googleapis.com/auth/spreadsheets"
+        ]
+    )
+
+    client = gspread.authorize(credentials)
+
+    return client.open_by_key(
+        SHEET_ID
+    ).sheet1
+
+
+
+def load_danse_google_sheet():
+
+    sheet = get_danse_sheet()
+
+    data = sheet.get_all_records()
+
+    df = pd.DataFrame(data)
+
+    return df
+
+
+
+def add_practice_time(
+    artiste,
+    titre,
+    temps
+):
+
+    sheet = get_danse_sheet()
+
+    records = sheet.get_all_records()
+
+
+    for index, row in enumerate(records, start=2):
+
+        if (
+            row["artiste"] == artiste
+            and row["titre"] == titre
+        ):
+
+            ancienne_duree = float(
+                row["duree_apprentissage"]
+                or 0
+            )
+
+            nouvelle_duree = (
+                ancienne_duree
+                + temps
+            )
+
+
+            sheet.update_cell(
+                index,
+                6,   # colonne duree_apprentissage
+                nouvelle_duree
+            )
+
+
+            return True
+
+
+    return False
