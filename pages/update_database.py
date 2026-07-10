@@ -1,97 +1,210 @@
 ﻿import streamlit as st
-import pandas as pd
 
-from scripts.watchlist.update_watchlist import update_movies
+from scripts.watchlist.update_watchlist import (
+    add_movie_google_sheet
+)
+
+from scripts.watchlist.tmdb import (
+    search_movies_tmdb,
+    get_movie_details_tmdb
+)
 
 
 st.set_page_config(
-    page_title="Update Database"
+    page_title="Watchlist"
 )
 
 
-st.title("🔄 Mise à jour base de données")
+st.title("🎬 Ajouter un film")
 
 
-st.write(
-    "Cette page récupère les données TV Time, "
-    "ajoute les informations TMDB et met à jour Google Sheet."
+# =====================
+# Recherche TMDB
+# =====================
+
+st.subheader("Recherche d'un film")
+
+
+movie_query = st.text_input(
+    "Nom du film",
+    placeholder="Ex : Interstellar"
 )
 
 
+if st.button(
+    "🔎 Rechercher",
+    key="search_movie"
+):
 
-if st.button("🚀 Mettre à jour les films"):
+    if movie_query.strip():
 
-    with st.spinner("Mise à jour en cours..."):
-
-        try:
-
-            movies = update_movies()
-
-
-            st.success(
-                "Base mise à jour avec succès !"
-            )
-
-
-            st.metric(
-                "Nombre de films",
-                len(movies)
-            )
-
-
-            st.subheader(
-                "Aperçu"
-            )
-
-
-            st.dataframe(
-                movies.head(10),
-                use_container_width=True
-            )
-
-
-        except Exception as e:
-
-            st.error(
-                "Une erreur est survenue :"
-            )
-
-            st.exception(e)
-
-
-import streamlit as st
-
-from scripts.importation_2024 import prepare_2024
-from scripts.importation_2025 import prepare_2025
-from scripts.danse.gestion_danses import (
-    create_danse_data,
-    create_danse_recap
-)
-from scripts.danse.google_sheet import save_danse_google_sheet
-
-st.title("Dashboard Danse")
-
-# ====================================
-# Mise à jour de la base Google Sheet
-# ====================================
-
-if st.button("🔄 Mettre à jour la base de danse"):
-
-    with st.spinner("Mise à jour..."):
-
-        data2024 = prepare_2024("data/2024.csv")
-        data2025 = prepare_2025("data/2025.csv")
-
-        danse_2024 = create_danse_data(data2024)
-        danse_2025 = create_danse_data(data2025)
-
-        danse_data = pd.concat(
-            [danse_2024, danse_2025],
-            ignore_index=True
+        results = search_movies_tmdb(
+            movie_query
         )
 
-        danse_recap = create_danse_recap(danse_data)
+        st.session_state["movie_results"] = results
 
-        save_danse_google_sheet(danse_recap)
+    else:
 
-    st.success("✅ Google Sheet mis à jour.")
+        st.warning(
+            "Veuillez entrer un nom de film."
+        )
+
+
+
+# =====================
+# Résultats recherche
+# =====================
+
+if "movie_results" in st.session_state:
+
+
+    results = st.session_state["movie_results"]
+
+
+    if len(results) > 0:
+
+
+        choix = st.selectbox(
+            "Choisir le film",
+            [
+                f"{m['title']} ({m['year']})"
+                for m in results
+            ],
+            key="movie_choice"
+        )
+
+
+        index = [
+            f"{m['title']} ({m['year']})"
+            for m in results
+        ].index(
+            choix
+        )
+
+
+        selected = results[index]
+
+
+
+        col1, col2 = st.columns(
+            [1, 3]
+        )
+
+
+        with col1:
+
+            if selected["poster_path"]:
+
+                st.image(
+                    selected["poster_path"],
+                    width=150
+                )
+
+
+
+        with col2:
+
+            st.subheader(
+                selected["title"]
+            )
+
+            if selected["year"]:
+
+                st.write(
+                    f"📅 Année : {selected['year']}"
+                )
+
+
+            if selected["overview"]:
+
+                st.write(
+                    selected["overview"]
+                )
+
+
+
+        st.divider()
+
+
+
+        # =====================
+        # Informations utilisateur
+        # =====================
+
+
+        movie_date = st.date_input(
+            "Date de visionnage",
+            key="movie_date"
+        )
+
+
+        movie_rating = st.select_slider(
+            "Ma note",
+            options=[
+                0,
+                0.5,
+                1,
+                1.5,
+                2,
+                2.5,
+                3,
+                3.5,
+                4,
+                4.5,
+                5
+            ],
+            key="movie_rating"
+        )
+
+
+
+        # =====================
+        # Ajout Google Sheet
+        # =====================
+
+
+        if st.button(
+            "🎬 Ajouter ce film",
+            key="add_movie"
+        ):
+
+
+            try:
+
+                movie = get_movie_details_tmdb(
+                    selected["id"]
+                )
+
+
+                add_movie_google_sheet(
+                    movie,
+                    movie_date.strftime(
+                        "%Y-%m-%d"
+                    ),
+                    movie_rating
+                )
+
+
+                st.success(
+                    f"{movie['title']} ajouté à la watchlist !"
+                )
+
+
+                # nettoyage recherche
+                del st.session_state["movie_results"]
+
+
+            except Exception as e:
+
+                st.error(
+                    f"Erreur lors de l'ajout : {e}"
+                )
+
+
+
+    else:
+
+        st.info(
+            "Aucun résultat trouvé."
+        )
