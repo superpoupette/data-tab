@@ -2,7 +2,7 @@ from scripts.watchlist.import_tvtime import load_tvtime_movies
 from scripts.watchlist.clean_tvtime import (
     clean_movies,
     add_movie_rating
-    )
+)
 from scripts.watchlist.tmdb import add_tmdb_info
 from scripts.watchlist.google_sheet import save_movies_google_sheet
 
@@ -11,7 +11,29 @@ import streamlit as st
 
 from google.oauth2.service_account import Credentials
 
+
 SHEET_ID = "1r-cWFbD68vRs3FNTeI3w11Dq--ZeucvMvRKbrq9k24A"
+
+
+
+def get_movie_sheet():
+
+    credentials = Credentials.from_service_account_info(
+        st.secrets["gcp_service_account"],
+        scopes=[
+            "https://www.googleapis.com/auth/spreadsheets"
+        ]
+    )
+
+    client = gspread.authorize(
+        credentials
+    )
+
+    return client.open_by_key(
+        SHEET_ID
+    ).sheet1
+
+
 
 def update_movies():
 
@@ -24,13 +46,16 @@ def update_movies():
     movies = clean_movies(
         movies
     )
-    movies = add_movie_rating(movies)
+
+    movies = add_movie_rating(
+        movies
+    )
+
 
     movies = add_tmdb_info(
         movies
     )
 
-    
 
     columns = [
         "tvdb_id",
@@ -62,6 +87,8 @@ def update_movies():
 
     return movies
 
+
+
 def add_movie_google_sheet(
     title,
     watched_at,
@@ -89,4 +116,6 @@ def add_movie_google_sheet(
     ]
 
 
-    sheet.append_row(row)
+    sheet.append_row(
+        row
+    )
