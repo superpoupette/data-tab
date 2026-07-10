@@ -7,14 +7,24 @@ def load_danses(filepath):
 
     # Séparation artiste / titre / chorégraphe
     split = danses_recap["Nom"].str.split(
-        " - ",
+        r"\s*-\s*",
         n=2,
         expand=True
     )
 
     danses_recap["artiste"] = split[0]
-    danses_recap["titre"] = split[1]
-    danses_recap["choregraphe"] = split[2].fillna("")
+
+    danses_recap["titre"] = (
+        split[1]
+        if 1 in split.columns
+        else ""
+    )
+
+    danses_recap["choregraphe"] = (
+        split[2].fillna("")
+        if 2 in split.columns
+        else ""
+    )
 
     # Suppression colonne originale
     danses_recap = danses_recap.drop(
