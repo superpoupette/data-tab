@@ -62,17 +62,13 @@ from scripts.danse.google_sheet import (
 
 st.subheader("Danse")
 
-
 danses = load_danse_google_sheet()
-
 
 danses_en_cours = danses[
     danses["statut"] == "en cours"
 ]
 
-
 if len(danses_en_cours) > 0:
-
 
     danses_labels = (
         danses_en_cours["artiste"]
@@ -80,34 +76,39 @@ if len(danses_en_cours) > 0:
         + danses_en_cours["titre"]
     )
 
+    col1, col2, col3 = st.columns([4, 1, 1])
 
-    choix_danse = st.selectbox(
-        "Chorégraphie travaillée :",
-        danses_labels
-    )
+    with col1:
+        choix_danse = st.selectbox(
+            "Chorégraphie travaillée :",
+            danses_labels
+        )
 
+    with col2:
+        duree_danse = st.number_input(
+            "Durée (min)",
+            min_value=0,
+            step=5
+        )
 
-    duree_danse = st.number_input(
-        "Temps travaillé (minutes)",
-        min_value=0,
-        step=5
-    )
+    with col3:
+        st.write("")   # espace pour aligner
+        st.write("")
 
+        ajouter = st.button(
+            "💃 Ajouter",
+            use_container_width=True
+        )
 
-    if st.button(
-        "💃 Ajouter le temps de danse"
-    ):
-
+    if ajouter:
 
         ligne = danses_en_cours[
             (
                 danses_en_cours["artiste"]
                 + " - "
                 + danses_en_cours["titre"]
-            )
-            == choix_danse
+            ) == choix_danse
         ].iloc[0]
-
 
         succes = add_practice_time(
             ligne["artiste"],
@@ -115,24 +116,19 @@ if len(danses_en_cours) > 0:
             duree_danse
         )
 
-
         if succes:
             st.success(
                 "Temps ajouté à la chorégraphie !"
             )
-
         else:
             st.error(
                 "Impossible de trouver la chorégraphie."
             )
 
-
 else:
-
     st.info(
         "Aucune chorégraphie en cours."
     )
-
 
 
 
