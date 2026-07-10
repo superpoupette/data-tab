@@ -1,7 +1,7 @@
-﻿# coding: utf-8
+﻿import pandas as pd
 
-import pandas as pd
 from scripts.danse.google_sheet import save_danse_google_sheet
+
 
 def load_danses(filepath):
 
@@ -23,6 +23,17 @@ def load_danses(filepath):
         columns=["Nom"]
     )
 
+    # Renommage des colonnes
+    danses_recap = danses_recap.rename(
+        columns={
+            "Style": "style",
+            "Durée (s)": "duree",
+            "Difficultée": "difficulte",
+            "Estimation": "estimation",
+            "Note": "note"
+        }
+    )
+
     # Suppression lignes vides
     danses_recap = danses_recap.dropna(
         how="all"
@@ -30,17 +41,18 @@ def load_danses(filepath):
 
     return danses_recap
 
+
 def clean_danse_recap(danses_recap):
 
     colonnes_attendues = [
         "artiste",
         "titre",
         "choregraphe",
-        "Style",
-        "Durée (s)",
-        "Difficultée",
-        "Estimation",
-        "Note"
+        "style",
+        "duree",
+        "difficulte",
+        "estimation",
+        "note"
     ]
 
     for col in colonnes_attendues:
@@ -48,6 +60,7 @@ def clean_danse_recap(danses_recap):
             danses_recap[col] = None
 
     return danses_recap[colonnes_attendues]
+
 
 def create_danse_data(data):
 
@@ -66,7 +79,10 @@ def create_danse_data(data):
 
             if pd.notna(morceau):
 
-                morceaux_split = str(morceau).split(" - ", 2)
+                morceaux_split = str(morceau).split(
+                    " - ",
+                    2
+                )
 
                 artiste = morceaux_split[0]
                 titre = morceaux_split[1] if len(morceaux_split) > 1 else ""
@@ -84,7 +100,6 @@ def create_danse_data(data):
     danse_data = pd.DataFrame(lignes)
 
     return danse_data
-
 
 
 def create_danse_recap(danse_data):
@@ -108,7 +123,7 @@ def create_danse_recap(danse_data):
         ignore_index=True
     )
 
-    # Suppression doublons
+    # Suppression des doublons
     danse_recap = danse_recap.drop_duplicates(
         subset=[
             "artiste",
@@ -116,7 +131,7 @@ def create_danse_recap(danse_data):
         ]
     )
 
-    # Ajout du temps d'apprentissage
+    # Temps d'apprentissage
     duree_apprentissage = (
         danse_data
         .groupby(
@@ -154,16 +169,13 @@ def create_danse_recap(danse_data):
             "titre",
             "choregraphe",
             "duree_apprentissage",
-            "Style",
-            "Durée (s)",
-            "Difficultée",
-            "Estimation",
-            "Note"
+            "style",
+            "duree",
+            "difficulte",
+            "estimation",
+            "note"
         ]
     ]
-
-    
-
 
     save_danse_google_sheet(
         danse_recap

@@ -16,38 +16,31 @@ def save_danse_google_sheet(df):
         ]
     )
 
-
     client = gspread.authorize(credentials)
-
 
     sheet = client.open_by_key(
         SHEET_ID
     ).sheet1
 
-
     df = df.copy()
 
-
-    # Remplacement valeurs vides
+    # Remplacement des valeurs manquantes
     df = df.fillna("")
 
-
-    # Renommage pour correspondre au Google Sheet
+    # CompatibilitÃ© avec les anciens noms de colonnes
     df = df.rename(
         columns={
             "Style": "style",
-            "Durée (s)": "duree",
-            "Difficultée": "difficulte",
+            "Duree (s)": "duree",
+            "Difficulte": "difficulte",
             "Estimation": "estimation",
-            "Note": "note"
+            "Note": "note",
         }
     )
 
-
-    # Ajout statut si absent
+    # Ajout de la colonne statut si absente
     if "statut" not in df.columns:
         df["statut"] = ""
-
 
     columns = [
         "artiste",
@@ -62,21 +55,11 @@ def save_danse_google_sheet(df):
         "statut"
     ]
 
+    df = df.reindex(columns=columns)
 
-    df = df.reindex(
-        columns=columns
-    )
+    # Conversion en liste pour Google Sheets
+    data = [df.columns.tolist()] + df.values.tolist()
 
-
-    # Conversion dataframe vers liste Google Sheet
-    data = [
-        df.columns.tolist()
-    ] + df.values.tolist()
-
-
-    # Nettoyage puis écriture
+    # Remplacement complet du contenu
     sheet.clear()
-
-    sheet.update(
-        data
-    )
+    sheet.update(data)
