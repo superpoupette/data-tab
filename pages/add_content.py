@@ -1,4 +1,4 @@
-from datetime import date
+﻿from datetime import date
 import streamlit as st
 from scripts.watchlist.update_watchlist import add_movie_google_sheet
 from scripts.watchlist.tmdb import (
@@ -255,6 +255,119 @@ if st.button(
     )
 
     st.success("Chorégraphie ajoutée !")
+
+st.subheader("🎬 Nouveau film")
+
+
+movie_query = st.text_input(
+    "Rechercher un film",
+    placeholder="Ex : Interstellar"
+)
+
+
+if st.button(
+    "🔎 Rechercher"
+):
+
+    results = search_movies_tmdb(
+        movie_query
+    )
+
+    st.session_state["movie_results"] = results
+
+
+
+if "movie_results" in st.session_state:
+
+
+    results = st.session_state["movie_results"]
+
+
+    if len(results) > 0:
+
+
+        choix = st.selectbox(
+            "Choisir le film",
+            [
+                f"{m['title']} ({m['year']})"
+                for m in results
+            ]
+        )
+
+
+        selected = results[
+            [
+                f"{m['title']} ({m['year']})"
+                for m in results
+            ].index(choix)
+        ]
+
+
+
+        col1, col2 = st.columns([1,3])
+
+
+        with col1:
+
+            if selected["poster_path"]:
+
+                st.image(
+                    selected["poster_path"],
+                    width=120
+                )
+
+
+        with col2:
+
+            st.write(
+                selected["overview"]
+            )
+
+
+        movie_date = st.date_input(
+            "Date de visionnage"
+        )
+
+
+        movie_rating = st.select_slider(
+            "Ma note",
+            options=[
+                0,
+                0.5,
+                1,
+                1.5,
+                2,
+                2.5,
+                3,
+                3.5,
+                4,
+                4.5,
+                5
+            ]
+        )
+
+
+        if st.button(
+            "🎬 Ajouter ce film",
+            key="add_movie_button"
+        ):
+
+
+            movie = get_movie_details_tmdb(
+                selected["id"]
+            )
+
+
+            add_movie_google_sheet(
+                movie,
+                movie_date.strftime("%Y-%m-%d"),
+                movie_rating
+            )
+
+
+            st.success(
+                "Film ajouté !"
+            )
 
 
 st.subheader("Tableau des données")
