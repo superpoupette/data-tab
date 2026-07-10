@@ -90,7 +90,7 @@ def update_movies():
 
 
 def add_movie_google_sheet(
-    title,
+    movie,
     watched_at,
     rating
 ):
@@ -99,23 +99,33 @@ def add_movie_google_sheet(
 
 
     row = [
-        "",                 # tvdb_id
-        "",                 # imdb_id
-        title,              # title
-        "",                 # year
-        "",                 # director
-        watched_at,         # watched_at
-        rating,             # rating
-        "movie",            # type
-        "watched",          # status
-        "",                 # style
-        "",                 # country
-        "",                 # overview
-        "",                 # poster_path
-        ""                  # tmdb_rating
+        str(movie.get("tvdb_id", "")),
+        str(movie.get("imdb_id", "")),
+        str(movie.get("title", "")),
+        str(movie.get("year", "")),
+        str(movie.get("director", "")),
+        str(watched_at),
+        float(rating),
+        "movie",
+        "watched",
+        str(movie.get("style", "")),
+        str(movie.get("country", "")),
+        str(movie.get("overview", "")),
+        str(movie.get("poster_path", "")),
+        float(movie.get("tmdb_rating", 0))
+        if movie.get("tmdb_rating")
+        else ""
     ]
 
 
+    # Vérification nombre colonnes
+    if len(row) != 14:
+        raise ValueError(
+            f"Erreur : {len(row)} colonnes envoyées au lieu de 14"
+        )
+
+
     sheet.append_row(
-        row
+        row,
+        value_input_option="USER_ENTERED"
     )
