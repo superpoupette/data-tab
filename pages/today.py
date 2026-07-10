@@ -187,7 +187,8 @@ if st.button("💾 Sauvegarder"):
 
 st.subheader("Nouvelle chorégraphie")
 
-col1, col2 = st.columns(2)
+# Ligne 1
+col1, col2, col3 = st.columns([2, 2, 2])
 
 with col1:
     new_artiste = st.text_input(
@@ -195,17 +196,22 @@ with col1:
         key="new_artiste"
     )
 
+with col2:
     new_titre = st.text_input(
         "Titre",
         key="new_titre"
     )
 
-with col2:
+with col3:
     new_choregraphe = st.text_input(
         "Chorégraphe",
         key="new_choregraphe"
     )
 
+# Ligne 2
+col4, col5 = st.columns([2, 1])
+
+with col4:
     new_style = st.selectbox(
         "Style",
         [
@@ -218,12 +224,11 @@ with col2:
             "Dancehall",
             "Waacking/voguing",
             "Heels"
-        ]
+        ],
+        key="new_style"
     )
 
-col3, col4 = st.columns([1, 1])
-
-with col3:
+with col5:
     new_duree = st.number_input(
         "Durée (s)",
         min_value=0,
@@ -231,24 +236,20 @@ with col3:
         key="new_duree"
     )
 
-with col4:
-    st.write("")
-    st.write("")
+# Ligne 3
+if st.button(
+    "➕ Ajouter la chorégraphie",
+    use_container_width=True
+):
+    add_danse_google_sheet(
+        artiste=new_artiste,
+        titre=new_titre,
+        choregraphe=new_choregraphe,
+        style=new_style,
+        duree=new_duree
+    )
 
-    if st.button(
-        "➕ Ajouter la chorégraphie",
-        use_container_width=True
-    ):
-
-        add_danse_google_sheet(
-            artiste=new_artiste,
-            titre=new_titre,
-            choregraphe=new_choregraphe,
-            style=new_style,
-            duree=new_duree
-        )
-
-        st.success("Chorégraphie ajoutée !")
+    st.success("Chorégraphie ajoutée !")
 
 st.subheader("Tableau des données")
 
