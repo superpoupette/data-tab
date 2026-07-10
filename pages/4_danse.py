@@ -2,40 +2,43 @@
 import pandas as pd
 import plotly.express as px
 
-from scripts.importation_2024 import prepare_2024
-from scripts.importation_2025 import prepare_2025
-from scripts.danse.gestion_danses import create_danse_data
-from scripts.danse.gestion_danses import create_danse_recap
+from scripts.danse.google_sheet import load_danse_google_sheet
 
 
-# Chargement des données
+# =========================
+# Chargement Google Sheet
+# =========================
 
-data2024 = prepare_2024(
-    "data/2024.csv"
+danse_recap = load_danse_google_sheet()
+
+
+danse_recap["date_debut"] = pd.to_datetime(
+    danse_recap["date_debut"],
+    errors="coerce"
 )
 
-data2025 = prepare_2025(
-    "data/2025.csv"
-)
-
-
-danse_2024 = create_danse_data(data2024)
-danse_2025 = create_danse_data(data2025)
-
-
-danse_data = pd.concat(
-    [
-        danse_2024,
-        danse_2025
-    ],
-    ignore_index=True
+danse_recap["date_fin"] = pd.to_datetime(
+    danse_recap["date_fin"],
+    errors="coerce"
 )
 
 
-danse_recap = create_danse_recap(danse_data)
+# Valeurs numériques
+
+for col in [
+    "duree_apprentissage",
+    "nombre_seance",
+    "duree_seance"
+]:
+    danse_recap[col] = pd.to_numeric(
+        danse_recap[col],
+        errors="coerce"
+    ).fillna(0)
 
 
-st.title("Dashboard Danse")
+
+st.title("💃 Dashboard Danse")
+
 
 
 # =========================
@@ -44,85 +47,111 @@ st.title("Dashboard Danse")
 
 col1, col2, col3, col4 = st.columns(4)
 
-with col1:
-    temps_total_min = danse_data["duree_min"].sum()
 
-    heures = int(temps_total_min // 60)
-    minutes = int(temps_total_min % 60)
+with col1:
+
+    temps_total_min = (
+        danse_recap["duree_apprentissage"]
+        .sum()
+    )
+
+    heures = int(
+        temps_total_min // 60
+    )
+
+    minutes = int(
+        temps_total_min % 60
+    )
 
     st.metric(
         "Temps d'apprentissage global",
         f"{heures}h{minutes:02d}"
     )
 
+
+
 with col2:
+
     nb_chorees = (
         danse_recap["duree_apprentissage"] > 0
     ).sum()
 
     st.metric(
-        "Nombre de chorégraphies apprises",
+        "Chorégraphies apprises",
         nb_chorees
     )
 
-with col3:
-    nb_sessions = danse_data["date"].nunique()
 
-    st.metric(
-        "Nombre de sessions de danse",
-        nb_sessions
+
+with col3:
+
+    nb_sessions = (
+        danse_recap["nombre_seance"]
+        .sum()
     )
 
+    st.metric(
+        "Nombre de séances",
+        int(nb_sessions)
+    )
+
+
+
 with col4:
+
     duree_moyenne = (
-        danse_data
-        .groupby("date")["duree_min"]
-        .sum()
+        danse_recap["duree_seance"]
         .mean()
     )
 
     st.metric(
-        "Durée moyenne d'une session",
+        "Durée moyenne séance",
         f"{duree_moyenne:.0f} min"
     )
 
-
-# =========================
-# Préparation des données
-# =========================
-
-danse_data["mois"] = (
-    pd.to_datetime(danse_data["date"])
-    .dt.to_period("M")
-    .astype(str)
-)
 
 
 # =========================
 # Graphiques principaux
 # =========================
 
+
 col1, col2 = st.columns(2)
 
 
-# Répartition des styles
+
+# -------------------------
+# Styles
+# -------------------------
 
 with col1:
-    st.subheader("Répartition des styles")
+
+    st.subheader(
+        "Répartition des styles"
+    )
+
 
     styles = (
         danse_recap
-        .groupby("Style")
+        .groupby("style")
         .size()
-        .reset_index(name="nombre")
+        .reset_index(
+            name="nombre"
+        )
+        .sort_values(
+            "nombre",
+            ascending=False
+        )
     )
+
 
     fig_style = px.pie(
         styles,
         values="nombre",
-        names="Style",
+        names="style",
         hole=0.3
     )
+
 
     st.plotly_chart(
         fig_style,
@@ -130,54 +159,99 @@ with col1:
     )
 
 
-# Répartition par artiste
 
-# Top artistes par nombre de chorégraphies
+# -------------------------
+# Artistes
+# -------------------------
 
 with col2:
-    st.subheader("Top 10 artistes par nombre de chorégraphies")
+
+    st.subheader(
+        "Top 10 artistes"
+    )
+
 
     artistes = (
-        danse_recap[danse_recap["duree_apprentissage"] > 0]
+        danse_recap[
+            danse_recap["duree_apprentissage"] > 0
+        ]
         .groupby("artiste")
         .size()
-        .reset_index(name="nombre_chorees")
+        .reset_index(
+            name="nombre_chorees"
+        )
         .sort_values(
             "nombre_chorees",
             ascending=False
         )
         .head(10)
-        .reset_index(drop=True)
     )
 
-    st.dataframe(
+
+    fig_artistes = px.bar(
         artistes,
-        use_container_width=True,
-        hide_index=True
+        x="nombre_chorees",
+        y="artiste",
+        orientation="h",
+        labels={
+            "nombre_chorees":
+                "Nombre de chorégraphies",
+            "artiste":
+                "Artiste"
+        }
     )
 
+
+    st.plotly_chart(
+        fig_artistes,
+        use_container_width=True
+    )
+
+
+
 # =========================
-# Evolution mensuelle
+# Evolution des apprentissages
 # =========================
 
-st.subheader("Temps d'apprentissage par mois")
-
-temps_mois = (
-    danse_data
-    .groupby("mois", as_index=False)["duree_min"]
-    .sum()
+st.subheader(
+    "Chorégraphies commencées par mois"
 )
+
+
+evolution = (
+    danse_recap
+    .dropna(
+        subset=[
+            "date_debut"
+        ]
+    )
+    .assign(
+        mois=lambda x:
+            x["date_debut"]
+            .dt.to_period("M")
+            .astype(str)
+    )
+    .groupby("mois")
+    .size()
+    .reset_index(
+        name="nombre"
+    )
+)
+
 
 fig_mois = px.line(
-    temps_mois,
+    evolution,
     x="mois",
-    y="duree_min",
+    y="nombre",
     markers=True,
     labels={
-        "mois": "Mois",
-        "duree_min": "Temps (min)"
+        "mois":
+            "Mois",
+        "nombre":
+            "Nouvelles chorégraphies"
     }
 )
+
 
 st.plotly_chart(
     fig_mois,
@@ -185,11 +259,15 @@ st.plotly_chart(
 )
 
 
+
 # =========================
 # Top chorégraphies
 # =========================
 
-st.subheader("Top 10 des chorégraphies par temps d'apprentissage")
+st.subheader(
+    "Top 10 chorégraphies par temps d'apprentissage"
+)
+
 
 top_chorees = (
     danse_recap
@@ -207,10 +285,13 @@ fig_top = px.bar(
     x="duree_apprentissage",
     orientation="h",
     labels={
-        "titre": "Chorégraphie",
-        "duree_apprentissage": "Temps (min)"
+        "titre":
+            "Chorégraphie",
+        "duree_apprentissage":
+            "Temps (min)"
     }
 )
+
 
 st.plotly_chart(
     fig_top,
@@ -218,13 +299,18 @@ st.plotly_chart(
 )
 
 
+
 # =========================
-# Tableau récapitulatif
+# Tableau
 # =========================
 
-st.subheader("Récapitulatif des chorégraphies")
+st.subheader(
+    "Récapitulatif des chorégraphies"
+)
+
 
 st.dataframe(
     danse_recap,
-    use_container_width=True
+    use_container_width=True,
+    hide_index=True
 )
