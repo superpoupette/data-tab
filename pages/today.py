@@ -1,6 +1,10 @@
 from datetime import date
 import streamlit as st
 from scripts.watchlist.update_watchlist import add_movie_google_sheet
+from scripts.watchlist.tmdb import (
+    search_movies_tmdb,
+    get_movie_details_tmdb
+)
 
 from scripts.data_entry.dataframe import (
     create_today_dataframe,
@@ -252,78 +256,118 @@ if st.button(
 
     st.success("Chorégraphie ajoutée !")
 
-# =====================
-# Nouveau film
-# =====================
-
-st.subheader("🎬 Nouveau film vu")
+st.subheader("🎬 Nouveau film")
 
 
-col1, col2, col3 = st.columns([3, 2, 1])
-
-
-with col1:
-
-    movie_title = st.text_input(
-        "Nom du film",
-        key="movie_title"
-    )
-
-
-with col2:
-
-    movie_date = st.date_input(
-        "Date de visionnage",
-        value=date.today(),
-        key="movie_date"
-    )
-
-
-with col3:
-
-    movie_rating = st.selectbox(
-        "Note /5",
-        [
-            0,
-            0.5,
-            1,
-            1.5,
-            2,
-            2.5,
-            3,
-            3.5,
-            4,
-            4.5,
-            5
-        ],
-        key="movie_rating"
-    )
-
+movie_query = st.text_input(
+    "Rechercher un film",
+    placeholder="Ex : Interstellar"
+)
 
 
 if st.button(
-    "🎬 Ajouter le film",
-    use_container_width=True
+    "🔎 Rechercher"
 ):
 
-    if movie_title.strip() == "":
+    results = search_movies_tmdb(
+        movie_query
+    )
 
-        st.error(
-            "Veuillez renseigner un titre."
+    st.session_state["movie_results"] = results
+
+
+
+if "movie_results" in st.session_state:
+
+
+    results = st.session_state["movie_results"]
+
+
+    if len(results) > 0:
+
+
+        choix = st.selectbox(
+            "Choisir le film",
+            [
+                f"{m['title']} ({m['year']})"
+                for m in results
+            ]
         )
 
-    else:
 
-        add_movie_google_sheet(
-            title=movie_title,
-            watched_at=movie_date.strftime("%Y-%m-%d"),
-            rating=movie_rating
+        selected = results[
+            [
+                f"{m['title']} ({m['year']})"
+                for m in results
+            ].index(choix)
+        ]
+
+
+
+        col1, col2 = st.columns([1,3])
+
+
+        with col1:
+
+            if selected["poster_path"]:
+
+                st.image(
+                    selected["poster_path"],
+                    width=120
+                )
+
+
+        with col2:
+
+            st.write(
+                selected["overview"]
+            )
+
+
+        movie_date = st.date_input(
+            "Date de visionnage"
         )
 
 
-        st.success(
-            "Film ajouté !"
+        movie_rating = st.select_slider(
+            "Ma note",
+            options=[
+                0,
+                0.5,
+                1,
+                1.5,
+                2,
+                2.5,
+                3,
+                3.5,
+                4,
+                4.5,
+                5
+            ]
         )
+
+
+        if st.button(
+            "🎬 Ajouter ce film"
+        ):
+
+
+            movie = get_movie_details_tmdb(
+                selected["id"]
+            )
+
+
+            add_movie_google_sheet(
+                movie,
+                movie_date.strftime("%Y-%m-%d"),
+                movie_rating
+            )
+
+
+            st.success(
+                "Film ajouté !"
+            )
+
 
 st.subheader("Tableau des données")
 

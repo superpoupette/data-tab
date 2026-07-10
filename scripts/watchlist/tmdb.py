@@ -113,3 +113,143 @@ def add_tmdb_info(movies):
     )
 
     return movies
+
+
+def search_movies_tmdb(query):
+
+    url = "https://api.themoviedb.org/3/search/movie"
+
+    params = {
+        "api_key": TMDB_API_KEY,
+        "query": query,
+        "language": "fr-FR"
+    }
+
+    response = requests.get(
+        url,
+        params=params
+    )
+
+    results = response.json().get(
+        "results",
+        []
+    )
+
+
+    movies = []
+
+    for movie in results[:10]:
+
+        movies.append(
+            {
+                "id": movie["id"],
+                "title": movie.get(
+                    "title",
+                    ""
+                ),
+                "year": movie.get(
+                    "release_date",
+                    ""
+                )[:4],
+                "overview": movie.get(
+                    "overview",
+                    ""
+                ),
+                "poster_path": (
+                    "https://image.tmdb.org/t/p/w200"
+                    + movie["poster_path"]
+                )
+                if movie.get("poster_path")
+                else ""
+            }
+        )
+
+
+    return movies
+
+def get_movie_details_tmdb(movie_id):
+
+    url = (
+        f"https://api.themoviedb.org/3/movie/{movie_id}"
+    )
+
+
+    response = requests.get(
+        url,
+        params={
+            "api_key": TMDB_API_KEY,
+            "language": "fr-FR",
+            "append_to_response": "credits"
+        }
+    )
+
+
+    details = response.json()
+
+
+    director = ""
+
+    for person in details["credits"]["crew"]:
+
+        if person["job"] == "Director":
+            director = person["name"]
+            break
+
+
+
+    return {
+
+        "imdb_id": details.get(
+            "imdb_id",
+            ""
+        ),
+
+        "title": details.get(
+            "title",
+            ""
+        ),
+
+        "year": details.get(
+            "release_date",
+            ""
+        )[:4],
+
+        "director": director,
+
+        "style": ", ".join(
+            [
+                g["name"]
+                for g in details.get(
+                    "genres",
+                    []
+                )
+            ]
+        ),
+
+        "country": ", ".join(
+            [
+                c["name"]
+                for c in details.get(
+                    "production_countries",
+                    []
+                )
+            ]
+        ),
+
+        "overview": details.get(
+            "overview",
+            ""
+        ),
+
+        "poster_path": (
+            "https://image.tmdb.org/t/p/w500"
+            + details["poster_path"]
+        )
+        if details.get("poster_path")
+        else "",
+
+        "tmdb_rating": details.get(
+            "vote_average",
+            ""
+        )
+    }
