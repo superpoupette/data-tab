@@ -153,13 +153,12 @@ with col7:
 with col8:
     new_choregraphe=st.text_input(
         "Choregraphe :",
-        placeholder="Nom du choregraphe"
     )
 
 with col9:
     new_duree=st.text_input(
         "Durée :",
-        placeholder="Minutes",
+        placeholder="min",
         key="new_choreo_duree"
     )
 
