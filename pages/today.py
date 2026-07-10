@@ -1,10 +1,5 @@
 from datetime import date
 import streamlit as st
-from scripts.watchlist.update_watchlist import add_movie_google_sheet
-from scripts.watchlist.tmdb import (
-    search_movies_tmdb,
-    get_movie_details_tmdb
-)
 
 from scripts.data_entry.dataframe import (
     create_today_dataframe,
@@ -12,7 +7,11 @@ from scripts.data_entry.dataframe import (
     save_to_google_sheet
 )
 
-from scripts.danse.google_sheet import add_danse_google_sheet
+from scripts.danse.google_sheet import (
+    add_danse_google_sheet,
+    load_danse_google_sheet,
+    add_practice_time
+)
 
 st.set_page_config(page_title="Today")
 
