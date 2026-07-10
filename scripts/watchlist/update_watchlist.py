@@ -6,7 +6,12 @@ from scripts.watchlist.clean_tvtime import (
 from scripts.watchlist.tmdb import add_tmdb_info
 from scripts.watchlist.google_sheet import save_movies_google_sheet
 
+import gspread
+import streamlit as st
 
+from google.oauth2.service_account import Credentials
+
+SHEET_ID = "1r-cWFbD68vRs3FNTeI3w11Dq--ZeucvMvRKbrq9k24A"
 
 def update_movies():
 
@@ -56,3 +61,32 @@ def update_movies():
 
 
     return movies
+
+def add_movie_google_sheet(
+    title,
+    watched_at,
+    rating
+):
+
+    sheet = get_movie_sheet()
+
+
+    row = [
+        "",                 # tvdb_id
+        "",                 # imdb_id
+        title,              # title
+        "",                 # year
+        "",                 # director
+        watched_at,         # watched_at
+        rating,             # rating
+        "movie",            # type
+        "watched",          # status
+        "",                 # style
+        "",                 # country
+        "",                 # overview
+        "",                 # poster_path
+        ""                  # tmdb_rating
+    ]
+
+
+    sheet.append_row(row)

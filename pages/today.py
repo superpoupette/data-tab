@@ -1,5 +1,6 @@
 from datetime import date
 import streamlit as st
+from scripts.watchlist.load_watchlist import add_movie_google_sheet
 
 from scripts.data_entry.dataframe import (
     create_today_dataframe,
@@ -250,6 +251,79 @@ if st.button(
     )
 
     st.success("Chorégraphie ajoutée !")
+
+# =====================
+# Nouveau film
+# =====================
+
+st.subheader("🎬 Nouveau film vu")
+
+
+col1, col2, col3 = st.columns([3, 2, 1])
+
+
+with col1:
+
+    movie_title = st.text_input(
+        "Nom du film",
+        key="movie_title"
+    )
+
+
+with col2:
+
+    movie_date = st.date_input(
+        "Date de visionnage",
+        value=date.today(),
+        key="movie_date"
+    )
+
+
+with col3:
+
+    movie_rating = st.selectbox(
+        "Note /5",
+        [
+            0,
+            0.5,
+            1,
+            1.5,
+            2,
+            2.5,
+            3,
+            3.5,
+            4,
+            4.5,
+            5
+        ],
+        key="movie_rating"
+    )
+
+
+
+if st.button(
+    "🎬 Ajouter le film",
+    use_container_width=True
+):
+
+    if movie_title.strip() == "":
+
+        st.error(
+            "Veuillez renseigner un titre."
+        )
+
+    else:
+
+        add_movie_google_sheet(
+            title=movie_title,
+            watched_at=movie_date.strftime("%Y-%m-%d"),
+            rating=movie_rating
+        )
+
+
+        st.success(
+            "Film ajouté !"
+        )
 
 st.subheader("Tableau des données")
 
