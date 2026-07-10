@@ -253,7 +253,7 @@ with col_rating:
 # DERNIERS FILMS VUS
 # =====================
 
-st.subheader("🎬 Mes 6 derniers films vus")
+st.subheader("Mes 6 derniers films vus")
 
 
 last_6_movies = (
@@ -278,6 +278,23 @@ for col, (_, movie) in zip(
 
     with col:
 
+        # Titre au-dessus de l'affiche
+        st.markdown(
+            f"""
+            <div style="
+                text-align:center;
+                font-size:14px;
+                font-weight:600;
+                height:45px;
+            ">
+                {movie["title"]}
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+
+        # Affiche
         if pd.notna(movie.get("poster_path")):
 
             poster_url = (
@@ -297,14 +314,17 @@ for col, (_, movie) in zip(
             )
 
 
+        # Date sous l'affiche
+        date_vue = movie["watched_at"].strftime("%d/%m/%Y")
+
         st.markdown(
             f"""
             <div style="
                 text-align:center;
-                font-size:14px;
-                font-weight:600;
+                font-size:13px;
+                color:gray;
             ">
-                {movie["title"]}
+                Vu le {date_vue}
             </div>
             """,
             unsafe_allow_html=True
