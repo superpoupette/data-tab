@@ -81,25 +81,25 @@ st.subheader("Nouvelle chorégraphie")
 col6, col7, col8, col9 = st.columns([3, 3, 3, 1])
 
 with col6:
-    artiste=st.text_input(
+    new_artiste=st.text_input(
         "Artiste :",
         placeholder="Nom de l'artiste"
     )
 
 with col7:
-    titre=st.text_input(
+    new_titre=st.text_input(
         "Titre :",
         placeholder="Nom du titre"
     )
 
 with col8:
-    choregraphe=st.text_input(
+    new_choregraphe=st.text_input(
         "Choregraphe :",
         placeholder="Nom du choregraphe"
     )
 
 with col9:
-    duree=st.text_input(
+    new_duree=st.text_input(
         "Durée :",
         placeholder="Minutes"
     )
