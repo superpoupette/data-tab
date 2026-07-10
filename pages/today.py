@@ -77,34 +77,7 @@ with col5:
 
 
 
-st.subheader("Nouvelle chorégraphie")
 
-col6, col7, col8, col9 = st.columns([3, 3, 3, 1])
-
-with col6:
-    new_artiste=st.text_input(
-        "Artiste :",
-        placeholder="Nom de l'artiste"
-    )
-
-with col7:
-    new_titre=st.text_input(
-        "Titre :",
-        placeholder="Nom du titre"
-    )
-
-with col8:
-    new_choregraphe=st.text_input(
-        "Choregraphe :",
-        placeholder="Nom du choregraphe"
-    )
-
-with col9:
-    new_duree=st.text_input(
-        "Durée :",
-        placeholder="Minutes",
-        key="new_choreo_duree"
-    )
 
 
 
@@ -158,6 +131,37 @@ if st.button("💾 Sauvegarder"):
         st.error(
             "⚠️ Format incorrect pour le sommeil. Exemple attendu : 7 ou 7,5"
         )
+
+
+#Nouvelle chorégraphie
+st.subheader("Nouvelle chorégraphie")
+
+col6, col7, col8, col9 = st.columns([3, 3, 3, 1])
+
+with col6:
+    new_artiste=st.text_input(
+        "Artiste :",
+        placeholder="Nom de l'artiste"
+    )
+
+with col7:
+    new_titre=st.text_input(
+        "Titre :",
+        placeholder="Nom du titre"
+    )
+
+with col8:
+    new_choregraphe=st.text_input(
+        "Choregraphe :",
+        placeholder="Nom du choregraphe"
+    )
+
+with col9:
+    new_duree=st.text_input(
+        "Durée :",
+        placeholder="Minutes",
+        key="new_choreo_duree"
+    )
 
 
 
