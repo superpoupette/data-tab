@@ -12,7 +12,7 @@ from scripts.watchlist.load_watchlist import load_movies_google_sheet
 movies = load_movies_google_sheet()
 
 
-st.title("🍿 Watchlist Films")
+st.title("🍿 Ma watchlist")
 
 
 # =====================
