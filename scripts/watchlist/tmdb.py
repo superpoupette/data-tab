@@ -189,11 +189,55 @@ def get_movie_details_tmdb(movie_id):
 
     director = ""
 
-    for person in details["credits"]["crew"]:
+    for person in details.get(
+        "credits",
+        {}
+    ).get(
+        "crew",
+        []
+    ):
 
-        if person["job"] == "Director":
-            director = person["name"]
+        if person.get("job") == "Director":
+            director = person.get("name")
             break
+
+
+
+    genres = [
+        GENRES_FR.get(
+            g["name"],
+            g["name"]
+        )
+        for g in details.get(
+            "genres",
+            []
+        )
+    ]
+
+
+    countries = [
+        c["name"]
+        for c in details.get(
+            "production_countries",
+            []
+        )
+    ]
+
+
+    release_date = (
+        details.get("release_date")
+        or ""
+    )
+
+
+    poster = ""
+
+    if details.get("poster_path"):
+
+        poster = (
+            "https://image.tmdb.org/t/p/w500"
+            + details["poster_path"]
+        )
 
 
 
@@ -209,31 +253,16 @@ def get_movie_details_tmdb(movie_id):
             ""
         ),
 
-        "year": details.get(
-            "release_date",
-            ""
-        )[:4],
+        "year": release_date[:4],
 
         "director": director,
 
         "style": ", ".join(
-            [
-                g["name"]
-                for g in details.get(
-                    "genres",
-                    []
-                )
-            ]
+            genres
         ),
 
         "country": ", ".join(
-            [
-                c["name"]
-                for c in details.get(
-                    "production_countries",
-                    []
-                )
-            ]
+            countries
         ),
 
         "overview": details.get(
@@ -241,12 +270,7 @@ def get_movie_details_tmdb(movie_id):
             ""
         ),
 
-        "poster_path": (
-            "https://image.tmdb.org/t/p/w500"
-            + details["poster_path"]
-        )
-        if details.get("poster_path")
-        else "",
+        "poster_path": poster,
 
         "tmdb_rating": details.get(
             "vote_average",
