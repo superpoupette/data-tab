@@ -185,56 +185,70 @@ if st.button("💾 Sauvegarder"):
         )
 
 
-#Nouvelle chorégraphie
 st.subheader("Nouvelle chorégraphie")
 
-col6, col7, col8, col9 = st.columns([3, 3, 3, 1])
+col1, col2 = st.columns(2)
 
-with col6:
-    new_artiste=st.text_input(
-        "Artiste :",
+with col1:
+    new_artiste = st.text_input(
+        "Artiste",
+        key="new_artiste"
     )
 
-with col7:
-    new_titre=st.text_input(
-        "Titre :",
+    new_titre = st.text_input(
+        "Titre",
+        key="new_titre"
     )
 
-with col8:
-    new_choregraphe=st.text_input(
-        "Choregraphe :",
+with col2:
+    new_choregraphe = st.text_input(
+        "Chorégraphe",
+        key="new_choregraphe"
     )
 
-with col9:
-    new_duree=st.text_input(
-        "Durée :",
-        placeholder="min",
-        key="new_choreo_duree"
+    new_style = st.selectbox(
+        "Style",
+        [
+            "Urban",
+            "Kpop girl",
+            "Kpop boy",
+            "Jazz",
+            "Lyrical",
+            "Street Jazz",
+            "Dancehall",
+            "Waacking/voguing",
+            "Heels"
+        ]
     )
 
-if st.button("➕ Ajouter la chorégraphie"):
+col3, col4 = st.columns([1, 1])
 
-    if (
-        new_artiste.strip()
-        and new_titre.strip()
+with col3:
+    new_duree = st.number_input(
+        "Durée (s)",
+        min_value=0,
+        step=10,
+        key="new_duree"
+    )
+
+with col4:
+    st.write("")
+    st.write("")
+
+    if st.button(
+        "➕ Ajouter la chorégraphie",
+        use_container_width=True
     ):
 
         add_danse_google_sheet(
-            new_artiste,
-            new_titre,
-            new_choregraphe,
-            new_duree
+            artiste=new_artiste,
+            titre=new_titre,
+            choregraphe=new_choregraphe,
+            style=new_style,
+            duree=new_duree
         )
 
-        st.success(
-            "Nouvelle chorégraphie ajoutée !"
-        )
-
-    else:
-
-        st.error(
-            "L'artiste et le titre sont obligatoires."
-        )
+        st.success("Chorégraphie ajoutée !")
 
 st.subheader("Tableau des données")
 

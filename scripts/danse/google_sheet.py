@@ -75,6 +75,7 @@ def add_danse_google_sheet(
     artiste,
     titre,
     choregraphe,
+    style,
     duree
 ):
 
