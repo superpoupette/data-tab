@@ -89,7 +89,7 @@ with st.container():
 # FILMS VUS PAR MOIS
 # =====================
 
-st.subheader("📈 Films vus par mois")
+st.subheader("Films vus par mois")
 
 
 movies_month = (
@@ -132,7 +132,7 @@ col_style, col_rating = st.columns(2)
 
 with col_style:
 
-    st.subheader("🎭 Répartition des styles")
+    st.subheader("Répartition des styles")
 
 
     styles = (
@@ -201,7 +201,7 @@ with col_style:
 
 with col_rating:
 
-    st.subheader("⭐ Répartition des notes")
+    st.subheader("Répartition des notes")
 
 
     ratings = (
