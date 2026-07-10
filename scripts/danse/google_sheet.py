@@ -8,7 +8,7 @@ from google.oauth2.service_account import Credentials
 SHEET_ID = "1EXdUL-iCTtOU-qBEyvKxN3qZzb2OMR4CdJ3RjddmERI"
 
 
-def save_danse_google_sheet(df):
+def get_sheet():
 
     credentials = Credentials.from_service_account_info(
         st.secrets["gcp_service_account"],
@@ -23,24 +23,17 @@ def save_danse_google_sheet(df):
         SHEET_ID
     ).sheet1
 
+    return sheet
+
+
+
+def save_danse_google_sheet(df):
+
+    sheet = get_sheet()
 
     df = df.copy()
 
-
-    # Remplacement des valeurs manquantes
     df = df.fillna("")
-
-
-    # Compatibilité anciens noms de colonnes
-    df = df.rename(
-        columns={
-            "Style": "style",
-            "Durée (s)": "duree",
-            "Difficultée": "difficulte",
-            "Estimation": "estimation",
-            "Note": "note"
-        }
-    )
 
 
     columns = [
@@ -61,25 +54,21 @@ def save_danse_google_sheet(df):
     ]
 
 
-    # Ajoute les colonnes manquantes
     for col in columns:
         if col not in df.columns:
             df[col] = ""
 
 
-    # Réorganisation finale
     df = df.reindex(
         columns=columns
     )
 
 
-    # Conversion dataframe vers Google Sheet
     data = [
         df.columns.tolist()
     ] + df.values.tolist()
 
 
-    # Réécriture complète
     sheet.clear()
 
     sheet.update(
@@ -87,26 +76,15 @@ def save_danse_google_sheet(df):
     )
 
 
-    def load_danse_google_sheet():
 
-    credentials = Credentials.from_service_account_info(
-        st.secrets["gcp_service_account"],
-        scopes=[
-            "https://www.googleapis.com/auth/spreadsheets"
-        ]
-    )
+def load_danse_google_sheet():
 
-    client = gspread.authorize(credentials)
-
-    sheet = client.open_by_key(
-        SHEET_ID
-    ).sheet1
-
+    sheet = get_sheet()
 
     data = sheet.get_all_records()
 
-
-    df = pd.DataFrame(data)
-
+    df = pd.DataFrame(
+        data
+    )
 
     return df
