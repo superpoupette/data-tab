@@ -141,13 +141,11 @@ col6, col7, col8, col9 = st.columns([3, 3, 3, 1])
 with col6:
     new_artiste=st.text_input(
         "Artiste :",
-        placeholder="Nom de l'artiste"
     )
 
 with col7:
     new_titre=st.text_input(
         "Titre :",
-        placeholder="Nom du titre"
     )
 
 with col8:
