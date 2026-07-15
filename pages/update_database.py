@@ -1,4 +1,5 @@
 ﻿import streamlit as st
+import pandas as pd
 
 from scripts.watchlist.update_watchlist import update_movies
 
