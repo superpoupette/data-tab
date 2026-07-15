@@ -167,6 +167,24 @@ def clean_series(
         }
     )
 
+    series = series.merge(
+        last_episode[
+            [
+                "series_uuid",
+                "last_watch",
+                "last_episode"
+            ]
+        ],
+        left_on="uuid",
+        right_on="series_uuid",
+        how="left"
+    )
+
+
+    series.drop(
+        columns=["series_uuid"],
+        inplace=True
+    )
     
     # Premier épisode regardé
     first_episode = (
