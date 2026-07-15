@@ -56,3 +56,39 @@ if st.button("🚀 Mettre à jour les films"):
             )
 
             st.exception(e)
+
+
+import streamlit as st
+
+from scripts.importation_2024 import prepare_2024
+from scripts.importation_2025 import prepare_2025
+from scripts.danse.gestion_danses import (
+    create_danse_data,
+    create_danse_recap
+)
+
+st.title("Dashboard Danse")
+
+# ====================================
+# Mise à jour de la base Google Sheet
+# ====================================
+
+if st.button("🔄 Mettre à jour la base de danse"):
+
+    with st.spinner("Mise à jour en cours..."):
+
+        data2024 = prepare_2024("data/2024.csv")
+        data2025 = prepare_2025("data/2025.csv")
+
+        danse_2024 = create_danse_data(data2024)
+        danse_2025 = create_danse_data(data2025)
+
+        danse_data = pd.concat(
+            [danse_2024, danse_2025],
+            ignore_index=True
+        )
+
+        # Cette fonction met déjà à jour le Google Sheet
+        create_danse_recap(danse_data)
+
+    st.success("✅ Base Google Sheet mise à jour.")
