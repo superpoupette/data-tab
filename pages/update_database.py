@@ -3,8 +3,19 @@ import pandas as pd
 
 from scripts.watchlist.update_watchlist import (
     update_movies,
-    update_series,
-    save_series_google_sheet
+    update_series
+)
+
+from scripts.importation_2024 import prepare_2024
+from scripts.importation_2025 import prepare_2025
+
+from scripts.danse.gestion_danses import (
+    create_danse_data,
+    create_danse_recap
+)
+
+from scripts.danse.google_sheet import (
+    save_danse_google_sheet
 )
 
 
@@ -12,135 +23,131 @@ st.set_page_config(
     page_title="Update Database"
 )
 
+st.title("🔄 Mise à jour des bases de données")
 
-st.title("🔄 Mise à jour base de données")
 
+# =====================================================
+# WATCHLIST
+# =====================================================
+
+st.header("🍿 Watchlist")
 
 st.write(
-    "Cette page récupère les données TV Time, "
-    "ajoute les informations TMDB et met à jour Google Sheet."
+    "Met à jour les films et les séries depuis TV Time "
+    "et les animes depuis MyAnimeList."
 )
 
 
-
-if st.button("🚀 Mettre à jour les films"):
-
-    with st.spinner("Mise à jour en cours..."):
-
-        try:
-
-            movies = update_movies()
+col1, col2 = st.columns(2)
 
 
-            st.success(
-                "Base mise à jour avec succès !"
-            )
+# ===========================
+# FILMS
+# ===========================
+
+with col1:
+
+    if st.button("🎬 Mettre à jour les films"):
+
+        with st.spinner("Mise à jour des films..."):
+
+            try:
+
+                movies = update_movies()
+
+                st.success("Films mis à jour.")
+
+                st.metric(
+                    "Nombre de films",
+                    len(movies)
+                )
+
+                st.dataframe(
+                    movies.head(10),
+                    use_container_width=True
+                )
+
+            except Exception as e:
+
+                st.exception(e)
 
 
-            st.metric(
-                "Nombre de films",
-                len(movies)
-            )
+# ===========================
+# SERIES
+# ===========================
+
+with col2:
+
+    if st.button("📺 Mettre à jour les séries"):
+
+        with st.spinner("Mise à jour des séries..."):
+
+            try:
+
+                series = update_series()
+
+                st.success("Séries et animes mis à jour.")
+
+                st.metric(
+                    "Nombre de séries/animes",
+                    len(series)
+                )
+
+                st.dataframe(
+                    series.head(10),
+                    use_container_width=True
+                )
+
+            except Exception as e:
+
+                st.exception(e)
 
 
-            st.subheader(
-                "Aperçu"
-            )
+st.divider()
 
 
-            st.dataframe(
-                movies.head(10),
-                use_container_width=True
-            )
+# =====================================================
+# DANSE
+# =====================================================
 
-
-        except Exception as e:
-
-            st.error(
-                "Une erreur est survenue :"
-            )
-
-            st.exception(e)
-
-
-import streamlit as st
-
-from scripts.importation_2024 import prepare_2024
-from scripts.importation_2025 import prepare_2025
-from scripts.danse.gestion_danses import (
-    create_danse_data,
-    create_danse_recap
-)
-from scripts.danse.google_sheet import save_danse_google_sheet
-
-st.title("Dashboard Danse")
-
-# ====================================
-# Mise à jour de la base Google Sheet
-# ====================================
+st.header("💃 Danse")
 
 if st.button("🔄 Mettre à jour la base de danse"):
 
     with st.spinner("Mise à jour..."):
 
-        data2024 = prepare_2024("data/2024.csv")
-        data2025 = prepare_2025("data/2025.csv")
+        data2024 = prepare_2024(
+            "data/2024.csv"
+        )
 
-        danse_2024 = create_danse_data(data2024)
-        danse_2025 = create_danse_data(data2025)
+        data2025 = prepare_2025(
+            "data/2025.csv"
+        )
+
+        danse_2024 = create_danse_data(
+            data2024
+        )
+
+        danse_2025 = create_danse_data(
+            data2025
+        )
 
         danse_data = pd.concat(
-            [danse_2024, danse_2025],
+            [
+                danse_2024,
+                danse_2025
+            ],
             ignore_index=True
         )
 
-        danse_recap = create_danse_recap(danse_data)
+        danse_recap = create_danse_recap(
+            danse_data
+        )
 
-        save_danse_google_sheet(danse_recap)
+        save_danse_google_sheet(
+            danse_recap
+        )
 
-    st.success("✅ Google Sheet mis à jour.")
-
-
-
-if st.button("📺 Mettre à jour les séries"):
-
-    with st.spinner("Mise à jour des séries en cours..."):
-
-        try:
-
-            series = update_series()
-
-            save_series_google_sheet(
-                series
-            )
-
-
-            st.success(
-                "Base séries mise à jour avec succès !"
-            )
-
-
-            st.metric(
-                "Nombre de séries",
-                len(series)
-            )
-
-
-            st.subheader(
-                "Aperçu"
-            )
-
-
-            st.dataframe(
-                series.head(10),
-                use_container_width=True
-            )
-
-
-        except Exception as e:
-
-            st.error(
-                "Une erreur est survenue :"
-            )
-
-            st.exception(e)
+    st.success(
+        "Base danse mise à jour."
+    )
