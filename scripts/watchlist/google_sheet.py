@@ -8,40 +8,113 @@ from google.oauth2.service_account import Credentials
 SHEET_ID = "1r-cWFbD68vRs3FNTeI3w11Dq--ZeucvMvRKbrq9k24A"
 
 
-def save_movies_google_sheet(df):
+def get_google_sheet():
 
     credentials = Credentials.from_service_account_info(
         st.secrets["gcp_service_account"],
-        scopes=["https://www.googleapis.com/auth/spreadsheets"]
+        scopes=[
+            "https://www.googleapis.com/auth/spreadsheets"
+        ]
     )
 
-    client = gspread.authorize(credentials)
+    client = gspread.authorize(
+        credentials
+    )
 
-    sheet = client.open_by_key(SHEET_ID).sheet1
+    return client.open_by_key(
+        SHEET_ID
+    )
+
+
+def get_worksheet(sheet_name):
+
+    spreadsheet = get_google_sheet()
+
+    try:
+
+        sheet = spreadsheet.worksheet(
+            sheet_name
+        )
+
+    except gspread.exceptions.WorksheetNotFound:
+
+        sheet = spreadsheet.add_worksheet(
+            title=sheet_name,
+            rows="1000",
+            cols="30"
+        )
+
+    return sheet
+
+
+
+def convert_value(value):
+
+    if pd.isna(value):
+        return ""
+
+    if isinstance(value, pd.Timestamp):
+        return value.strftime(
+            "%Y-%m-%d"
+        )
+
+    if hasattr(value, "item"):
+        return value.item()
+
+    return value
+
+
+
+def save_google_sheet(
+    df,
+    sheet_name
+):
+
+    sheet = get_worksheet(
+        sheet_name
+    )
 
     df = df.copy()
 
-    # Conversion de chaque cellule en type compatible Google Sheets
-    def convert_value(value):
-
-        if pd.isna(value):
-            return ""
-
-        if isinstance(value, pd.Timestamp):
-            return value.strftime("%Y-%m-%d")
-
-        if hasattr(value, "item"):
-            return value.item()
-
-        return value
 
     values = [
-        [convert_value(v) for v in row]
-        for row in df.itertuples(index=False, name=None)
+        df.columns.tolist()
+    ] + [
+        [
+            convert_value(v)
+            for v in row
+        ]
+        for row in df.itertuples(
+            index=False,
+            name=None
+        )
     ]
+
 
     sheet.clear()
 
     sheet.update(
-        [df.columns.tolist()] + values
+        range_name="A1",
+        values=values
     )
+
+
+
+def load_google_sheet(
+    sheet_name
+):
+
+    sheet = get_worksheet(
+        sheet_name
+    )
+
+
+    data = sheet.get_all_records()
+
+
+    df = pd.DataFrame(
+        data
+    )
+
+
+    return df
