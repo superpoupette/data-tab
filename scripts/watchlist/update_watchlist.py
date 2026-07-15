@@ -160,3 +160,44 @@ def add_movie_google_sheet(
         row,
         value_input_option="USER_ENTERED"
     )
+
+
+def save_series_google_sheet(series):
+
+    credentials = Credentials.from_service_account_info(
+        st.secrets["gcp_service_account"],
+        scopes=[
+            "https://www.googleapis.com/auth/spreadsheets"
+        ]
+    )
+
+    client = gspread.authorize(
+        credentials
+    )
+
+    spreadsheet = client.open_by_key(
+        SHEET_ID
+    )
+
+    try:
+        sheet = spreadsheet.worksheet("series")
+
+    except gspread.exceptions.WorksheetNotFound:
+
+        sheet = spreadsheet.add_worksheet(
+            title="series",
+            rows="1000",
+            cols="20"
+        )
+
+
+    values = [
+        series.columns.tolist()
+    ] + series.fillna("").values.tolist()
+
+
+    sheet.clear()
+
+    sheet.update(
+        values
+    )

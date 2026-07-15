@@ -1,7 +1,11 @@
 ﻿import streamlit as st
 import pandas as pd
 
-from scripts.watchlist.update_watchlist import update_movies
+from scripts.watchlist.update_watchlist import (
+    update_movies,
+    update_series,
+    save_series_google_sheet
+)
 
 
 st.set_page_config(
@@ -95,3 +99,48 @@ if st.button("🔄 Mettre à jour la base de danse"):
         save_danse_google_sheet(danse_recap)
 
     st.success("✅ Google Sheet mis à jour.")
+
+
+
+if st.button("📺 Mettre à jour les séries"):
+
+    with st.spinner("Mise à jour des séries en cours..."):
+
+        try:
+
+            series = update_series()
+
+            save_series_google_sheet(
+                series
+            )
+
+
+            st.success(
+                "Base séries mise à jour avec succès !"
+            )
+
+
+            st.metric(
+                "Nombre de séries",
+                len(series)
+            )
+
+
+            st.subheader(
+                "Aperçu"
+            )
+
+
+            st.dataframe(
+                series.head(10),
+                use_container_width=True
+            )
+
+
+        except Exception as e:
+
+            st.error(
+                "Une erreur est survenue :"
+            )
+
+            st.exception(e)
