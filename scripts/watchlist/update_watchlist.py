@@ -118,10 +118,10 @@ def add_movie_google_sheet(
     ]
 
 
-    # Vérification nombre colonnes
+    # Verification nombre colonnes
     if len(row) != 14:
         raise ValueError(
-            f"Erreur : {len(row)} colonnes envoyées au lieu de 14"
+            f"Erreur : {len(row)} colonnes envoyees au lieu de 14"
         )
 
 
