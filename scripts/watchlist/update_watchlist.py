@@ -1,10 +1,20 @@
-from scripts.watchlist.import_tvtime import load_tvtime_movies
+from scripts.watchlist.import_tvtime import (
+    load_tvtime_movies,
+    load_tvtime_series,
+    load_tvtime_series_episodes
+)
+
 from scripts.watchlist.clean_tvtime import (
     clean_movies,
+    clean_series,
     add_movie_rating
 )
+
 from scripts.watchlist.tmdb import add_tmdb_info
-from scripts.watchlist.google_sheet import save_movies_google_sheet
+
+from scripts.watchlist.google_sheet import (
+    save_movies_google_sheet
+)
 
 import gspread
 import streamlit as st
@@ -13,7 +23,6 @@ from google.oauth2.service_account import Credentials
 
 
 SHEET_ID = "1r-cWFbD68vRs3FNTeI3w11Dq--ZeucvMvRKbrq9k24A"
-
 
 
 def get_movie_sheet():
@@ -34,14 +43,11 @@ def get_movie_sheet():
     ).sheet1
 
 
-
 def update_movies():
-
 
     movies = load_tvtime_movies(
         "data/tvtime-movies-2026-07-07.csv"
     )
-
 
     movies = clean_movies(
         movies
@@ -51,11 +57,9 @@ def update_movies():
         movies
     )
 
-
     movies = add_tmdb_info(
         movies
     )
-
 
     columns = [
         "tvdb_id",
@@ -74,19 +78,49 @@ def update_movies():
         "tmdb_rating"
     ]
 
-
     movies = movies.reindex(
         columns=columns
     )
-
 
     save_movies_google_sheet(
         movies
     )
 
-
     return movies
 
+
+def update_series():
+
+    series = load_tvtime_series(
+        "data/tvtime-series-2026-07-07.csv"
+    )
+
+    episodes = load_tvtime_series_episodes(
+        "data/tvtime-series-episodes-2026-07-07.csv"
+    )
+
+    series = clean_series(
+        series,
+        episodes
+    )
+
+    columns = [
+        "tvdb_id",
+        "title",
+        "year",
+        "status",
+        "type",
+        "episodes",
+        "progress",
+        "last_episode",
+        "last_watch"
+    ]
+
+    series = series.reindex(
+        columns=columns
+    )
+
+    return series
 
 
 def add_movie_google_sheet(
@@ -96,7 +130,6 @@ def add_movie_google_sheet(
 ):
 
     sheet = get_movie_sheet()
-
 
     row = [
         str(movie.get("tvdb_id", "")),
@@ -117,13 +150,10 @@ def add_movie_google_sheet(
         else ""
     ]
 
-
-    # Verification nombre colonnes
     if len(row) != 14:
         raise ValueError(
-            f"Erreur : {len(row)} colonnes envoyees au lieu de 14"
+            f"Erreur : {len(row)} colonnes envoyées au lieu de 14"
         )
-
 
     sheet.append_row(
         row,

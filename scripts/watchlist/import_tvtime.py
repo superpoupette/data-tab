@@ -3,6 +3,14 @@ import pandas as pd
 
 def load_tvtime_movies(filepath):
 
-    movies = pd.read_csv(filepath)
+    return pd.read_csv(filepath)
 
-    return movies
+
+def load_tvtime_series(filepath):
+
+    return pd.read_csv(filepath)
+
+
+def load_tvtime_series_episodes(filepath):
+
+    return pd.read_csv(filepath)

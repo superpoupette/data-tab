@@ -329,3 +329,13 @@ for col, (_, movie) in zip(
             """,
             unsafe_allow_html=True
         )
+
+from scripts.watchlist.update_watchlist import update_series
+
+series = update_series()
+
+st.header("📺 Séries")
+st.dataframe(
+    series,
+    use_container_width=True
+)
