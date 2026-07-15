@@ -237,9 +237,18 @@ def clean_animes(animes):
         )
     )
 
+    animes["first_seen"] = pd.to_datetime(
+        animes["first_seen"],
+        errors="coerce"
+    )
+
+    animes["last_watch"] = pd.to_datetime(
+        animes["last_watch"],
+        errors="coerce"
+    )
+
     animes["year"] = pd.NA
-    animes["first_seen"] = pd.NaT
-    animes["last_watch"] = pd.NaT
+
     animes["last_episode"] = pd.NA
 
     return animes
