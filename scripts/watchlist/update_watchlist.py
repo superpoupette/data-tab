@@ -18,6 +18,7 @@ from scripts.watchlist.google_sheet import (
 
 import gspread
 import streamlit as st
+import pandas as pd
 
 from google.oauth2.service_account import Credentials
 
@@ -191,9 +192,32 @@ def save_series_google_sheet(series):
         )
 
 
+    def convert_value(value):
+
+        if pd.isna(value):
+            return ""
+
+        if isinstance(value, pd.Timestamp):
+            return value.strftime("%Y-%m-%d")
+
+        if hasattr(value, "item"):
+            return value.item()
+
+        return value
+
+
     values = [
         series.columns.tolist()
-    ] + series.fillna("").values.tolist()
+    ] + [
+        [
+            convert_value(v)
+            for v in row
+        ]
+        for row in series.itertuples(
+            index=False,
+            name=None
+        )
+    ]
 
 
     sheet.clear()
