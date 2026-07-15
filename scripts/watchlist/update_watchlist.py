@@ -12,9 +12,7 @@ from scripts.watchlist.clean_tvtime import (
 
 from scripts.watchlist.tmdb import add_tmdb_info
 
-from scripts.watchlist.google_sheet import (
-    save_movies_google_sheet
-)
+from scripts.watchlist.google_sheet import save_google_sheet
 
 import gspread
 import streamlit as st
@@ -83,8 +81,9 @@ def update_movies():
         columns=columns
     )
 
-    save_movies_google_sheet(
-        movies
+    save_google_sheet(
+        movies,
+        "movies"
     )
 
     return movies
