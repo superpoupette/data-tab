@@ -1,45 +1,24 @@
 from scripts.watchlist.import_tvtime import (
     load_tvtime_movies,
     load_tvtime_series,
-    load_tvtime_series_episodes
+    load_tvtime_series_episodes,
+    load_myanimelist
 )
 
 from scripts.watchlist.clean_tvtime import (
     clean_movies,
     clean_series,
+    clean_animes,
     add_movie_rating
 )
 
 from scripts.watchlist.tmdb import add_tmdb_info
 
-from scripts.watchlist.google_sheet import save_google_sheet
+from scripts.watchlist.google_sheet import (
+    save_google_sheet
+)
 
-import gspread
-import streamlit as st
 import pandas as pd
-
-from google.oauth2.service_account import Credentials
-
-
-SHEET_ID = "1r-cWFbD68vRs3FNTeI3w11Dq--ZeucvMvRKbrq9k24A"
-
-
-def get_movie_sheet():
-
-    credentials = Credentials.from_service_account_info(
-        st.secrets["gcp_service_account"],
-        scopes=[
-            "https://www.googleapis.com/auth/spreadsheets"
-        ]
-    )
-
-    client = gspread.authorize(
-        credentials
-    )
-
-    return client.open_by_key(
-        SHEET_ID
-    ).sheet1
 
 
 def update_movies():
@@ -104,6 +83,14 @@ def update_series():
         episodes
     )
 
+    animes = load_myanimelist(
+        "data/animelist.xml"
+    )
+
+    animes = clean_animes(
+        animes
+    )
+
     columns = [
         "tvdb_id",
         "title",
@@ -121,106 +108,21 @@ def update_series():
         columns=columns
     )
 
-    return series
-
-
-def add_movie_google_sheet(
-    movie,
-    watched_at,
-    rating
-):
-
-    sheet = get_movie_sheet()
-
-    row = [
-        str(movie.get("tvdb_id", "")),
-        str(movie.get("imdb_id", "")),
-        str(movie.get("title", "")),
-        str(movie.get("year", "")),
-        str(movie.get("director", "")),
-        str(watched_at),
-        float(rating),
-        "movie",
-        "watched",
-        str(movie.get("style", "")),
-        str(movie.get("country", "")),
-        str(movie.get("overview", "")),
-        str(movie.get("poster_path", "")),
-        float(movie.get("tmdb_rating", 0))
-        if movie.get("tmdb_rating")
-        else ""
-    ]
-
-    if len(row) != 14:
-        raise ValueError(
-            f"Erreur : {len(row)} colonnes envoyées au lieu de 14"
-        )
-
-    sheet.append_row(
-        row,
-        value_input_option="USER_ENTERED"
+    animes = animes.reindex(
+        columns=columns
     )
 
-
-def save_series_google_sheet(series):
-
-    credentials = Credentials.from_service_account_info(
-        st.secrets["gcp_service_account"],
-        scopes=[
-            "https://www.googleapis.com/auth/spreadsheets"
-        ]
-    )
-
-    client = gspread.authorize(
-        credentials
-    )
-
-    spreadsheet = client.open_by_key(
-        SHEET_ID
-    )
-
-    try:
-        sheet = spreadsheet.worksheet("series")
-
-    except gspread.exceptions.WorksheetNotFound:
-
-        sheet = spreadsheet.add_worksheet(
-            title="series",
-            rows="1000",
-            cols="20"
-        )
-
-
-    def convert_value(value):
-
-        if pd.isna(value):
-            return ""
-
-        if isinstance(value, pd.Timestamp):
-            return value.strftime("%Y-%m-%d")
-
-        if hasattr(value, "item"):
-            return value.item()
-
-        return value
-
-
-    values = [
-        series.columns.tolist()
-    ] + [
+    series = pd.concat(
         [
-            convert_value(v)
-            for v in row
-        ]
-        for row in series.itertuples(
-            index=False,
-            name=None
-        )
-    ]
-
-
-    sheet.clear()
-
-    sheet.update(
-        values
+            series,
+            animes
+        ],
+        ignore_index=True
     )
+
+    save_google_sheet(
+        series,
+        "series"
+    )
+
+    return series

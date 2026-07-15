@@ -216,3 +216,30 @@ def clean_series(
     )
 
     return series
+
+
+def clean_animes(animes):
+
+    animes = animes.copy()
+
+    animes["type"] = "anime"
+
+    animes["status"] = (
+        animes["status"]
+        .replace(
+            {
+                "Completed": "watched",
+                "Watching": "continuing",
+                "Plan to Watch": "to_watch",
+                "On-Hold": "paused",
+                "Dropped": "stopped"
+            }
+        )
+    )
+
+    animes["year"] = pd.NA
+    animes["first_seen"] = pd.NaT
+    animes["last_watch"] = pd.NaT
+    animes["last_episode"] = pd.NA
+
+    return animes
