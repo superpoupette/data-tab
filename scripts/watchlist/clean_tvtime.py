@@ -167,18 +167,30 @@ def clean_series(
         }
     )
 
+    
+    # Premier épisode regardé
+    first_episode = (
+        series_episodes[
+            series_episodes["watched_at"].notna()
+        ]
+        .groupby("series_uuid")["watched_at"]
+        .min()
+        .reset_index()
+        .rename(
+            columns={
+                "watched_at": "first_seen"
+            }
+        )
+    )
+
+
     series = series.merge(
-        last_episode[
-            [
-                "series_uuid",
-                "last_watch",
-                "last_episode"
-            ]
-        ],
+        first_episode,
         left_on="uuid",
         right_on="series_uuid",
         how="left"
     )
+
 
     series.drop(
         columns=["series_uuid"],
