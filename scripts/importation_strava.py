@@ -5,20 +5,19 @@ def reparer_texte(x):
     if isinstance(x, str):
         try:
             return x.encode("latin1").decode("utf-8")
-        except:
+        except (UnicodeEncodeError, UnicodeDecodeError):
             return x
     return x
 
-
-df = df.applymap(reparer_texte)
 
 def charger_donnees_strava():
 
     df = pd.read_csv(
         "data/strava_activities.csv",
-        encoding="utf-8-sig"
+        encoding="latin1"
     )
 
+    # Réparation du texte corrompu
     df = df.applymap(reparer_texte)
 
     return df
