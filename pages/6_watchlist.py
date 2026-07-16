@@ -14,13 +14,24 @@ from scripts.watchlist.load_watchlist import (
 movies = load_movies_google_sheet()
 series_all = load_series_google_sheet()
 
+
+# Nettoyage type
+series_all["type"] = (
+    series_all["type"]
+    .astype(str)
+    .str.strip()
+    .str.lower()
+)
+
+
 series = series_all[
     series_all["type"] == "series"
-]
+].copy()
+
 
 animes = series_all[
     series_all["type"] == "anime"
-]
+].copy()
 
 st.title("🍿 Ma watchlist")
 
@@ -339,16 +350,13 @@ for col, (_, movie) in zip(
             unsafe_allow_html=True
         )
 
-from scripts.watchlist.update_watchlist import update_series
-
-series = update_series()
 
 st.header("📺 Séries")
+
 st.dataframe(
     series,
     use_container_width=True
 )
-
 
 # =====================
 # Cartes Anime / Séries
