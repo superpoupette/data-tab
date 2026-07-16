@@ -86,11 +86,6 @@ def update_series():
     animes = load_myanimelist(
         "data/animelist.xml"
     )
-    st.write(animes.columns.tolist())
-
-    st.dataframe(
-        animes.head()
-    )
 
     animes = clean_animes(
         animes

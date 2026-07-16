@@ -44,8 +44,6 @@ def load_myanimelist(filepath):
                     anime.findtext("my_score") or 0
                 ),
                 "status": anime.findtext("my_status"),
-                "first_seen": anime.findtext("my_start_date"),
-                "last_watch": anime.findtext("my_finish_date"),
             }
         )
 
