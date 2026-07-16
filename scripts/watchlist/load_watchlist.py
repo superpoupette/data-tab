@@ -45,3 +45,40 @@ def load_movies_google_sheet():
 
 
     return movies
+
+
+def load_series_google_sheet():
+
+    credentials = Credentials.from_service_account_info(
+        st.secrets["gcp_service_account"],
+        scopes=[
+            "https://www.googleapis.com/auth/spreadsheets"
+        ]
+    )
+
+    client = gspread.authorize(credentials)
+
+    sheet = (
+        client.open_by_key(SHEET_ID)
+        .worksheet("series")
+    )
+
+    data = sheet.get_all_records()
+
+    series = pd.DataFrame(data)
+
+    for col in ["first_seen", "last_watch"]:
+        if col in series.columns:
+            series[col] = pd.to_datetime(
+                series[col],
+                errors="coerce"
+            )
+
+    for col in ["episodes", "progress", "score"]:
+        if col in series.columns:
+            series[col] = pd.to_numeric(
+                series[col],
+                errors="coerce"
+            )
+
+    return series
