@@ -86,6 +86,8 @@ def update_series():
     animes = load_myanimelist(
         "data/animelist.xml"
     )
+    print(animes.columns)
+    print(animes.head())
 
     animes = clean_animes(
         animes
