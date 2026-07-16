@@ -14,6 +14,7 @@ from scripts.watchlist.load_watchlist import (
 
 movies = load_movies_google_sheet()
 series_all = load_series_google_sheet()
+st.write(series_all.groupby("type").size())
 
 series = series_all[
     series_all["type"] == "series"
