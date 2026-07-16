@@ -626,3 +626,102 @@ with col_animes:
             "Épisodes vus",
             int(total_episodes_watched)
         )
+
+
+
+# =====================
+# DERNIÈRES SÉRIES VUES
+# =====================
+
+st.subheader("Mes 6 dernières séries vues")
+
+
+last_6_series = (
+    series[
+        series["last_watch"].notna()
+    ]
+    .sort_values(
+        "last_watch",
+        ascending=False
+    )
+    .head(6)
+)
+
+
+cols = st.columns(6)
+
+
+for col, (_, serie) in zip(
+    cols,
+    last_6_series.iterrows()
+):
+
+    with col:
+
+        # Titre
+        st.markdown(
+            f"""
+            <div style="
+                text-align:center;
+                font-size:14px;
+                font-weight:600;
+                height:45px;
+            ">
+                {serie["title"]}
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+        # Affiche
+        if pd.notna(serie.get("poster_path")) and serie["poster_path"] != "":
+
+            poster_url = (
+                "https://image.tmdb.org/t/p/w500"
+                + serie["poster_path"]
+            )
+
+            st.image(
+                poster_url,
+                use_container_width=True
+            )
+
+        else:
+
+            st.write("Pas d'affiche")
+
+        # Dernier épisode vu
+        last_episode = (
+            serie["last_episode"]
+            if pd.notna(serie["last_episode"])
+            else "-"
+        )
+
+        st.markdown(
+            f"""
+            <div style="
+                text-align:center;
+                font-size:13px;
+                color:gray;
+            ">
+                {last_episode}
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
+
+        # Date
+        date_vue = serie["last_watch"].strftime("%d/%m/%Y")
+
+        st.markdown(
+            f"""
+            <div style="
+                text-align:center;
+                font-size:13px;
+                color:gray;
+            ">
+                Vu le {date_vue}
+            </div>
+            """,
+            unsafe_allow_html=True
+        )
