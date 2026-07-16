@@ -352,6 +352,9 @@ for col, (_, movie) in zip(
 
 st.write("")
 st.write("")
+st.write("")
+st.write("")
+st.write("")
 
 # =====================
 # Cartes Anime / Séries
