@@ -1,6 +1,6 @@
 import streamlit as st
 
-from utils.importation_strava import charger_donnees_strava
+from scripts.importation_strava import charger_donnees_strava
 
 
 st.set_page_config(
