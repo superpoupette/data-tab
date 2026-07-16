@@ -124,6 +124,7 @@ def update_series():
         "type",
         "episodes",
         "progress",
+        "rating",
         "first_seen",
         "last_episode",
         "last_watch",
