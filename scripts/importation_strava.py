@@ -1,23 +1,25 @@
 import pandas as pd
 
 
-def reparer_texte(x):
-    if isinstance(x, str):
+def reparer_texte(texte):
+    if isinstance(texte, str):
         try:
-            return x.encode("latin1").decode("utf-8")
-        except (UnicodeEncodeError, UnicodeDecodeError):
-            return x
-    return x
+            return texte.encode("latin1").decode("utf-8")
+        except Exception:
+            return texte
+    return texte
 
 
 def charger_donnees_strava():
 
     df = pd.read_csv(
         "data/strava_activities.csv",
-        encoding="latin1"
+        encoding="latin1",
+        low_memory=False
     )
 
-    # Réparation du texte corrompu
-    df = df.applymap(reparer_texte)
+    # Correction de tous les champs texte
+    for colonne in df.select_dtypes(include="object").columns:
+        df[colonne] = df[colonne].apply(reparer_texte)
 
     return df
