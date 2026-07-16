@@ -73,6 +73,10 @@ def update_movies():
 
 def update_series():
 
+    # ======================
+    # TV Time
+    # ======================
+
     series = load_tvtime_series(
         "data/tvtime-series-2026-07-07.csv"
     )
@@ -86,6 +90,15 @@ def update_series():
         episodes
     )
 
+    # Enrichissement TMDB
+    series = add_tmdb_series_info(
+        series
+    )
+
+    # ======================
+    # MyAnimeList
+    # ======================
+
     animes = load_myanimelist(
         "data/animelist.xml"
     )
@@ -93,6 +106,15 @@ def update_series():
     animes = clean_animes(
         animes
     )
+
+    # Enrichissement TMDB
+    animes = add_tmdb_series_info(
+        animes
+    )
+
+    # ======================
+    # Colonnes finales
+    # ======================
 
     columns = [
         "tvdb_id",
@@ -104,7 +126,12 @@ def update_series():
         "progress",
         "first_seen",
         "last_episode",
-        "last_watch"
+        "last_watch",
+        "style",
+        "country",
+        "overview",
+        "poster_path",
+        "tmdb_rating"
     ]
 
     series = series.reindex(
@@ -114,6 +141,10 @@ def update_series():
     animes = animes.reindex(
         columns=columns
     )
+
+    # ======================
+    # Fusion
+    # ======================
 
     series = pd.concat(
         [
