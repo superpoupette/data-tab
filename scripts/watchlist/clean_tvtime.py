@@ -215,6 +215,8 @@ def clean_series(
         inplace=True
     )
 
+    series["rating"] = pd.NA
+
     return series
 
 
@@ -241,5 +243,9 @@ def clean_animes(animes):
     animes["first_seen"] = pd.NaT
     animes["last_watch"] = pd.NaT
     animes["last_episode"] = pd.NA
+    animes["rating"] = (
+    animes["rating"]
+    .replace(0, pd.NA)
+    )
 
     return animes

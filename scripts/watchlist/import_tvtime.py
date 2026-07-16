@@ -40,7 +40,7 @@ def load_myanimelist(filepath):
                 "progress": int(
                     anime.findtext("my_watched_episodes") or 0
                 ),
-                "score": int(
+                "rating": int(
                     anime.findtext("my_score") or 0
                 ),
                 "status": anime.findtext("my_status"),
