@@ -235,6 +235,7 @@ def clean_animes(animes):
                 "Dropped": "stopped"
             }
         )
+    )
 
     animes["year"] = pd.NA
     animes["first_seen"] = pd.NaT
