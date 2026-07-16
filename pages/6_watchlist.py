@@ -7,7 +7,6 @@ from scripts.watchlist.load_watchlist import (
     load_series_google_sheet
 )
 
-
 # =====================
 # Chargement données
 # =====================
@@ -24,9 +23,7 @@ animes = series_all[
     series_all["type"] == "anime"
 ]
 
-
 st.title("🍿 Ma watchlist")
-
 
 # =====================
 # FILMS
