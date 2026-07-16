@@ -10,10 +10,13 @@ st.set_page_config(
     layout="wide"
 )
 
-st.write(df.columns[:5])
-st.write(df["Nom de l'activité"].head())
+
 
 st.title("🏃 Dashboard Course")
+
+
+st.write(df.columns[:5])
+st.write(df["Nom de l'activité"].head())
 
 df = charger_donnees_strava()
 
