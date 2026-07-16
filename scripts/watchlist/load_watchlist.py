@@ -18,7 +18,11 @@ def load_movies_google_sheet():
 
     client = gspread.authorize(credentials)
 
-    sheet = client.open_by_key(SHEET_ID).sheet1
+    sheet = (
+        client
+        .open_by_key(SHEET_ID)
+        .worksheet("movies")
+    )
 
     data = sheet.get_all_records()
 
