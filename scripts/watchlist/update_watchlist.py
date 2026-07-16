@@ -12,7 +12,10 @@ from scripts.watchlist.clean_tvtime import (
     add_movie_rating
 )
 
-from scripts.watchlist.tmdb import add_tmdb_info
+from scripts.watchlist.tmdb import (
+    add_tmdb_info,
+    add_tmdb_series_info
+)
 
 from scripts.watchlist.google_sheet import (
     save_google_sheet

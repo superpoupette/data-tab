@@ -91,6 +91,116 @@ def get_movie_info(imdb_id):
         "tmdb_rating": details.get("vote_average")
     }
 
+def search_tmdb_series(query):
+
+    url = "https://api.themoviedb.org/3/search/tv"
+
+    params = {
+        "api_key": TMDB_API_KEY,
+        "query": query,
+        "language": "fr-FR"
+    }
+
+    response = requests.get(
+        url,
+        params=params
+    )
+
+    if response.status_code != 200:
+        return None
+
+    results = response.json().get(
+        "results",
+        []
+    )
+
+    if not results:
+        return None
+
+    tv = results[0]
+
+    return get_series_details_tmdb(
+        tv["id"]
+    )
+
+
+
+def get_series_details_tmdb(series_id):
+
+    url = (
+        f"https://api.themoviedb.org/3/tv/{series_id}"
+    )
+
+
+    response = requests.get(
+        url,
+        params={
+            "api_key": TMDB_API_KEY,
+            "language": "fr-FR"
+        }
+    )
+
+
+    if response.status_code != 200:
+        return None
+
+
+    details = response.json()
+
+
+    genres = [
+        GENRES_FR.get(
+            g["name"],
+            g["name"]
+        )
+        for g in details.get(
+            "genres",
+            []
+        )
+    ]
+
+
+    countries = [
+        c
+        for c in details.get(
+            "origin_country",
+            []
+        )
+    ]
+
+
+    poster = ""
+
+    if details.get("poster_path"):
+
+        poster = (
+            "https://image.tmdb.org/t/p/w500"
+            + details["poster_path"]
+        )
+
+
+    return {
+
+        "style": ", ".join(
+            genres
+        ),
+
+        "country": ", ".join(
+            countries
+        ),
+
+        "overview": details.get(
+            "overview",
+            ""
+        ),
+
+        "poster_path": poster,
+
+        "tmdb_rating": details.get(
+            "vote_average",
+            ""
+        )
+    }
 
 def add_tmdb_info(movies):
 
@@ -277,3 +387,41 @@ def get_movie_details_tmdb(movie_id):
             ""
         )
     }
+
+
+
+def add_tmdb_series_info(series):
+
+    series = series.copy()
+
+    series["style"] = ""
+    series["country"] = ""
+    series["overview"] = ""
+    series["poster_path"] = ""
+    series["tmdb_rating"] = None
+
+
+    for index, row in series.iterrows():
+
+        result = search_tmdb_series(
+            row["title"]
+        )
+
+
+        if result:
+
+            for col in [
+                "style",
+                "country",
+                "overview",
+                "poster_path",
+                "tmdb_rating"
+            ]:
+
+                series.loc[index, col] = result.get(
+                    col,
+                    ""
+                )
+
+
+    return series
