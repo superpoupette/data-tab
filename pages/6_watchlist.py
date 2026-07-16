@@ -14,6 +14,9 @@ from scripts.watchlist.load_watchlist import (
 movies = load_movies_google_sheet()
 series_all = load_series_google_sheet()
 st.write(series_all.groupby("type").size())
+st.write("Nombre séries filtrées :", len(series))
+st.write("Total épisodes :", series["progress"].sum())
+st.write(series[["title", "type", "progress"]].head())
 
 series = series_all[
     series_all["type"] == "series"
