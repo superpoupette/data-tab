@@ -351,13 +351,6 @@ for col, (_, movie) in zip(
         )
 
 
-st.header("📺 Séries")
-
-st.dataframe(
-    series,
-    use_container_width=True
-)
-
 # =====================
 # Cartes Anime / Séries
 # =====================
