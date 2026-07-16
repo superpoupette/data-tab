@@ -17,6 +17,7 @@ def charger_donnees_strava():
         encoding="latin1",
         low_memory=False
     )
+    print(df.columns[0])
 
     # Correction de tous les champs texte
     for colonne in df.select_dtypes(include="object").columns:
