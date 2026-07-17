@@ -100,22 +100,23 @@ def save_google_sheet(
 
 
 
-def load_google_sheet(
-    sheet_name
-):
+def load_google_sheet(sheet_name):
 
-    sheet = get_worksheet(
-        sheet_name
-    )
+    sheet = get_worksheet(sheet_name)
 
+    values = sheet.get_all_values()
 
-    data = sheet.get_all_records()
+    if len(values) < 2:
+        return pd.DataFrame()
 
+    headers = values[0]
+
+    rows = values[1:]
 
     df = pd.DataFrame(
-        data
+        rows,
+        columns=headers
     )
-
 
     return df
 
