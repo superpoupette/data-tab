@@ -495,12 +495,8 @@ def get_series_details_tmdb(series_id):
     poster = ""
 
     if details.get("poster_path"):
-
-        poster = (
-            "https://image.tmdb.org/t/p/w500"
-            + details["poster_path"]
-        )
-    
+        poster = details["poster_path"]
+        
     external_ids = requests.get(
         f"https://api.themoviedb.org/3/tv/{series_id}/external_ids",
         params={
@@ -549,6 +545,14 @@ def get_series_details_tmdb(series_id):
     "style": ", ".join(genres),
 
     "country": ", ".join(countries),
+
+    response = requests.get(
+        f"https://api.themoviedb.org/3/tv/{series_id}",
+        params={
+            "api_key": TMDB_API_KEY,
+            "language": "fr-FR"
+        }
+    )
 
     "overview": details.get(
         "overview",
