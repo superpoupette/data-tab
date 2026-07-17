@@ -500,54 +500,65 @@ def get_series_details_tmdb(series_id):
             "https://image.tmdb.org/t/p/w500"
             + details["poster_path"]
         )
+    
+    external_ids = requests.get(
+        f"https://api.themoviedb.org/3/tv/{series_id}/external_ids",
+        params={
+            "api_key": TMDB_API_KEY
+        }
+    ).json()
+
+    tvdb_id = external_ids.get(
+        "tvdb_id",
+        ""
+    )
 
     return {
 
-        "tvdb_id": "",
+    "tvdb_id": tvdb_id,
 
-        "title": details.get(
-            "name",
+    "title": details.get(
+        "name",
+        ""
+    ),
+
+    "year": (
+        details.get(
+            "first_air_date",
             ""
-        ),
+        )[:4]
+    ),
 
-        "year": (
-            details.get(
-                "first_air_date",
-                ""
-            )[:4]
-        ),
+    "status": "continuing",
 
-        "status": "continuing",
+    "type": "series",
 
-        "type": "series",
+    "episodes": details.get(
+        "number_of_episodes",
+        0
+    ),
 
-        "episodes": details.get(
-            "number_of_episodes",
-            0
-        ),
+    "progress": 0,
 
-        "progress": 1,
+    "first_seen": "",
 
-        "rating": None,
+    "last_episode": "",
 
-        "first_seen": pd.Timestamp.today(),
+    "last_watch": "",
 
-        "last_episode": "S01E01",
+    "style": ", ".join(genres),
 
-        "last_watch": pd.Timestamp.today(),
+    "country": ", ".join(countries),
 
-        "style": ", ".join(genres),
+    "overview": details.get(
+        "overview",
+        ""
+    ),
 
-        "country": ", ".join(countries),
+    "poster_path": poster,
 
-        "overview": details.get(
-            "overview",
-            ""
-        ),
-
-        "poster_path": poster,
-
-        "tmdb_rating": details.get(
-            "vote_average"
-        )
-    }
+    "tmdb_rating": details.get(
+        "vote_average",
+        ""
+    )
+}

@@ -172,23 +172,39 @@ def add_series_google_sheet(series):
     row = [
 
         series.get("tvdb_id", ""),
+
         series.get("title", ""),
+
         series.get("year", ""),
+
         series.get("status", ""),
+
         series.get("type", ""),
+
         series.get("episodes", ""),
+
         series.get("progress", ""),
+
         series.get("rating", ""),
-        series.get("first_seen", "").strftime("%Y-%m-%d"),
+
+        series.get("first_seen", ""),
+
         series.get("last_episode", ""),
-        series.get("last_watch", "").strftime("%Y-%m-%d"),
+
+        series.get("last_watch", ""),
+
         series.get("style", ""),
+
         series.get("country", ""),
+
         series.get("overview", ""),
+
         series.get("poster_path", ""),
+
         series.get("tmdb_rating", "")
 
     ]
+
 
     sheet.append_row(
         row,

@@ -207,25 +207,6 @@ if "series_results" in st.session_state:
 
         st.divider()
 
-        rating = st.select_slider(
-            "Ma note",
-            options=[
-                0,
-                0.5,
-                1,
-                1.5,
-                2,
-                2.5,
-                3,
-                3.5,
-                4,
-                4.5,
-                5
-            ],
-            value=3,
-            key="series_rating"
-        )
-
         if st.button(
             "📺 Ajouter la série",
             key="add_series",
