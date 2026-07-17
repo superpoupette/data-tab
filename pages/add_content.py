@@ -408,11 +408,11 @@ else:
             series_df["rating"],
             errors="coerce"
         )
-
+        
         series_df.loc[
             serie_index,
             "rating"
-        ] = nouvelle_note
+        ] = rating
 
 
         
