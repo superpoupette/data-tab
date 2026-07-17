@@ -109,14 +109,22 @@ def load_google_sheet(sheet_name):
     if len(values) < 2:
         return pd.DataFrame()
 
-    headers = values[0]
-
-    rows = values[1:]
-
     df = pd.DataFrame(
-        rows,
-        columns=headers
+        values[1:],
+        columns=values[0]
     )
+
+    for col in [
+        "episodes",
+        "progress",
+        "rating",
+        "tmdb_rating"
+    ]:
+        if col in df.columns:
+            df[col] = pd.to_numeric(
+                df[col],
+                errors="coerce"
+            )
 
     return df
 

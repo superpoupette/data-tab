@@ -404,11 +404,15 @@ else:
             "status"
         ] = statut
 
+        series_df["rating"] = pd.to_numeric(
+            series_df["rating"],
+            errors="coerce"
+        )
 
         series_df.loc[
             serie_index,
             "rating"
-        ] = rating
+        ] = nouvelle_note
 
 
         
