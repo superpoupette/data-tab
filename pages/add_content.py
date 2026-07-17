@@ -2,7 +2,7 @@
 
 from scripts.watchlist.google_sheet import (
     add_movie_google_sheet,
-    add_series_google_sheet
+    add_series_google_sheet,
     update_series_google_sheet
 )
 
