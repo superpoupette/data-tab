@@ -338,12 +338,13 @@ else:
     )
 
 
-    ancienne_note = (
-        serie["rating"]
-        if "rating" in serie
-        and pd.notna(serie["rating"])
-        else 0
+    ancienne_note = pd.to_numeric(
+        serie.get("rating"),
+        errors="coerce"
     )
+
+    if pd.isna(ancienne_note):
+        ancienne_note = 0
 
 
     rating = st.select_slider(
