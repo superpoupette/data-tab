@@ -217,8 +217,6 @@ if "series_results" in st.session_state:
                 selected["id"]
             )
 
-            serie["rating"] = rating
-
             add_series_google_sheet(
                 serie
             )
