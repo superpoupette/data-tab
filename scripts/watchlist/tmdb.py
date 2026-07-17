@@ -476,6 +476,7 @@ def get_series_details_tmdb(series_id):
 
     details = response.json()
 
+
     genres = [
         GENRES_FR.get(
             g["name"],
@@ -487,16 +488,24 @@ def get_series_details_tmdb(series_id):
         )
     ]
 
+
     countries = details.get(
         "origin_country",
         []
     )
 
+
     poster = ""
 
     if details.get("poster_path"):
-        poster = details["poster_path"]
-        
+
+        poster = (
+            "https://image.tmdb.org/t/p/w500"
+            + details["poster_path"]
+        )
+
+
+    # récupération TVDB ID
     external_ids = requests.get(
         f"https://api.themoviedb.org/3/tv/{series_id}/external_ids",
         params={
@@ -504,65 +513,60 @@ def get_series_details_tmdb(series_id):
         }
     ).json()
 
+
     tvdb_id = external_ids.get(
         "tvdb_id",
         ""
     )
 
+
     return {
 
-    "tvdb_id": tvdb_id,
+        "tvdb_id": tvdb_id,
 
-    "title": details.get(
-        "name",
-        ""
-    ),
-
-    "year": (
-        details.get(
-            "first_air_date",
+        "title": details.get(
+            "name",
             ""
-        )[:4]
-    ),
+        ),
 
-    "status": "continuing",
+        "year": (
+            details.get(
+                "first_air_date",
+                ""
+            )[:4]
+        ),
 
-    "type": "series",
+        "status": "continuing",
 
-    "episodes": details.get(
-        "number_of_episodes",
-        0
-    ),
+        "type": "series",
 
-    "progress": 0,
+        "episodes": "",
 
-    "first_seen": "",
+        "progress": 0,
 
-    "last_episode": "",
+        "first_seen": "",
 
-    "last_watch": "",
+        "last_episode": "",
 
-    "style": ", ".join(genres),
+        "last_watch": "",
 
-    "country": ", ".join(countries),
+        "style": ", ".join(
+            genres
+        ),
 
-    response = requests.get(
-        f"https://api.themoviedb.org/3/tv/{series_id}",
-        params={
-            "api_key": TMDB_API_KEY,
-            "language": "fr-FR"
-        }
-    )
+        "country": ", ".join(
+            countries
+        ),
 
-    "overview": details.get(
-        "overview",
-        ""
-    ),
+        "overview": details.get(
+            "overview",
+            ""
+        ),
 
-    "poster_path": poster,
+        "poster_path": poster,
 
-    "tmdb_rating": details.get(
-        "vote_average",
-        ""
-    )
-}
+        "tmdb_rating": details.get(
+            "vote_average",
+            ""
+        )
+    }
