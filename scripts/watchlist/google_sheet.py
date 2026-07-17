@@ -210,3 +210,31 @@ def add_series_google_sheet(series):
         row,
         value_input_option="USER_ENTERED"
     )
+
+
+
+def update_series_google_sheet(series_df):
+
+    sheet = get_worksheet(
+        "series"
+    )
+
+    values = [
+        series_df.columns.tolist()
+    ] + [
+        [
+            convert_value(v)
+            for v in row
+        ]
+        for row in series_df.itertuples(
+            index=False,
+            name=None
+        )
+    ]
+
+    sheet.clear()
+
+    sheet.update(
+        range_name="A1",
+        values=values
+    )

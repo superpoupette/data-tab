@@ -3,6 +3,7 @@
 from scripts.watchlist.google_sheet import (
     add_movie_google_sheet,
     add_series_google_sheet
+    update_series_google_sheet
 )
 
 from scripts.watchlist.tmdb import (
@@ -11,6 +12,7 @@ from scripts.watchlist.tmdb import (
     search_series_tmdb,
     get_series_details_tmdb
 )
+
 
 
 
@@ -224,3 +226,186 @@ if "series_results" in st.session_state:
             st.success(
                 "Série ajoutée !"
             )
+
+
+
+# =====================================================
+# Ajouter un épisode vu sur une série existante
+# =====================================================
+
+st.divider()
+
+st.title("📺 Mise à jour d'une série")
+
+
+series_df = load_google_sheet(
+    "series"
+)
+
+
+# uniquement séries TV en cours
+
+series_continuing = series_df[
+    (series_df["type"] == "series")
+    &
+    (series_df["status"] == "continuing")
+].copy()
+
+
+
+if len(series_continuing) == 0:
+
+    st.info(
+        "Aucune série en cours."
+    )
+
+
+else:
+
+
+    choix = st.selectbox(
+        "Choisir une série",
+        series_continuing["title"].tolist(),
+        key="update_series_select"
+    )
+
+
+    serie_index = series_continuing[
+        series_continuing["title"] == choix
+    ].index[0]
+
+
+    serie = series_df.loc[
+        serie_index
+    ]
+
+
+    st.write(
+        f"Épisodes vus actuellement : {serie['progress']}"
+    )
+
+
+    col1, col2 = st.columns(2)
+
+
+    with col1:
+
+        episode = st.number_input(
+            "Dernier épisode vu",
+            min_value=0,
+            value=int(
+                serie["progress"]
+                if pd.notna(serie["progress"])
+                else 0
+            ),
+            step=1
+        )
+
+
+    with col2:
+
+        date_watch = st.date_input(
+            "Date du visionnage",
+            key="episode_date"
+        )
+
+
+    statut = st.selectbox(
+        "Statut",
+        [
+            "continuing",
+            "up_to_date",
+            "stopped",
+            "watch_later"
+        ],
+        index=[
+            "continuing",
+            "up_to_date",
+            "stopped",
+            "watch_later"
+        ].index(
+            serie["status"]
+        )
+        if serie["status"] in [
+            "continuing",
+            "up_to_date",
+            "stopped",
+            "watch_later"
+        ]
+        else 0
+    )
+
+
+    ancienne_note = (
+        serie["rating"]
+        if "rating" in serie
+        and pd.notna(serie["rating"])
+        else 0
+    )
+
+
+    rating = st.select_slider(
+        "Ma note",
+        options=[
+            0,
+            0.5,
+            1,
+            1.5,
+            2,
+            2.5,
+            3,
+            3.5,
+            4,
+            4.5,
+            5
+        ],
+        value=float(
+            ancienne_note
+        )
+    )
+
+
+
+    if st.button(
+        "💾 Mettre à jour la série",
+        use_container_width=True
+    ):
+
+
+        series_df.loc[
+            serie_index,
+            "progress"
+        ] = episode
+
+
+        series_df.loc[
+            serie_index,
+            "last_watch"
+        ] = date_watch.strftime(
+            "%Y-%m-%d"
+        )
+
+
+        series_df.loc[
+            serie_index,
+            "status"
+        ] = statut
+
+
+        series_df.loc[
+            serie_index,
+            "rating"
+        ] = rating
+
+
+
+        update_series_google_sheet(
+            series_df
+        )
+
+
+        st.success(
+            "Série mise à jour !"
+        )
+
+        st.rerun()
