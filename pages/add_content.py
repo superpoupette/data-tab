@@ -245,6 +245,16 @@ series_df = load_google_sheet(
 )
 
 
+series_df["progress"] = pd.to_numeric(
+    series_df["progress"],
+    errors="coerce"
+).fillna(0)
+
+series_df["episodes"] = pd.to_numeric(
+    series_df["episodes"],
+    errors="coerce"
+).fillna(0)
+
 # uniquement séries TV en cours
 
 series_continuing = series_df[
@@ -378,7 +388,7 @@ else:
         series_df.loc[
             serie_index,
             "progress"
-        ] = episode
+        ] = int(episode)
 
 
         series_df.loc[
