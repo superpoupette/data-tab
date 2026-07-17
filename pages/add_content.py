@@ -5,7 +5,8 @@ from scripts.watchlist.google_sheet import (
     add_movie_google_sheet,
     add_series_google_sheet,
     load_google_sheet,
-    update_series_google_sheet
+    update_series_google_sheet,
+    save_google_sheet
 )
 
 from scripts.watchlist.tmdb import (
@@ -408,7 +409,7 @@ else:
             series_df["rating"],
             errors="coerce"
         )
-        
+
         series_df.loc[
             serie_index,
             "rating"
@@ -426,3 +427,151 @@ else:
         )
 
         st.rerun()
+
+
+# =====================================================
+# MODIFIER UNE SERIE
+# =====================================================
+
+st.divider()
+
+st.header("✏️ Modifier une série")
+
+
+series_df = load_google_sheet(
+    "series"
+)
+
+
+if not series_df.empty:
+
+
+    # Sélection uniquement séries/animes existants
+    serie_choices = (
+        series_df["title"]
+        .dropna()
+        .tolist()
+    )
+
+
+    selected_title = st.selectbox(
+        "Choisir une série",
+        serie_choices,
+        key="edit_series_select"
+    )
+
+
+    serie_index = series_df[
+        series_df["title"] == selected_title
+    ].index[0]
+
+
+    serie = series_df.loc[
+        serie_index
+    ]
+
+
+    st.write(
+        f"Modification de : **{serie['title']}**"
+    )
+
+
+    col1, col2 = st.columns(2)
+
+
+    with col1:
+
+        current_status = serie.get(
+            "status",
+            ""
+        )
+
+        statuses = [
+            "continuing",
+            "up_to_date",
+            "to_watch",
+            "stopped"
+        ]
+
+
+        new_status = st.selectbox(
+            "Statut",
+            statuses,
+            index=(
+                statuses.index(current_status)
+                if current_status in statuses
+                else 0
+            ),
+            key="edit_status"
+        )
+
+
+    with col2:
+
+        current_rating = serie.get(
+            "rating",
+            0
+        )
+
+
+        if pd.isna(current_rating):
+            current_rating = 0
+
+
+        new_rating = st.select_slider(
+            "Note",
+            options=[
+                0,
+                0.5,
+                1,
+                1.5,
+                2,
+                2.5,
+                3,
+                3.5,
+                4,
+                4.5,
+                5
+            ],
+            value=float(current_rating),
+            key="edit_rating"
+        )
+
+
+    if st.button(
+        "💾 Enregistrer les modifications",
+        use_container_width=True,
+        key="save_series_edit"
+    ):
+
+
+        series_df.loc[
+            serie_index,
+            "status"
+        ] = new_status
+
+
+        series_df.loc[
+            serie_index,
+            "rating"
+        ] = new_rating
+
+
+        # sauvegarde
+        save_google_sheet(
+            series_df,
+            "series"
+        )
+
+
+        st.success(
+            "Série modifiée !"
+        )
+
+        st.rerun()
+
+else:
+
+    st.info(
+        "Aucune série disponible."
+    )
