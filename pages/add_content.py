@@ -1,4 +1,5 @@
 ﻿import streamlit as st
+import pandas as pd
 
 from scripts.watchlist.google_sheet import (
     add_movie_google_sheet,
