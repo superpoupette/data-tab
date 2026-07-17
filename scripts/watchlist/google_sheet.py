@@ -1,5 +1,3 @@
-print(">>> google_sheet.py chargé")
-
 import pandas as pd
 import gspread
 import streamlit as st
@@ -164,4 +162,35 @@ def add_movie_google_sheet(
     )
 
 
-print(">>> fin du fichier")
+def add_series_google_sheet(series):
+
+    sheet = (
+        get_google_sheet()
+        .worksheet("series")
+    )
+
+    row = [
+
+        series.get("tvdb_id", ""),
+        series.get("title", ""),
+        series.get("year", ""),
+        series.get("status", ""),
+        series.get("type", ""),
+        series.get("episodes", ""),
+        series.get("progress", ""),
+        series.get("rating", ""),
+        series.get("first_seen", "").strftime("%Y-%m-%d"),
+        series.get("last_episode", ""),
+        series.get("last_watch", "").strftime("%Y-%m-%d"),
+        series.get("style", ""),
+        series.get("country", ""),
+        series.get("overview", ""),
+        series.get("poster_path", ""),
+        series.get("tmdb_rating", "")
+
+    ]
+
+    sheet.append_row(
+        row,
+        value_input_option="USER_ENTERED"
+    )

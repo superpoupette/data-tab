@@ -10,9 +10,11 @@ from scripts.watchlist.tmdb import (
 )
 
 
+
 st.set_page_config(
-    page_title="Ajouter un film"
+    page_title="Ajouter à la watchlist"
 )
+
 
 st.title("🎬 Ajouter un film")
 
@@ -124,3 +126,105 @@ if "movie_results" in st.session_state:
         st.warning(
             "Aucun film trouvé."
         )
+
+
+
+
+
+st.title("📺 Ajouter une série")
+
+query = st.text_input(
+    "Rechercher une série",
+    placeholder="Ex : Breaking Bad"
+)
+
+if st.button("🔎 Rechercher"):
+
+    st.session_state["series_results"] = (
+        search_series_tmdb(query)
+    )
+
+if "series_results" in st.session_state:
+
+    results = st.session_state["series_results"]
+
+    if results:
+
+        choix = st.selectbox(
+            "Choisir la série",
+            [
+                f"{s['title']} ({s['year']})"
+                for s in results
+            ]
+        )
+
+        selected = results[
+            [
+                f"{s['title']} ({s['year']})"
+                for s in results
+            ].index(choix)
+        ]
+
+        col1, col2 = st.columns([1,3])
+
+        with col1:
+
+            if selected["poster_path"]:
+
+                st.image(
+                    selected["poster_path"],
+                    use_container_width=True
+                )
+
+        with col2:
+
+            st.subheader(
+                selected["title"]
+            )
+
+            st.caption(
+                selected["year"]
+            )
+
+            st.write(
+                selected["overview"]
+            )
+
+        st.divider()
+
+        rating = st.select_slider(
+            "Ma note",
+            options=[
+                0,
+                0.5,
+                1,
+                1.5,
+                2,
+                2.5,
+                3,
+                3.5,
+                4,
+                4.5,
+                5
+            ],
+            value=3
+        )
+
+        if st.button(
+            "📺 Ajouter la série",
+            use_container_width=True
+        ):
+
+            serie = get_series_details_tmdb(
+                selected["id"]
+            )
+
+            serie["rating"] = rating
+
+            add_series_google_sheet(
+                serie
+            )
+
+            st.success(
+                "Série ajoutée !"
+            )

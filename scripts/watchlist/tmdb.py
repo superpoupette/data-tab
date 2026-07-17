@@ -425,3 +425,129 @@ def add_tmdb_series_info(series):
 
 
     return series
+
+def search_series_tmdb(query):
+
+    url = "https://api.themoviedb.org/3/search/tv"
+
+    response = requests.get(
+        url,
+        params={
+            "api_key": TMDB_API_KEY,
+            "query": query,
+            "language": "fr-FR"
+        }
+    )
+
+    results = response.json().get("results", [])
+
+    series = []
+
+    for tv in results[:10]:
+
+        series.append(
+            {
+                "id": tv["id"],
+                "title": tv.get("name", ""),
+                "year": (
+                    tv.get("first_air_date", "")[:4]
+                ),
+                "overview": tv.get("overview", ""),
+                "poster_path": (
+                    "https://image.tmdb.org/t/p/w200"
+                    + tv["poster_path"]
+                )
+                if tv.get("poster_path")
+                else ""
+            }
+        )
+
+    return series
+
+def get_series_details_tmdb(series_id):
+
+    response = requests.get(
+        f"https://api.themoviedb.org/3/tv/{series_id}",
+        params={
+            "api_key": TMDB_API_KEY,
+            "language": "fr-FR"
+        }
+    )
+
+    details = response.json()
+
+    genres = [
+        GENRES_FR.get(
+            g["name"],
+            g["name"]
+        )
+        for g in details.get(
+            "genres",
+            []
+        )
+    ]
+
+    countries = details.get(
+        "origin_country",
+        []
+    )
+
+    poster = ""
+
+    if details.get("poster_path"):
+
+        poster = (
+            "https://image.tmdb.org/t/p/w500"
+            + details["poster_path"]
+        )
+
+    return {
+
+        "tvdb_id": "",
+
+        "title": details.get(
+            "name",
+            ""
+        ),
+
+        "year": (
+            details.get(
+                "first_air_date",
+                ""
+            )[:4]
+        ),
+
+        "status": "continuing",
+
+        "type": "series",
+
+        "episodes": details.get(
+            "number_of_episodes",
+            0
+        ),
+
+        "progress": 1,
+
+        "rating": None,
+
+        "first_seen": pd.Timestamp.today(),
+
+        "last_episode": "S01E01",
+
+        "last_watch": pd.Timestamp.today(),
+
+        "style": ", ".join(genres),
+
+        "country": ", ".join(countries),
+
+        "overview": details.get(
+            "overview",
+            ""
+        ),
+
+        "poster_path": poster,
+
+        "tmdb_rating": details.get(
+            "vote_average"
+        )
+    }
