@@ -1,12 +1,15 @@
 ﻿import streamlit as st
 
 from scripts.watchlist.google_sheet import (
-    add_movie_google_sheet
+    add_movie_google_sheet,
+    add_series_google_sheet
 )
 
 from scripts.watchlist.tmdb import (
     search_movies_tmdb,
-    get_movie_details_tmdb
+    get_movie_details_tmdb,
+    search_series_tmdb,
+    get_series_details_tmdb
 )
 
 
@@ -21,16 +24,18 @@ st.title("🎬 Ajouter un film")
 
 movie_query = st.text_input(
     "Rechercher un film",
-    placeholder="Ex : Interstellar"
+    placeholder="Ex : Interstellar",
+    key="movie_query"
 )
 
-
-if st.button("🔎 Rechercher"):
+if st.button(
+    "🔎 Rechercher",
+    key="search_movie"
+):
 
     st.session_state["movie_results"] = search_movies_tmdb(
         movie_query
     )
-
 
 if "movie_results" in st.session_state:
 
@@ -43,7 +48,8 @@ if "movie_results" in st.session_state:
             [
                 f"{movie['title']} ({movie['year']})"
                 for movie in results
-            ]
+            ],
+            key="movie_select"
         )
 
         selected = results[
@@ -81,8 +87,10 @@ if "movie_results" in st.session_state:
         with col1:
 
             movie_date = st.date_input(
-                "Date de visionnage"
+                "Date de visionnage",
+                key="movie_date"
             )
+            
 
         with col2:
 
@@ -101,11 +109,13 @@ if "movie_results" in st.session_state:
                     4.5,
                     5
                 ],
-                value=3
+                value=3,
+                key="movie_rating"
             )
 
         if st.button(
             "🎬 Ajouter le film",
+            key="add_movie",
             use_container_width=True
         ):
 
@@ -135,10 +145,14 @@ st.title("📺 Ajouter une série")
 
 query = st.text_input(
     "Rechercher une série",
-    placeholder="Ex : Breaking Bad"
+    placeholder="Ex : Breaking Bad",
+    key="series_query"
 )
 
-if st.button("🔎 Rechercher"):
+if st.button(
+    "🔎 Rechercher",
+    key="search_series"
+):
 
     st.session_state["series_results"] = (
         search_series_tmdb(query)
@@ -155,7 +169,8 @@ if "series_results" in st.session_state:
             [
                 f"{s['title']} ({s['year']})"
                 for s in results
-            ]
+            ],
+            key="series_select"
         )
 
         selected = results[
@@ -207,11 +222,13 @@ if "series_results" in st.session_state:
                 4.5,
                 5
             ],
-            value=3
+            value=3,
+            key="series_rating"
         )
 
         if st.button(
             "📺 Ajouter la série",
+            key="add_series",
             use_container_width=True
         ):
 
