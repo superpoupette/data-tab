@@ -118,3 +118,45 @@ def load_google_sheet(
 
 
     return df
+
+def add_movie_google_sheet(
+    movie,
+    watched_at,
+    rating
+):
+
+    credentials = Credentials.from_service_account_info(
+        st.secrets["gcp_service_account"],
+        scopes=[
+            "https://www.googleapis.com/auth/spreadsheets"
+        ]
+    )
+
+    client = gspread.authorize(credentials)
+
+    sheet = (
+        client.open_by_key(SHEET_ID)
+        .worksheet("movies")
+    )
+
+    row = [
+        str(movie.get("tvdb_id", "")),
+        str(movie.get("imdb_id", "")),
+        str(movie.get("title", "")),
+        str(movie.get("year", "")),
+        str(movie.get("director", "")),
+        watched_at,
+        rating,
+        "movie",
+        "watched",
+        str(movie.get("style", "")),
+        str(movie.get("country", "")),
+        str(movie.get("overview", "")),
+        movie.get("poster_path", ""),
+        movie.get("tmdb_rating", "")
+    ]
+
+    sheet.append_row(
+        row,
+        value_input_option="USER_ENTERED"
+    )

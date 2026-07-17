@@ -1,6 +1,6 @@
 ﻿import streamlit as st
 
-from scripts.watchlist.update_watchlist import (
+from scripts.watchlist.google_sheet import (
     add_movie_google_sheet
 )
 
