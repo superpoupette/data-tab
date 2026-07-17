@@ -401,7 +401,7 @@ else:
         ] = rating
 
 
-
+        
         update_series_google_sheet(
             series_df
         )

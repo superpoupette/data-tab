@@ -540,7 +540,10 @@ def get_series_details_tmdb(series_id):
 
         "type": "series",
 
-        "episodes": "",
+        "episodes": details.get(
+            "number_of_episodes",
+            0
+        ),
 
         "progress": 0,
 
