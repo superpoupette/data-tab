@@ -1,3 +1,5 @@
+print(">>> google_sheet.py chargé")
+
 import pandas as pd
 import gspread
 import streamlit as st
@@ -160,3 +162,6 @@ def add_movie_google_sheet(
         row,
         value_input_option="USER_ENTERED"
     )
+
+
+print(">>> fin du fichier")
