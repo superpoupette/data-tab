@@ -59,11 +59,17 @@ def clean_danse_recap(danses_recap):
         "artiste",
         "titre",
         "choregraphe",
+        "date_debut",
+        "date_fin",
+        "duree_apprentissage",
+        "nombre_seance",
+        "duree_seance",
         "style",
         "duree",
         "difficulte",
         "estimation",
-        "note"
+        "note",
+        "statut"
     ]
 
     for col in colonnes_attendues:
