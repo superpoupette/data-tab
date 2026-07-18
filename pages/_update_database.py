@@ -111,63 +111,43 @@ st.divider()
 # =====================================================
 
 st.header("💃 Danse")
-if st.button(
-    "🔄 Mettre à jour la base de danse",
-    key="update_danse"
-):
 
-    st.warning(
-        "⚠️ Attention : cette action va écraser les données actuelles "
-        "de la base danse avec les nouvelles données."
+if st.button("🔄 Mettre à jour la base de danse"):
+
+    with st.spinner("Mise à jour..."):
+
+        data2024 = prepare_2024(
+            "data/2024.csv"
+        )
+
+        data2025 = prepare_2025(
+            "data/2025.csv"
+        )
+
+        danse_2024 = create_danse_data(
+            data2024
+        )
+
+        danse_2025 = create_danse_data(
+            data2025
+        )
+
+        danse_data = pd.concat(
+            [
+                danse_2024,
+                danse_2025
+            ],
+            ignore_index=True
+        )
+
+        danse_recap = create_danse_recap(
+            danse_data
+        )
+
+        save_danse_google_sheet(
+            danse_recap
+        )
+
+    st.success(
+        "Base danse mise à jour."
     )
-
-    confirmation = st.checkbox(
-        "Je confirme vouloir écraser la base danse.",
-        key="confirm_update_danse"
-    )
-
-
-    if confirmation:
-
-        if st.button(
-            "✅ Confirmer la mise à jour",
-            key="confirm_update_danse_button"
-        ):
-
-            with st.spinner("Mise à jour..."):
-
-                data2024 = prepare_2024(
-                    "data/2024.csv"
-                )
-
-                data2025 = prepare_2025(
-                    "data/2025.csv"
-                )
-
-                danse_2024 = create_danse_data(
-                    data2024
-                )
-
-                danse_2025 = create_danse_data(
-                    data2025
-                )
-
-                danse_data = pd.concat(
-                    [
-                        danse_2024,
-                        danse_2025
-                    ],
-                    ignore_index=True
-                )
-
-                danse_recap = create_danse_recap(
-                    danse_data
-                )
-
-                save_danse_google_sheet(
-                    danse_recap
-                )
-
-            st.success(
-                "Base danse mise à jour."
-            )
