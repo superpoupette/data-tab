@@ -137,6 +137,8 @@ def create_danse_recap(danse_data):
         ignore_index=True
     )
 
+print(danse_recap.columns.tolist())
+
     # Suppression des doublons
     danse_recap = danse_recap.drop_duplicates(
         subset=[
