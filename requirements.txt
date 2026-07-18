@@ -5,3 +5,4 @@ plotly
 Babel
 gspread
 google-auth
+openpyxl
