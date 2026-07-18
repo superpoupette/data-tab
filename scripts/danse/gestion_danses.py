@@ -120,7 +120,7 @@ def create_danse_recap(danse_data):
     danse_2024 = clean_danse_recap(danse_2024)
     danse_2025 = clean_danse_recap(danse_2025)
 
-     danse_recap = pd.concat(
+    danse_recap = pd.concat(
         [
             danse_2024,
             danse_2025,
