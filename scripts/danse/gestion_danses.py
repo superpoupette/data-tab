@@ -1,4 +1,6 @@
-﻿import pandas as pd
+﻿# -*- coding: cp1252 -*-
+
+import pandas as pd
 
 from scripts.importation_2026 import load_danses
 
