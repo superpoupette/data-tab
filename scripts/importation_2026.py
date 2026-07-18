@@ -1,4 +1,4 @@
-import pandas as pd
+﻿import pandas as pd
 
 
 def load_danse():
@@ -27,7 +27,7 @@ def clean_danses_2026():
     danses = danses.rename(
         columns={
             "Style": "style",
-            "Dur�e (s)": "duree",
+            "Durée (s)": "duree",
             "Temps apprentissage (m)": "duree_apprentissage"
         }
     )
