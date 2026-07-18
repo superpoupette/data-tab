@@ -1,5 +1,6 @@
 ﻿import pandas as pd
 
+from scripts.importation_2026 import load_danses
 
 def load_danses(filepath):
 
@@ -112,21 +113,18 @@ def create_danse_data(data):
 
 def create_danse_recap(danse_data):
 
-    danse_2024 = load_danses(
-        "data/danses_2024.csv"
-    )
-
-    danse_2025 = load_danses(
-        "data/danses_2025.csv"
-    )
+    danse_2024 = load_danses("data/danses_2024.csv")
+    danse_2025 = load_danses("data/danses_2025.csv")
+    danse_2026 = clean_danses_2026()
 
     danse_2024 = clean_danse_recap(danse_2024)
     danse_2025 = clean_danse_recap(danse_2025)
 
-    danse_recap = pd.concat(
+     danse_recap = pd.concat(
         [
             danse_2024,
-            danse_2025
+            danse_2025,
+            danse_2026
         ],
         ignore_index=True
     )
