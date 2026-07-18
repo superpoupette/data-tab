@@ -393,36 +393,37 @@ def get_movie_details_tmdb(movie_id):
 def add_tmdb_series_info(series):
 
     series = series.copy()
+    series["year"] = ""
+    series["style"] = ""
+    series["country"] = ""
+    series["overview"] = ""
+    series["poster_path"] = ""
+    series["tmdb_rating"] = None
 
-    for col in [
-        "year",
-        "style",
-        "country",
-        "overview",
-        "poster_path",
-        "tmdb_rating",
-        "tvdb_id"
-    ]:
-        if col not in series.columns:
-            series[col] = ""
 
     for index, row in series.iterrows():
 
-        result = search_tmdb_series(row["title"])
+        result = search_tmdb_series(
+            row["title"]
+        )
+
 
         if result:
 
             for col in [
                 "year",
-                "tvdb_id",
                 "style",
                 "country",
                 "overview",
                 "poster_path",
                 "tmdb_rating"
             ]:
-                if result.get(col) not in [None, ""]:
-                    series.loc[index, col] = result[col]
+
+                series.loc[index, col] = result.get(
+                    col,
+                    ""
+                )
+
 
     return series
 
