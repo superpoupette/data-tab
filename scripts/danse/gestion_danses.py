@@ -136,8 +136,20 @@ def create_danse_recap(danse_data):
         ],
         ignore_index=True
     )
+    # Sécurité : création des colonnes absentes
+    colonnes_google_sheet = [
+        "date_debut",
+        "date_fin",
+        "duree_apprentissage",
+        "nombre_seance",
+        "duree_seance",
+        "statut"
+    ]
 
-    print(danse_recap.columns.tolist())
+
+    for col in colonnes_google_sheet:
+        if col not in danse_recap.columns:
+            danse_recap[col] = ""
 
     # Suppression des doublons
     danse_recap = danse_recap.drop_duplicates(
