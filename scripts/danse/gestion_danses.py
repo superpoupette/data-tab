@@ -1,8 +1,5 @@
-﻿# -*- coding: utf-8 -*-
+﻿import pandas as pd
 
-import pandas as pd
-
-from scripts.importation_2026 import clean_danses_2026
 
 def load_danses(filepath):
 
@@ -59,17 +56,11 @@ def clean_danse_recap(danses_recap):
         "artiste",
         "titre",
         "choregraphe",
-        "date_debut",
-        "date_fin",
-        "duree_apprentissage",
-        "nombre_seance",
-        "duree_seance",
         "style",
         "duree",
         "difficulte",
         "estimation",
-        "note",
-        "statut"
+        "note"
     ]
 
     for col in colonnes_attendues:
@@ -129,13 +120,8 @@ def create_danse_recap(danse_data):
         "data/danses_2025.csv"
     )
 
-    danse_2024 = clean_danse_recap(
-        danse_2024
-    )
-
-    danse_2025 = clean_danse_recap(
-        danse_2025
-    )
+    danse_2024 = clean_danse_recap(danse_2024)
+    danse_2025 = clean_danse_recap(danse_2025)
 
     danse_recap = pd.concat(
         [
@@ -144,20 +130,6 @@ def create_danse_recap(danse_data):
         ],
         ignore_index=True
     )
-    # Sécurité : création des colonnes absentes
-    colonnes_google_sheet = [
-        "date_debut",
-        "date_fin",
-        "duree_apprentissage",
-        "nombre_seance",
-        "duree_seance",
-        "statut"
-    ]
-
-
-    for col in colonnes_google_sheet:
-        if col not in danse_recap.columns:
-            danse_recap[col] = ""
 
     # Suppression des doublons
     danse_recap = danse_recap.drop_duplicates(
@@ -234,25 +206,15 @@ def create_danse_recap(danse_data):
     )
 
 
-    # suppression des anciennes statistiques
-    danse_recap = danse_recap.drop(
-        columns=[
-            "duree_apprentissage",
-            "nombre_seance",
-            "duree_seance"
-        ],
-        errors="ignore"
-    )
-
-
     danse_recap = danse_recap.merge(
-        stats_apprentissage,
+        dates,
         on=[
             "artiste",
             "titre"
         ],
         how="left"
     )
+
 
     # Valeurs par défaut
     danse_recap["duree_apprentissage"] = (
