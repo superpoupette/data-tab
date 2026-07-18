@@ -226,15 +226,25 @@ def create_danse_recap(danse_data):
     )
 
 
+    # suppression des anciennes statistiques
+    danse_recap = danse_recap.drop(
+        columns=[
+            "duree_apprentissage",
+            "nombre_seance",
+            "duree_seance"
+        ],
+        errors="ignore"
+    )
+
+
     danse_recap = danse_recap.merge(
-        dates,
+        stats_apprentissage,
         on=[
             "artiste",
             "titre"
         ],
         how="left"
     )
-
 
     # Valeurs par défaut
     danse_recap["duree_apprentissage"] = (
