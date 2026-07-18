@@ -2,7 +2,7 @@
 
 import pandas as pd
 
-from scripts.importation_2026 import load_danse
+from scripts.importation_2026 import clean_danses_2026
 
 def load_danses(filepath):
 
