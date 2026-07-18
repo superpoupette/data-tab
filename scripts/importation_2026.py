@@ -12,7 +12,7 @@ def load_danse():
 
 def clean_danses_2026():
 
-    danses = load_danses_2026()
+    danses = load_danses()
 
     split = danses["Nom"].str.split(
         r"\s*-\s*",
