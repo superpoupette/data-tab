@@ -17,26 +17,30 @@ st.title("🏃 Dashboard Course")
 # ==========================
 
 df = charger_donnees_strava()
+
 # Garder uniquement les courses à pied
 df = df[
     df["Type d'activité"] == "Course à pied"
 ].copy()
 
-# Conversion des dates
-df["Date de l'activité"] = pd.to_datetime(
-    df["Date de l'activité"],
-    dayfirst=True
-)
+
+# ==========================
+# Suppression des activités erronées pour les calculs
+# ==========================
+
+df_calculs = df[
+    df["Nom de l'activité"] != "Bah super le bug 😬🤖"
+].copy()
 
 # ==========================
 # Calcul des KPI
 # ==========================
 
 # Kilomètres parcourus
-km_total = df["Distance"].sum()
+km_total = df_calculs["Distance"].sum()
 
 # Allure moyenne globale
-vitesse_moyenne = df["Vitesse moyenne"].mean()
+vitesse_moyenne = df_calculs["Vitesse moyenne"].mean()
 
 secondes_par_km = 1000 / vitesse_moyenne
 
@@ -46,12 +50,12 @@ secondes_allure = int(secondes_par_km % 60)
 allure_moyenne = f"{minutes_allure}:{secondes_allure:02d}/km"
 
 # Distance maximale
-distance_max = df["Distance"].max()
+distance_max = df_calculs["Distance"].max()
 
 # Record sur 10 km
-courses_10 = df[
-    (df["Distance"] >= 9.9)
-    & (df["Distance"] <= 10.1)
+courses_10 = df_calculs[
+    (df_calculs["Distance"] >= 9.9)
+    & (df_calculs["Distance"] <= 10.1)
 ]
 
 if len(courses_10):
@@ -126,8 +130,8 @@ with col1:
     )
 
 
-    df_annee = df[
-        df["Date de l'activité"].dt.year == annee_km
+    df_annee = df_calculs[
+        df_calculs["Date de l'activité"].dt.year == annee_km
     ].copy()
 
 
@@ -178,8 +182,8 @@ with col2:
     )
 
 
-    df_allure = df[
-        df["Date de l'activité"].dt.year == annee_allure
+    df_allure = df_calculs[
+        df_calculs["Date de l'activité"].dt.year == annee_allure
     ].copy()
 
 
