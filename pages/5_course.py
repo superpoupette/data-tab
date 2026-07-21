@@ -272,7 +272,7 @@ for col, (_, ligne) in zip(
 ):
 
     col.metric(
-        ligne["Année"],
+        str(ligne["Année"]),
         ligne["Allure moyenne"]
     )
 
