@@ -119,7 +119,7 @@ with col1:
 
 
     annees = sorted(
-        df["Date de l'activité"].dt.year.unique(),
+        df_calculs["Date de l'activité"].dt.year.unique(),
         reverse=True
     )
 
