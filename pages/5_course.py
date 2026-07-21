@@ -89,21 +89,28 @@ st.divider()
 # ==========================
 # Km parcourus par semaine
 # ==========================
-st.write(df[["Date de l'activité", "Distance"]].head(10))
-st.write(df.dtypes)
+
+df_graph = df.dropna(
+    subset=[
+        "Date de l'activité",
+        "Distance"
+    ]
+).copy()
 
 km_semaine = (
-    df
+    df_graph
     .set_index("Date de l'activité")
-    .resample("W")["Distance"]
+    ["Distance"]
+    .resample("W")
     .sum()
 )
 
 st.subheader("📈 Kilomètres parcourus par semaine")
 
+st.write(km_semaine)
+
 st.line_chart(
-    km_semaine,
-    use_container_width=True
+    km_semaine
 )
 
 
