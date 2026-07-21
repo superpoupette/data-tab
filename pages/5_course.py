@@ -287,7 +287,7 @@ for col, (_, ligne) in zip(
     df_allures_annuelles.iterrows()
 ):
     col.markdown(
-        f"📏 {ligne['Km']}"
+        f"{ligne['Km']}"
     )
 
 
@@ -297,7 +297,7 @@ for col, (_, ligne) in zip(
     df_allures_annuelles.iterrows()
 ):
     col.markdown(
-        f"🏃 {ligne['Allure moyenne']}"
+        f"{ligne['Allure moyenne']}"
     )
 
 
