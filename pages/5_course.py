@@ -161,22 +161,22 @@ c1, c2, c3, c4 = st.columns(4)
 
 
 c1.metric(
-    "🏃 Km totaux",
+    "Km totaux",
     f"{km_total:.1f} km"
 )
 
 c2.metric(
-    "🏃 Allure moyenne",
+    "Allure moyenne",
     allure_moyenne
 )
 
 c3.metric(
-    "🏅 Meilleur 10 km",
+    "Meilleur 10 km",
     meilleur_10
 )
 
 c4.metric(
-    "📏 Sortie max",
+    "Sortie max",
     f"{distance_max:.1f} km"
 )
 
@@ -196,7 +196,7 @@ col1, col2 = st.columns(2)
 
 with col1:
 
-    st.subheader("📈 Km par semaine")
+    st.subheader("Km par semaine")
 
 
     annees = sorted(
@@ -261,7 +261,7 @@ with col1:
 
 with col2:
 
-    st.subheader("🏃 Allure par sortie")
+    st.subheader("Allure par sortie")
 
 
     annee_allure = st.selectbox(
@@ -320,7 +320,7 @@ with col2:
 
 separateur()
 
-st.subheader("📊 Évolution annuelle")
+st.subheader("Évolution annuelle")
 
 
 allures_annuelles = []
@@ -436,7 +436,7 @@ for col, (_, ligne) in zip(
 
 separateur()
 
-st.subheader("📋 Historique des sorties")
+st.subheader("Historique des sorties")
 
 
 colonnes_affichees = [
