@@ -17,8 +17,16 @@ def charger_donnees_strava():
         dayfirst=True,
         errors="coerce"
     )
+    #correction distance
+    df["Distance"] = (
+        df["Distance"]
+        .astype(str)
+        .str.replace('"', '', regex=False)
+        .str.replace(",", ".", regex=False)
+    )
 
     df["Distance"] = pd.to_numeric(df["Distance"], errors="coerce")
+
     df["Vitesse moyenne"] = pd.to_numeric(df["Vitesse moyenne"], errors="coerce")
     df["Durée de déplacement"] = pd.to_numeric(df["Durée de déplacement"], errors="coerce")
 
