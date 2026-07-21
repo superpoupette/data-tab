@@ -99,59 +99,118 @@ c4.metric(
 st.divider()
 
 # ==========================
+# Graphiques performances
+# ==========================
+
+col1, col2 = st.columns(2)
+
+
+# ==========================
 # Km parcourus par semaine
 # ==========================
 
-st.subheader("📈 Kilomètres parcourus par semaine")
+with col1:
+
+    st.subheader("📈 Km par semaine")
 
 
-# Liste des années disponibles
-annees = sorted(
-    df["Date de l'activité"].dt.year.unique(),
-    reverse=True
-)
+    annees = sorted(
+        df["Date de l'activité"].dt.year.unique(),
+        reverse=True
+    )
 
-annee_selectionnee = st.selectbox(
-    "Choisir une année",
-    annees
-)
-
-
-# Filtre sur l'année sélectionnée
-df_annee = df[
-    df["Date de l'activité"].dt.year == annee_selectionnee
-].copy()
+    annee_km = st.selectbox(
+        "Année",
+        annees,
+        key="annee_km"
+    )
 
 
-# Calcul des kilomètres par semaine
-km_semaine = (
-    df_annee
-    .set_index("Date de l'activité")
-    .resample("W")["Distance"]
-    .sum()
-    .reset_index()
-)
+    df_annee = df[
+        df["Date de l'activité"].dt.year == annee_km
+    ].copy()
 
 
-# Graphique
-fig = px.line(
-    km_semaine,
-    x="Date de l'activité",
-    y="Distance",
-    markers=True
-)
+    km_semaine = (
+        df_annee
+        .set_index("Date de l'activité")
+        .resample("W")["Distance"]
+        .sum()
+        .reset_index()
+    )
 
 
-fig.update_layout(
-    xaxis_title="Semaine",
-    yaxis_title="Kilomètres",
-)
+    fig_km = px.line(
+        km_semaine,
+        x="Date de l'activité",
+        y="Distance",
+        markers=True
+    )
 
 
-st.plotly_chart(
-    fig,
-    use_container_width=True
-)
+    fig_km.update_layout(
+        xaxis_title="Semaine",
+        yaxis_title="Km",
+        height=350
+    )
+
+
+    st.plotly_chart(
+        fig_km,
+        use_container_width=True
+    )
+
+
+
+# ==========================
+# Allure par sortie
+# ==========================
+
+with col2:
+
+    st.subheader("🏃 Allure par sortie")
+
+
+    annee_allure = st.selectbox(
+        "Année",
+        annees,
+        key="annee_allure"
+    )
+
+
+    df_allure = df[
+        df["Date de l'activité"].dt.year == annee_allure
+    ].copy()
+
+
+    # Calcul allure min/km
+    df_allure["Allure"] = (
+        1000 / df_allure["Vitesse moyenne"]
+    ) / 60
+
+
+    fig_allure = px.line(
+        df_allure.sort_values("Date de l'activité"),
+        x="Date de l'activité",
+        y="Allure",
+        markers=True
+    )
+
+
+    fig_allure.update_layout(
+        xaxis_title="Date",
+        yaxis_title="Allure (min/km)",
+        height=350,
+        yaxis=dict(
+            autorange="reversed"
+        )
+    )
+
+
+    st.plotly_chart(
+        fig_allure,
+        use_container_width=True
+    )
 
 # ==========================
 # Tableau récapitulatif des sorties
