@@ -300,7 +300,14 @@ for col, (_, ligne) in zip(
         f"{ligne['Allure moyenne']}"
     )
 
-
+st.markdown(
+    """
+    <hr style="border:1px solid #e0e0e0;">
+    """,
+    unsafe_allow_html=True
+)
+st.write("")
+st.write("")
 # ==========================
 # Tableau récapitulatif des sorties
 # ==========================
