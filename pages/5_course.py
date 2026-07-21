@@ -163,6 +163,17 @@ df_resume = df[colonnes_affichees].copy()
 
 df_resume["Temps écoulé"] = df_resume["Temps écoulé"].apply(format_temps)
 
+def vitesse_kmh(vitesse):
+    if pd.isna(vitesse):
+        return ""
+
+    return f"{vitesse * 3.6:.1f} km/h"
+
+
+df_resume["Vitesse max."] = df_resume["Vitesse max."].apply(vitesse_kmh)
+
+df_resume["Vitesse moyenne"] = df_resume["Vitesse moyenne"].apply(vitesse_kmh)
+
 # Tri du plus récent au plus ancien
 df_resume = df_resume.sort_values(
     by="Date de l'activité",
