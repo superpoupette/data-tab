@@ -110,7 +110,7 @@ km_semaine = (
     .reset_index()
 )
 
-st.subheader("📈 Kilomètres parcourus par semaine")
+st.subheader("Kilomètres parcourus par semaine")
 
 fig = px.line(
     km_semaine,
@@ -129,7 +129,38 @@ st.plotly_chart(
     use_container_width=True
 )
 
+# ==========================
+# Tableau récapitulatif des sorties
+# ==========================
 
+st.subheader("Toutes les courses")
+
+
+colonnes_affichees = [
+    "Date de l'activité",
+    "Nom de l'activité",
+    "Description de l'activité",
+    "Temps écoulé",
+    "Distance",
+    "Vitesse max.",
+    "Vitesse moyenne"
+]
+
+df_resume = df[colonnes_affichees].copy()
+
+# Tri du plus récent au plus ancien
+df_resume = df_resume.sort_values(
+    by="Date de l'activité",
+    ascending=False
+)
+
+st.subheader("📋 Historique des sorties")
+
+st.dataframe(
+    df_resume,
+    use_container_width=True,
+    hide_index=True
+)
 
 st.dataframe(
     df,
