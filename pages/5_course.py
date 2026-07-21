@@ -1,5 +1,6 @@
 import pandas as pd
 import streamlit as st
+import plotly.express as px
 
 from scripts.importation_strava import charger_donnees_strava
 
@@ -107,14 +108,22 @@ km_semaine = (
 
 st.subheader("📈 Kilomètres parcourus par semaine")
 
-st.write(km_semaine)
-
-st.line_chart(
+fig = px.line(
     km_semaine,
     x="Date de l'activité",
-    y="Distance"
+    y="Distance",
+    markers=True
 )
 
+fig.update_layout(
+    xaxis_title="Semaine",
+    yaxis_title="Kilomètres",
+)
+
+st.plotly_chart(
+    fig,
+    use_container_width=True
+)
 
 
 
