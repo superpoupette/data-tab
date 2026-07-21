@@ -446,17 +446,41 @@ series_df = load_google_sheet(
 if not series_df.empty:
 
 
-    # Sélection uniquement séries/animes existants
+    # Liste complète des séries
     serie_choices = (
         series_df["title"]
         .dropna()
+        .sort_values()
         .tolist()
     )
 
 
+    # Recherche
+    search_serie = st.text_input(
+        "🔎 Rechercher une série",
+        placeholder="Ex : breaking",
+        key="edit_series_search"
+    )
+
+
+    # Filtrage
+    if search_serie:
+
+        filtered_series = [
+            serie
+            for serie in serie_choices
+            if search_serie.lower() in serie.lower()
+        ]
+
+    else:
+
+        filtered_series = serie_choices[:20]  # évite d'afficher 500 lignes
+
+
+    # Sélection
     selected_title = st.selectbox(
         "Choisir une série",
-        serie_choices,
+        filtered_series,
         key="edit_series_select"
     )
 
