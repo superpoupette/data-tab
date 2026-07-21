@@ -182,3 +182,326 @@ c4.metric(
 
 
 separateur()
+
+# ==========================
+# Graphiques performances
+# ==========================
+
+col1, col2 = st.columns(2)
+
+
+# ==========================
+# Km parcourus par semaine
+# ==========================
+
+with col1:
+
+    st.subheader("📈 Km par semaine")
+
+
+    annees = sorted(
+        df_calculs["Date de l'activité"]
+        .dt.year
+        .unique(),
+        reverse=True
+    )
+
+
+    annee_km = st.selectbox(
+        "Année",
+        annees,
+        key="annee_km"
+    )
+
+
+    df_annee = df_calculs[
+        df_calculs["Date de l'activité"]
+        .dt.year == annee_km
+    ].copy()
+
+
+    km_semaine = (
+        df_annee
+        .set_index("Date de l'activité")
+        .resample("W")["Distance"]
+        .sum()
+        .reset_index()
+    )
+
+
+    if not km_semaine.empty:
+
+        fig_km = px.line(
+            km_semaine,
+            x="Date de l'activité",
+            y="Distance",
+            markers=True
+        )
+
+
+        fig_km.update_layout(
+            xaxis_title="Semaine",
+            yaxis_title="Km",
+            height=350
+        )
+
+
+        st.plotly_chart(
+            fig_km,
+            use_container_width=True
+        )
+
+    else:
+        st.info("Aucune course cette année")
+
+
+# ==========================
+# Allure par sortie
+# ==========================
+
+with col2:
+
+    st.subheader("🏃 Allure par sortie")
+
+
+    annee_allure = st.selectbox(
+        "Année",
+        annees,
+        key="annee_allure"
+    )
+
+
+    df_allure = df_calculs[
+        df_calculs["Date de l'activité"]
+        .dt.year == annee_allure
+    ].copy()
+
+
+    df_allure["Allure"] = (
+        1000 / df_allure["Vitesse moyenne"]
+    ) / 60
+
+
+    if not df_allure.empty:
+
+        fig_allure = px.line(
+            df_allure.sort_values(
+                "Date de l'activité"
+            ),
+            x="Date de l'activité",
+            y="Allure",
+            markers=True
+        )
+
+
+        fig_allure.update_layout(
+            xaxis_title="Date",
+            yaxis_title="Allure (min/km)",
+            height=350,
+            yaxis=dict(
+                autorange="reversed"
+            )
+        )
+
+
+        st.plotly_chart(
+            fig_allure,
+            use_container_width=True
+        )
+
+    else:
+        st.info("Aucune course cette année")
+
+
+
+# ==========================
+# Évolution annuelle
+# ==========================
+
+separateur()
+
+st.subheader("📊 Évolution annuelle")
+
+
+allures_annuelles = []
+
+
+for annee in sorted(
+    df_calculs["Date de l'activité"]
+    .dt.year
+    .unique()
+):
+
+    df_annee = df_calculs[
+        df_calculs["Date de l'activité"]
+        .dt.year == annee
+    ]
+
+
+    km_annee = (
+        df_annee["Distance"]
+        .sum()
+    )
+
+
+    vitesse_moy = (
+        df_annee["Vitesse moyenne"]
+        .dropna()
+        .mean()
+    )
+
+
+    if vitesse_moy > 0:
+
+        secondes_par_km = (
+            1000 / vitesse_moy
+        )
+
+        minutes = int(
+            secondes_par_km // 60
+        )
+
+        secondes = int(
+            secondes_par_km % 60
+        )
+
+        allure = (
+            f"{minutes}:{secondes:02d}/km"
+        )
+
+    else:
+        allure = "-"
+
+
+    allures_annuelles.append(
+        {
+            "Année": annee,
+            "Km": f"{km_annee:.0f} km",
+            "Allure moyenne": allure
+        }
+    )
+
+
+df_allures_annuelles = pd.DataFrame(
+    allures_annuelles
+)
+
+
+# ==========================
+# Affichage annuel horizontal
+# ==========================
+
+colonnes = st.columns(
+    len(df_allures_annuelles)
+)
+
+
+# Années
+for col, (_, ligne) in zip(
+    colonnes,
+    df_allures_annuelles.iterrows()
+):
+
+    col.markdown(
+        f"**{ligne['Année']}**"
+    )
+
+
+# Kilomètres
+for col, (_, ligne) in zip(
+    colonnes,
+    df_allures_annuelles.iterrows()
+):
+
+    col.markdown(
+        f"📏 {ligne['Km']}"
+    )
+
+
+# Allure
+for col, (_, ligne) in zip(
+    colonnes,
+    df_allures_annuelles.iterrows()
+):
+
+    col.markdown(
+        f"🏃 {ligne['Allure moyenne']}"
+    )
+
+
+
+# ==========================
+# Tableau récapitulatif
+# ==========================
+
+separateur()
+
+st.subheader("📋 Historique des sorties")
+
+
+colonnes_affichees = [
+    "Date de l'activité",
+    "Nom de l'activité",
+    "Description de l'activité",
+    "Temps écoulé",
+    "Distance",
+    "Vitesse max.",
+    "Vitesse moyenne"
+]
+
+
+df_resume = df[
+    colonnes_affichees
+].copy()
+
+
+df_resume["Temps écoulé"] = (
+    df_resume["Temps écoulé"]
+    .apply(format_temps)
+)
+
+
+df_resume["Distance"] = (
+    df_resume["Distance"]
+    .apply(
+        lambda x:
+        f"{x:.2f} km"
+        if pd.notna(x)
+        else ""
+    )
+)
+
+
+df_resume.insert(
+    df_resume.columns.get_loc(
+        "Vitesse moyenne"
+    ),
+    "Allure moyenne",
+    df_resume["Vitesse moyenne"]
+    .apply(vitesse_vers_allure)
+)
+
+
+df_resume["Vitesse max."] = (
+    df_resume["Vitesse max."]
+    .apply(vitesse_kmh)
+)
+
+
+df_resume["Vitesse moyenne"] = (
+    df_resume["Vitesse moyenne"]
+    .apply(vitesse_kmh)
+)
+
+
+df_resume = df_resume.sort_values(
+    by="Date de l'activité",
+    ascending=False
+)
+
+
+st.dataframe(
+    df_resume,
+    use_container_width=True,
+    hide_index=True
+)
