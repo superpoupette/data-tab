@@ -17,6 +17,8 @@ st.title("🏃 Dashboard Course")
 
 df = charger_donnees_strava()
 
+st.write(df.dtypes)
+
 # Conversion des dates
 df["Date de l'activité"] = pd.to_datetime(
     df["Date de l'activité"],
