@@ -393,7 +393,7 @@ def get_movie_details_tmdb(movie_id):
 def add_tmdb_series_info(series):
 
     series = series.copy()
-
+    series["year"] = ""
     series["style"] = ""
     series["country"] = ""
     series["overview"] = ""
@@ -411,6 +411,7 @@ def add_tmdb_series_info(series):
         if result:
 
             for col in [
+                "year",
                 "style",
                 "country",
                 "overview",

@@ -86,7 +86,9 @@ with col2:
 
                 series = update_series()
 
-                st.success("Séries et animes mis à jour.")
+                st.success(
+                    "Séries et animes mis à jour."
+                )
 
                 st.metric(
                     "Nombre de séries/animes",
@@ -112,9 +114,14 @@ st.divider()
 
 st.header("💃 Danse")
 
-if st.button("🔄 Mettre à jour la base de danse"):
 
-    with st.spinner("Mise à jour..."):
+if st.button(
+    "🔄 Mettre à jour la base de danse"
+):
+
+    with st.spinner(
+        "Mise à jour..."
+    ):
 
         data2024 = prepare_2024(
             "data/2024.csv"
@@ -124,6 +131,7 @@ if st.button("🔄 Mettre à jour la base de danse"):
             "data/2025.csv"
         )
 
+
         danse_2024 = create_danse_data(
             data2024
         )
@@ -131,6 +139,7 @@ if st.button("🔄 Mettre à jour la base de danse"):
         danse_2025 = create_danse_data(
             data2025
         )
+
 
         danse_data = pd.concat(
             [
@@ -140,13 +149,16 @@ if st.button("🔄 Mettre à jour la base de danse"):
             ignore_index=True
         )
 
+
         danse_recap = create_danse_recap(
             danse_data
         )
 
+
         save_danse_google_sheet(
             danse_recap
         )
+
 
     st.success(
         "Base danse mise à jour."
