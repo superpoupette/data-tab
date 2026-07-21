@@ -300,11 +300,11 @@ for col, (_, ligne) in zip(
         f"{ligne['Allure moyenne']}"
     )
 
-st.markdown("<br><br>", unsafe_allow_html=True)
+
 
 st.markdown(
     """
-    <hr style="border:1px solid #e0e0e0;">
+    <hr style="border:0.5px solid #e0e0e0;">
     """,
     unsafe_allow_html=True
 )
