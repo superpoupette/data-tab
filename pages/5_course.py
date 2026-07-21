@@ -414,7 +414,7 @@ for col, (_, ligne) in zip(
 ):
 
     col.markdown(
-        f"📏 {ligne['Km']}"
+        f"{ligne['Km']}"
     )
 
 
@@ -425,7 +425,7 @@ for col, (_, ligne) in zip(
 ):
 
     col.markdown(
-        f"🏃 {ligne['Allure moyenne']}"
+        f"{ligne['Allure moyenne']}"
     )
 
 
