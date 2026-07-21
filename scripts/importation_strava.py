@@ -10,13 +10,35 @@ def charger_donnees_strava():
         low_memory=False
     )
 
-    # Conversion de la date
+    # Conversion des dates Strava en français
+    mois_fr = {
+        "janv.": "Jan",
+        "févr.": "Feb",
+        "mars": "Mar",
+        "avr.": "Apr",
+        "mai": "May",
+        "juin": "Jun",
+        "juil.": "Jul",
+        "août": "Aug",
+        "sept.": "Sep",
+        "oct.": "Oct",
+        "nov.": "Nov",
+        "déc.": "Dec"
+    }
+
+    for fr, en in mois_fr.items():
+        df["Date de l'activité"] = (
+            df["Date de l'activité"]
+            .astype(str)
+            .str.replace(fr, en, regex=False)
+        )
+
     df["Date de l'activité"] = pd.to_datetime(
         df["Date de l'activité"],
-        format="mixed",
-        dayfirst=True,
+        format="%d %b %Y, %H:%M:%S",
         errors="coerce"
     )
+    
     #correction distance
     df["Distance"] = (
         df["Distance"]
