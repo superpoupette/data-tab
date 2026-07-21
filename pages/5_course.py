@@ -133,8 +133,6 @@ st.plotly_chart(
 # Tableau récapitulatif des sorties
 # ==========================
 
-st.subheader("Toutes les courses")
-
 
 colonnes_affichees = [
     "Date de l'activité",
@@ -145,16 +143,32 @@ colonnes_affichees = [
     "Vitesse max.",
     "Vitesse moyenne"
 ]
+# ==========================
+# Conversion secondes -> HH:MM:SS
+# ==========================
+
+def format_temps(secondes):
+    if pd.isna(secondes):
+        return ""
+
+    secondes = int(secondes)
+
+    heures = secondes // 3600
+    minutes = (secondes % 3600) // 60
+    secondes = secondes % 60
+
+    return f"{heures:02d}:{minutes:02d}:{secondes:02d}"
 
 df_resume = df[colonnes_affichees].copy()
+
+df_resume["Temps écoulé"] = df_resume["Temps écoulé"].apply(format_temps)
 
 # Tri du plus récent au plus ancien
 df_resume = df_resume.sort_values(
     by="Date de l'activité",
     ascending=False
 )
-
-st.subheader("📋 Historique des sorties")
+st.subheader("Historique des sorties")
 
 st.dataframe(
     df_resume,
