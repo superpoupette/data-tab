@@ -35,8 +35,15 @@ df["Date de l'activité"] = pd.to_datetime(
 # Kilomètres parcourus
 km_total = df["Distance"].sum()
 
-# Vitesse moyenne
+# Allure moyenne globale
 vitesse_moyenne = df["Vitesse moyenne"].mean()
+
+secondes_par_km = 1000 / vitesse_moyenne
+
+minutes_allure = int(secondes_par_km // 60)
+secondes_allure = int(secondes_par_km % 60)
+
+allure_moyenne = f"{minutes_allure}:{secondes_allure:02d}/km"
 
 # Distance maximale
 distance_max = df["Distance"].max()
@@ -75,8 +82,8 @@ c1.metric(
 )
 
 c2.metric(
-    "⚡ Vitesse moyenne",
-    f"{vitesse_moyenne:.2f} km/h"
+    "🏃 Allure moyenne",
+    allure_moyenne
 )
 
 c3.metric(
@@ -95,23 +102,38 @@ st.divider()
 # Km parcourus par semaine
 # ==========================
 
-df_graph = df.dropna(
-    subset=[
-        "Date de l'activité",
-        "Distance"
-    ]
-).copy()
+st.subheader("📈 Kilomètres parcourus par semaine")
 
+
+# Liste des années disponibles
+annees = sorted(
+    df["Date de l'activité"].dt.year.unique(),
+    reverse=True
+)
+
+annee_selectionnee = st.selectbox(
+    "Choisir une année",
+    annees
+)
+
+
+# Filtre sur l'année sélectionnée
+df_annee = df[
+    df["Date de l'activité"].dt.year == annee_selectionnee
+].copy()
+
+
+# Calcul des kilomètres par semaine
 km_semaine = (
-    df_graph
+    df_annee
     .set_index("Date de l'activité")
     .resample("W")["Distance"]
     .sum()
     .reset_index()
 )
 
-st.subheader("Kilomètres parcourus par semaine")
 
+# Graphique
 fig = px.line(
     km_semaine,
     x="Date de l'activité",
@@ -119,10 +141,12 @@ fig = px.line(
     markers=True
 )
 
+
 fig.update_layout(
     xaxis_title="Semaine",
     yaxis_title="Kilomètres",
 )
+
 
 st.plotly_chart(
     fig,
