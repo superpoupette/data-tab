@@ -17,6 +17,10 @@ st.title("🏃 Dashboard Course")
 # ==========================
 
 df = charger_donnees_strava()
+# Garder uniquement les courses à pied
+df = df[
+    df["Type d'activité"] == "Course à pied"
+].copy()
 
 # Conversion des dates
 df["Date de l'activité"] = pd.to_datetime(
