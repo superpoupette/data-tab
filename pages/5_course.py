@@ -215,6 +215,67 @@ with col2:
         fig_allure,
         use_container_width=True
     )
+# ==========================
+# Allure moyenne par année
+# ==========================
+
+st.divider()
+
+st.subheader("🏃 Allure moyenne par année")
+
+
+# Calcul de l'allure moyenne annuelle
+
+allures_annuelles = []
+
+for annee in sorted(df_calculs["Date de l'activité"].dt.year.unique()):
+
+    df_annee = df_calculs[
+        df_calculs["Date de l'activité"].dt.year == annee
+    ]
+
+    vitesse_moy = df_annee["Vitesse moyenne"].dropna().mean()
+
+    if vitesse_moy > 0:
+
+        secondes_par_km = 1000 / vitesse_moy
+
+        minutes = int(secondes_par_km // 60)
+        secondes = int(secondes_par_km % 60)
+
+        allure = f"{minutes}:{secondes:02d}/km"
+
+    else:
+        allure = "-"
+
+
+    allures_annuelles.append(
+        {
+            "Année": annee,
+            "Allure moyenne": allure
+        }
+    )
+
+
+df_allures_annuelles = pd.DataFrame(allures_annuelles)
+
+
+# Affichage horizontal
+
+colonnes = st.columns(
+    len(df_allures_annuelles)
+)
+
+for col, (_, ligne) in zip(
+    colonnes,
+    df_allures_annuelles.iterrows()
+):
+
+    col.metric(
+        ligne["Année"],
+        ligne["Allure moyenne"]
+    )
+
 
 # ==========================
 # Tableau récapitulatif des sorties
