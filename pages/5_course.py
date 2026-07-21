@@ -89,6 +89,8 @@ st.divider()
 # ==========================
 # Km parcourus par semaine
 # ==========================
+st.write(df[["Date de l'activité", "Distance"]].head(10))
+st.write(df.dtypes)
 
 km_semaine = (
     df
