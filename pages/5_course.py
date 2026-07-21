@@ -133,21 +133,15 @@ st.plotly_chart(
 # Tableau récapitulatif des sorties
 # ==========================
 
+st.subheader("📋 Historique des sorties")
 
-colonnes_affichees = [
-    "Date de l'activité",
-    "Nom de l'activité",
-    "Description de l'activité",
-    "Temps écoulé",
-    "Distance",
-    "Vitesse max.",
-    "Vitesse moyenne"
-]
-# ==========================
-# Conversion secondes -> HH:MM:SS
-# ==========================
+
+# --------------------------
+# Fonctions de formatage
+# --------------------------
 
 def format_temps(secondes):
+    """Convertit des secondes en HH:MM:SS"""
     if pd.isna(secondes):
         return ""
 
@@ -159,36 +153,101 @@ def format_temps(secondes):
 
     return f"{heures:02d}:{minutes:02d}:{secondes:02d}"
 
-df_resume = df[colonnes_affichees].copy()
-
-df_resume["Temps écoulé"] = df_resume["Temps écoulé"].apply(format_temps)
 
 def vitesse_kmh(vitesse):
+    """Convertit m/s en km/h"""
     if pd.isna(vitesse):
         return ""
 
     return f"{vitesse * 3.6:.1f} km/h"
 
 
-df_resume["Vitesse max."] = df_resume["Vitesse max."].apply(vitesse_kmh)
+def vitesse_vers_allure(vitesse_ms):
+    """Convertit m/s en allure min/km"""
+    if pd.isna(vitesse_ms) or vitesse_ms <= 0:
+        return ""
 
-df_resume["Vitesse moyenne"] = df_resume["Vitesse moyenne"].apply(vitesse_kmh)
+    secondes_par_km = 1000 / vitesse_ms
 
+    minutes = int(secondes_par_km // 60)
+    secondes = int(secondes_par_km % 60)
+
+    return f"{minutes}:{secondes:02d}/km"
+
+
+# --------------------------
+# Colonnes affichées
+# --------------------------
+
+colonnes_affichees = [
+    "Date de l'activité",
+    "Nom de l'activité",
+    "Description de l'activité",
+    "Temps écoulé",
+    "Distance",
+    "Vitesse max.",
+    "Vitesse moyenne"
+]
+
+
+# Création du tableau résumé
+df_resume = df[colonnes_affichees].copy()
+
+
+# --------------------------
+# Mise en forme des données
+# --------------------------
+
+# Temps
+df_resume["Temps écoulé"] = (
+    df_resume["Temps écoulé"]
+    .apply(format_temps)
+)
+
+
+# Distance
+df_resume["Distance"] = (
+    df_resume["Distance"]
+    .apply(lambda x: f"{x:.2f} km" if pd.notna(x) else "")
+)
+
+
+# Ajout de l'allure moyenne avant la vitesse moyenne
+df_resume.insert(
+    df_resume.columns.get_loc("Vitesse moyenne"),
+    "Allure moyenne",
+    df["Vitesse moyenne"].apply(vitesse_vers_allure)
+)
+
+
+# Vitesses
+df_resume["Vitesse max."] = (
+    df_resume["Vitesse max."]
+    .apply(vitesse_kmh)
+)
+
+df_resume["Vitesse moyenne"] = (
+    df_resume["Vitesse moyenne"]
+    .apply(vitesse_kmh)
+)
+
+
+# --------------------------
 # Tri du plus récent au plus ancien
+# --------------------------
+
 df_resume = df_resume.sort_values(
     by="Date de l'activité",
     ascending=False
 )
-st.subheader("Historique des sorties")
+
+
+# --------------------------
+# Affichage
+# --------------------------
 
 st.dataframe(
     df_resume,
-    use_container_width=True,
-    hide_index=True
-)
-
-st.dataframe(
-    df,
     use_container_width=True,
     hide_index=True
 )
