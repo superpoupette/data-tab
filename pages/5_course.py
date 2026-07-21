@@ -100,9 +100,9 @@ df_graph = df.dropna(
 km_semaine = (
     df_graph
     .set_index("Date de l'activité")
-    ["Distance"]
-    .resample("W")
+    .resample("W")["Distance"]
     .sum()
+    .reset_index()
 )
 
 st.subheader("📈 Kilomètres parcourus par semaine")
@@ -110,7 +110,9 @@ st.subheader("📈 Kilomètres parcourus par semaine")
 st.write(km_semaine)
 
 st.line_chart(
-    km_semaine
+    km_semaine,
+    x="Date de l'activité",
+    y="Distance"
 )
 
 
