@@ -352,11 +352,32 @@ def charger_tableau_sport():
         subset=["Date"]
     )
 
+
+    # Regroupement des journées identiques
+    df_sport = (
+        df_sport
+        .groupby("Date", as_index=False)
+        [
+            [
+                "Danse",
+                "Muscu",
+                "Stretching",
+                "Course",
+                "Escalade",
+                "Randonnée",
+                "Autre",
+            ]
+        ]
+        .sum()
+    )
+
+
     # Tri par date
     df_sport = (
         df_sport
         .sort_values("Date")
         .reset_index(drop=True)
     )
+
 
     return df_sport
