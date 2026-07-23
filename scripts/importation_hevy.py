@@ -2,13 +2,13 @@ import pandas as pd
 
 
 def load_workouts(filepath):
-    workouts = pd.read_csv(filepath)
-    return workouts
+    return pd.read_csv(filepath)
+
 
 
 def load_exercices(filepath):
-    exercices = pd.read_csv(filepath, sep=";")
-    return exercices
+    return pd.read_csv(filepath, sep=";")
+
 
 
 def clean_dates(workouts):
@@ -27,6 +27,7 @@ def clean_dates(workouts):
         "nov.": "Nov",
         "déc.": "Dec"
     }
+
 
     for fr, en in mois.items():
 
@@ -49,11 +50,13 @@ def clean_dates(workouts):
         errors="coerce"
     )
 
+
     workouts["end_time"] = pd.to_datetime(
         workouts["end_time"],
         format="%d %b %Y, %H:%M",
         errors="coerce"
     )
+
 
     return workouts
 
@@ -62,9 +65,32 @@ def clean_dates(workouts):
 def add_volume(workouts):
 
     workouts["volume"] = (
-        pd.to_numeric(workouts["weight_kg"], errors="coerce")
+        pd.to_numeric(
+            workouts["weight_kg"],
+            errors="coerce"
+        )
         *
-        pd.to_numeric(workouts["reps"], errors="coerce")
+        pd.to_numeric(
+            workouts["reps"],
+            errors="coerce"
+        )
+    )
+
+    return workouts
+
+
+
+def add_muscle(workouts, exercices):
+
+    workouts = workouts.merge(
+        exercices[
+            [
+                "exercise_title",
+                "muscle"
+            ]
+        ],
+        on="exercise_title",
+        how="left"
     )
 
     return workouts
@@ -92,8 +118,6 @@ def create_sessions(workouts):
     )
 
 
-    # Durée de séance en minutes
-
     sessions["duree_minutes"] = (
         (
             sessions["end_time"]
@@ -106,10 +130,9 @@ def create_sessions(workouts):
     )
 
 
-    # Date sans l'heure
-    sessions["Date"] = (
+    sessions["mois"] = (
         sessions["start_time"]
-        .dt.normalize()
+        .dt.to_period("M")
     )
 
 
@@ -117,16 +140,37 @@ def create_sessions(workouts):
 
 
 
-def prepare_data(workouts_filepath, exercices_filepath=None):
+def prepare_data(
+    workouts_filepath,
+    exercices_filepath
+):
 
-    workouts = load_workouts(workouts_filepath)
+    workouts = load_workouts(
+        workouts_filepath
+    )
 
-    workouts = clean_dates(workouts)
+    exercices = load_exercices(
+        exercices_filepath
+    )
 
-    workouts = add_volume(workouts)
+
+    workouts = clean_dates(
+        workouts
+    )
+
+    workouts = add_volume(
+        workouts
+    )
+
+    workouts = add_muscle(
+        workouts,
+        exercices
+    )
 
 
-    sessions = create_sessions(workouts)
+    sessions = create_sessions(
+        workouts
+    )
 
 
     return workouts, sessions
