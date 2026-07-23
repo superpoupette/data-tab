@@ -165,16 +165,11 @@ def importer_2026(df_sport, data2026):
         errors="coerce"
     ).fillna(0)
 
-    # Stretch : case cochée = 10 min
-    stretching = (
-        data2026["Stretch"]
-        .fillna(False)
-        .astype(str)
-        .str.lower()
-        .isin(["true", "1", "x", "✓", "oui"])
-        .astype(int)
-        * 10
-    )
+    # Stretch : durée directement indiquée en minutes
+    stretching = pd.to_numeric(
+        data2026["Stretch"],
+        errors="coerce"
+    ).fillna(0)
 
     # On garde uniquement les jours avec une activité
     masque = (
