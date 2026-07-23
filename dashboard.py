@@ -11,6 +11,45 @@ def format_heures(minutes):
 
 st.title("📊 Mon tableau de bord personnel")
 
+# ==========================
+# Objectifs
+# ==========================
+
+st.subheader("🎯 Objectifs")
+
+# Données 2026 uniquement
+df_2026 = df_sport[
+    df_sport["Date"].dt.year == 2026
+].copy()
+
+activites = [
+    "Danse",
+    "Muscu",
+    "Stretching",
+    "Course",
+    "Escalade",
+    "Randonnée",
+    "Autre",
+]
+
+temps_sport = df_2026[activites].sum().sum()
+
+objectif = 300 * 60  # 300 heures en minutes
+
+progression = min(temps_sport / objectif, 1.0)
+
+col1, col2 = st.columns([5, 1])
+
+with col1:
+    st.write("**300 heures de sport en 2026**")
+    st.progress(progression)
+
+with col2:
+    st.metric(
+        "Progression",
+        f"{temps_sport/60:.1f} / 300 h"
+    )
+
 st.header("Sport")
 
 # ==========================
