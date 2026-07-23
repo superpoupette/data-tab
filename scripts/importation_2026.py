@@ -119,3 +119,37 @@ def clean_danses_2026():
 
 
     return danse
+
+
+
+
+def load_2026():
+
+    data2026 = pd.read_excel(
+        "data/2026.xlsx",
+        sheet_name="DATA",
+        engine="openpyxl"
+    )
+
+    return data2026
+
+
+
+def clean_2026(data2026):
+
+    # Conversion de la date
+    data2026["Date"] = pd.to_datetime(
+        data2026["Date"],
+        errors="coerce"
+    )
+
+    return data2026
+
+
+
+def prepare_2026():
+
+    data2026 = load_2026()
+    data2026 = clean_2026(data2026)
+
+    return data2026
