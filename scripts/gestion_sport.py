@@ -31,6 +31,7 @@ def importer_2024(df_sport, data2024):
 
 def charger_tableau_sport():
     """Construit le tableau complet de sport."""
+    st.write(data2024.columns.tolist())
 
     df_sport = creer_tableau_sport()
 

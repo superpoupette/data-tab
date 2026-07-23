@@ -5,7 +5,6 @@ import streamlit as st
 from scripts.gestion_sport import charger_tableau_sport
 
 st.title("📊 Mon tableau de bord personnel")
-st.write(data2024.columns.tolist())
 
 st.write("Suivi des activités sportives")
 
