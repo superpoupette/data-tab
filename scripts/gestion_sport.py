@@ -146,9 +146,22 @@ def importer_strava(df_sport, data_strava):
 
 def importer_2026(df_sport, data2026):
 
-    danse = data2026["Danse"].fillna(0)
+    # Danse en numérique
+    danse = pd.to_numeric(
+        data2026["Danse"],
+        errors="coerce"
+    ).fillna(0)
 
-    stretching = data2026["Stretch"].fillna(0)
+    # Stretch : case cochée = 10 min
+    stretching = (
+        data2026["Stretch"]
+        .fillna(False)
+        .astype(str)
+        .str.lower()
+        .isin(["true", "1", "x", "✓", "oui"])
+        .astype(int)
+        * 10
+    )
 
     # On garde uniquement les jours avec une activité
     masque = (
