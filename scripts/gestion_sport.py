@@ -102,23 +102,27 @@ def importer_2025(df_sport, data2025):
 
 def importer_strava(df_sport, data_strava):
 
-    # Initialisation des colonnes
-    course = pd.Series(0, index=data_strava.index)
-    randonnee = pd.Series(0, index=data_strava.index)
+    # Initialisation des colonnes en float
+    course = pd.Series(0.0, index=data_strava.index)
+    randonnee = pd.Series(0.0, index=data_strava.index)
 
     # Conversion du temps écoulé en minutes
     temps = data_strava["Temps écoulé"].fillna(0) / 60
 
     # Répartition selon le type d'activité
-    course[data_strava["Type d'activité"] == "Course à pied"] = (
-        temps[data_strava["Type d'activité"] == "Course à pied"]
+    masque_course = (
+        data_strava["Type d'activité"] == "Course à pied"
     )
 
-    randonnee[data_strava["Type d'activité"] == "Randonnée"] = (
-        temps[data_strava["Type d'activité"] == "Randonnée"]
+    masque_rando = (
+        data_strava["Type d'activité"] == "Randonnée"
     )
 
-    # On garde uniquement les activités utiles
+    course.loc[masque_course] = temps.loc[masque_course]
+
+    randonnee.loc[masque_rando] = temps.loc[masque_rando]
+
+    # On conserve uniquement les activités utiles
     masque = (course > 0) | (randonnee > 0)
 
     df_strava = pd.DataFrame({
