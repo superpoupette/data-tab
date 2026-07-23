@@ -26,7 +26,7 @@ df_sport["Date"] = pd.to_datetime(
 # Objectifs
 # ==========================
 
-st.subheader("🎯 Objectifs")
+st.header("🎯 Objectifs")
 
 # Données 2026 uniquement
 df_2026 = df_sport[
@@ -49,7 +49,7 @@ objectif = 300 * 60  # 300 heures en minutes
 
 progression = min(temps_sport / objectif, 1.0)
 
-col1, col2 = st.columns([5, 1])
+col1, col2 = st.columns([3, 2])
 
 with col1:
     st.write("**300 heures de sport en 2026**")
