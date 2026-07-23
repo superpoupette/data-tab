@@ -171,6 +171,12 @@ def importer_2026(df_sport, data2026):
         errors="coerce"
     ).fillna(0)
 
+    # Autre
+    autre = pd.to_numeric(
+        data2026["Autre"],
+        errors="coerce"
+    ).fillna(0)
+
     # On garde uniquement les jours avec une activité
     masque = (
         (danse > 0)
