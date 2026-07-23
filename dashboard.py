@@ -2,7 +2,7 @@
 
 import streamlit as st
 
-from gestion_sport import charger_tableau_sport
+from scripts.gestion_sport import charger_tableau_sport
 
 st.title("📊 Mon tableau de bord personnel")
 
