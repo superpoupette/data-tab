@@ -126,14 +126,6 @@ df_affichage["Total"] = (
 )
 
 
-# Mise en heures pour l'affichage
-for col in ["Total"] + activites:
-    df_affichage[col] = (
-        df_affichage[col]
-        .apply(format_heures)
-    )
-
-
 # Remettre Total juste après Date
 colonnes = [
     "Date",

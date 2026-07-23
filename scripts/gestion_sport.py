@@ -206,6 +206,11 @@ def charger_tableau_sport():
     data_strava = charger_donnees_strava()
     df_sport = importer_strava(df_sport, data_strava)
 
+    # Suppression des lignes sans date
+    df_sport = df_sport.dropna(
+        subset=["Date"]
+    )
+
     # Tri par date
     df_sport = (
         df_sport
