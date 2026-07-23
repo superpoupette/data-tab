@@ -28,13 +28,14 @@ nb_pompes = pompes_2026()
 # ==========================
 # Objectifs
 # ==========================
-
 st.header("🎯 Objectifs")
+
 
 # Données 2026 uniquement
 df_2026 = df_sport[
     df_sport["Date"].dt.year == 2026
 ].copy()
+
 
 activites = [
     "Danse",
@@ -46,37 +47,86 @@ activites = [
     "Autre",
 ]
 
-temps_sport = df_2026[activites].sum().sum()
 
-objectif = 300 * 60  # 300 heures en minutes
+temps_sport = (
+    df_2026[activites]
+    .sum()
+    .sum()
+)
 
-progression = min(temps_sport / objectif, 1.0)
 
-col1, col2 = st.columns([3, 2])
+# ==========================
+# Objectifs côte à côte
+# ==========================
+
+col1, col2 = st.columns(2)
+
+
+# -------- Objectif sport --------
 
 with col1:
-    st.write("**300 heures de sport en 2026**")
-    st.progress(progression)
 
-with col2:
+    objectif_sport = 300 * 60
+
+    progression_sport = min(
+        temps_sport / objectif_sport,
+        1.0
+    )
+
+    st.write("🏃 **300 heures de sport en 2026**")
+
+    st.progress(
+        progression_sport
+    )
+
     st.metric(
         "Progression",
         f"{temps_sport/60:.1f} / 300 h"
     )
 
-objectif_pompes = 1000
 
-progression = min(
-    nb_pompes / objectif_pompes,
-    1
-)
+# -------- Objectif pompes --------
 
-st.progress(progression)
+with col2:
 
-st.metric(
-    "Pompes",
-    f"{nb_pompes} / {objectif_pompes}"
-)
+    objectif_pompes = 1000
+
+    progression_pompes = min(
+        nb_pompes / objectif_pompes,
+        1.0
+    )
+
+    st.write("💪 **1000 pompes en 2026**")
+
+
+    # Barre personnalisée rose clair
+    st.markdown(
+        f"""
+        <div style="
+            background-color:#f3e6eb;
+            border-radius:10px;
+            height:20px;
+            width:100%;
+        ">
+            <div style="
+                background-color:#f7a8c4;
+                width:{progression_pompes*100}%;
+                height:20px;
+                border-radius:10px;
+            ">
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+    st.metric(
+        "Progression",
+        f"{nb_pompes} / 1000"
+    )
+
+
 
 st.write("")
 st.divider()
