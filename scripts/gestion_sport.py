@@ -192,7 +192,7 @@ def importer_2026(df_sport, data2026):
         "Course": 0,
         "Escalade": 0,
         "Randonnée": 0,
-        "Autre": 0,
+        "Autre": autre.loc[masque],
     })
 
     return pd.concat(
