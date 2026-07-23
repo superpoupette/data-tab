@@ -88,7 +88,7 @@ progression_sport = min(
 )
 
 
-col1, col2 = st.columns([3, 1])
+col1, col2 = st.columns([3, 2])
 
 
 with col1:
