@@ -61,7 +61,8 @@ with col2:
         f"{temps_sport/60:.1f} / 300 h"
     )
 
-
+st.write("")
+st.divider()
 
 # ==========================
 # Filtre année
