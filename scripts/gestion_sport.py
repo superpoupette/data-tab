@@ -3,6 +3,7 @@ import pandas as pd
 from scripts.importation_2024 import prepare_2024
 from scripts.importation_2025 import prepare_2025
 from scripts.importation_strava import charger_donnees_strava
+from scripts.importation_2026 import clean_danses_2026
 
 
 COLONNES_SPORT = [
@@ -143,7 +144,37 @@ def importer_strava(df_sport, data_strava):
 
     return df_sport
 
+def importer_2026(df_sport, data2026):
 
+    # Danse
+    danse = data2026["Danse"].fillna(0)
+
+    # Stretching
+    stretching = data2026["Stretch"].fillna(0)
+
+    # On garde uniquement les lignes avec une activité
+    masque = (
+        (danse > 0)
+        | (stretching > 0)
+    )
+
+    df_2026 = pd.DataFrame({
+        "Date": data2026.loc[masque, "Date"],
+        "Danse": danse.loc[masque],
+        "Muscu": 0,
+        "Stretching": stretching.loc[masque],
+        "Course": 0,
+        "Escalade": 0,
+        "Randonnée": 0,
+        "Autre": 0,
+    })
+
+    df_sport = pd.concat(
+        [df_sport, df_2026],
+        ignore_index=True
+    )
+
+    return df_sport
 
 def charger_tableau_sport():
 
@@ -156,6 +187,10 @@ def charger_tableau_sport():
     # 2025
     data2025 = prepare_2025("data/2025.csv")
     df_sport = importer_2025(df_sport, data2025)
+
+    # 2026
+    data2026 = clean_danses_2026()
+    df_sport = importer_2026(df_sport, data2026)
 
     # Strava
     data_strava = charger_donnees_strava()
