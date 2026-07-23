@@ -16,7 +16,6 @@ df_sport = charger_tableau_sport()
 # Synthèse des activités
 # ==========================
 
-st.subheader("🏆 Total des activités")
 
 activites = [
     "Danse",
@@ -25,7 +24,6 @@ activites = [
     "Course",
     "Escalade",
     "Randonnée",
-    "Autre",
 ]
 
 totaux = df_sport[activites].sum()
@@ -45,7 +43,6 @@ for col, activite in zip(colonnes, activites):
 # Graphique répartition
 # ==========================
 
-st.subheader("📈 Répartition du temps par sport")
 
 df_repartition = (
     totaux
