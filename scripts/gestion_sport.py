@@ -1,6 +1,7 @@
 import pandas as pd
 
 from scripts.importation_2024 import prepare_2024
+from scripts.importation_2025 import prepare_2025
 
 COLONNES_SPORT = [
     "Date",
@@ -53,14 +54,55 @@ def importer_2024(df_sport, data2024):
 
     return df_sport
 
+def importer_2025(df_sport, data2025):
+
+    # Danse
+    danse = data2025["Total Danse"].fillna(0)
+
+    # Stretching
+    stretch = data2025["Stretch"].fillna(False).astype(int) * 10
+    stretch_split = data2025["Stretch-split"].fillna(False).astype(int) * 7
+    stretch_bonus = data2025["Stretch_bonus"].fillna(0)
+
+    stretching = stretch + stretch_split + stretch_bonus
+
+    # On conserve uniquement les jours où il y a une activité
+    masque = (danse > 0) | (stretching > 0)
+
+    df_2025 = pd.DataFrame({
+        "Date": data2025.loc[masque, "Date"],
+        "Danse": danse.loc[masque],
+        "Muscu": 0,
+        "Stretching": stretching.loc[masque],
+        "Course": 0,
+        "Escalade": 0,
+        "Randonnée": 0,
+        "Autre": 0,
+    })
+
+    df_sport = pd.concat(
+        [df_sport, df_2025],
+        ignore_index=True
+    )
+
+    return df_sport
+
+
 
 def charger_tableau_sport():
     """Construit le tableau complet de sport."""
-    
 
     df_sport = creer_tableau_sport()
 
-    data2024 = prepare_2024("data/2024.csv")   # à adapter
+    # 2024
+    data2024 = prepare_2024("data/2024.csv")
     df_sport = importer_2024(df_sport, data2024)
+
+    # 2025
+    data2025 = prepare_2025("data/2025.csv")
+    df_sport = importer_2025(df_sport, data2025)
+
+    # Tri chronologique
+    df_sport = df_sport.sort_values("Date").reset_index(drop=True)
 
     return df_sport
