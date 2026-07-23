@@ -146,9 +146,22 @@ def importer_strava(df_sport, data_strava):
 
 def importer_2026(df_sport, data2026):
 
+    # Limite des données 2026
+    date_limite = pd.Timestamp("2026-04-21")
+
+    data2026 = data2026[
+        data2026["Date"] <= date_limite
+    ]
+
     # Danse en numérique
     danse = pd.to_numeric(
         data2026["Danse"],
+        errors="coerce"
+    ).fillna(0)
+
+    # Muscu en numérique
+    muscu = pd.to_numeric(
+        data2026["Muscu"],
         errors="coerce"
     ).fillna(0)
 
@@ -166,13 +179,14 @@ def importer_2026(df_sport, data2026):
     # On garde uniquement les jours avec une activité
     masque = (
         (danse > 0)
+        | (muscu > 0)
         | (stretching > 0)
     )
 
     df_2026 = pd.DataFrame({
         "Date": data2026.loc[masque, "Date"],
         "Danse": danse.loc[masque],
-        "Muscu": 0,
+        "Muscu": muscu.loc[masque],
         "Stretching": stretching.loc[masque],
         "Course": 0,
         "Escalade": 0,
