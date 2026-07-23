@@ -174,114 +174,131 @@ with droite:
 
 
 # ==========================
-# Evolution hebdomadaire
+# Evolution du temps de sport
 # ==========================
 
-st.subheader(
-    "📈 Temps de sport par semaine"
-)
+st.subheader("Evolution du temps de sport")
 
 
-df_semaine = df_filtre.copy()
+df_evolution = df_filtre.copy()
 
-
-df_semaine["Total"] = (
-    df_semaine[activites]
+df_evolution["Total"] = (
+    df_evolution[activites]
     .sum(axis=1)
 )
 
 
-# Cas : toutes les années
-if annees_selection == "Toutes":
+# ==========================
+# Toutes les années
+# ==========================
 
-    df_semaine["Année"] = (
-        df_semaine["Date"]
+if annee_selection == "Toutes":
+
+    df_evolution["Année"] = (
+        df_evolution["Date"]
         .dt.year
     )
 
-    df_semaine["Semaine"] = (
-        df_semaine["Date"]
+    df_evolution["Mois"] = (
+        df_evolution["Date"]
+        .dt.month
+    )
+
+
+    evolution = (
+        df_evolution
+        .groupby(
+            ["Année", "Mois"],
+            as_index=False
+        )["Total"]
+        .sum()
+    )
+
+
+    # Nom des mois pour affichage
+    mois_noms = [
+        "",
+        "Jan",
+        "Fév",
+        "Mar",
+        "Avr",
+        "Mai",
+        "Juin",
+        "Juil",
+        "Août",
+        "Sep",
+        "Oct",
+        "Nov",
+        "Déc",
+    ]
+
+    evolution["Mois_nom"] = (
+        evolution["Mois"]
+        .apply(lambda x: mois_noms[x])
+    )
+
+
+    fig_evolution = px.line(
+        evolution,
+        x="Mois_nom",
+        y="Total",
+        color="Année",
+        markers=True,
+        labels={
+            "Mois_nom": "Mois",
+            "Total": "Temps (minutes)",
+            "Année": "Année"
+        }
+    )
+
+
+    fig_evolution.update_layout(
+        xaxis={
+            "categoryorder": "array",
+            "categoryarray": mois_noms[1:]
+        }
+    )
+
+
+# ==========================
+# Une année sélectionnée
+# ==========================
+
+else:
+
+    df_evolution["Semaine"] = (
+        df_evolution["Date"]
         .dt.isocalendar()
         .week
     )
 
 
-    temps_semaine = (
-        df_semaine
+    evolution = (
+        df_evolution
         .groupby(
-            ["Année", "Semaine"]
+            "Semaine",
+            as_index=False
         )["Total"]
         .sum()
-        .reset_index()
     )
 
 
-    temps_semaine["Heures"] = (
-        temps_semaine["Total"] / 60
-    )
-
-
-    fig = px.line(
-        temps_semaine,
+    fig_evolution = px.line(
+        evolution,
         x="Semaine",
-        y="Heures",
-        color="Année",
+        y="Total",
         markers=True,
-    )
-
-
-    fig.update_layout(
-        xaxis=dict(
-            title="Semaine de l'année",
-            dtick=4
-        ),
-        yaxis_title="Heures de sport",
-        legend_title="Année"
-    )
-
-
-# Cas : une seule année
-else:
-
-    df_semaine["Semaine"] = (
-        df_semaine["Date"]
-        .dt.to_period("W")
-        .apply(lambda x: x.start_time)
-    )
-
-
-    temps_semaine = (
-        df_semaine
-        .groupby("Semaine")["Total"]
-        .sum()
-        .reset_index()
-    )
-
-
-    temps_semaine["Heures"] = (
-        temps_semaine["Total"] / 60
-    )
-
-
-    fig = px.line(
-        temps_semaine,
-        x="Semaine",
-        y="Heures",
-        markers=True,
-    )
-
-
-    fig.update_layout(
-        xaxis_title="Semaine",
-        yaxis_title="Heures de sport"
+        labels={
+            "Semaine": "Semaine",
+            "Total": "Temps (minutes)"
+        }
     )
 
 
 st.plotly_chart(
-    fig,
+    fig_evolution,
     use_container_width=True
 )
-
 
 # ==========================
 # Tableau détaillé
