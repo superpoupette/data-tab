@@ -28,6 +28,7 @@ def importer_2024(df_sport, data2024):
         + data2024["Choree4_duree"].fillna(0)
         + data2024["Choree5_duree"].fillna(0)
         + data2024["warmup"].fillna(0)
+        + data2024["Autre"].fillna(0)
     )
 
     # On ne conserve que les jours où il y a de la danse
