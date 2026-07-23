@@ -139,7 +139,21 @@ def load_2026():
 
 def clean_2026(data2026):
 
-    # Conversion de la date
+    # Nettoyage des noms de colonnes
+    data2026.columns = (
+        data2026.columns
+        .astype(str)
+        .str.strip()
+    )
+
+    # La colonne "/" contient les dates
+    data2026 = data2026.rename(
+        columns={
+            "/": "Date"
+        }
+    )
+
+    # Conversion date
     data2026["Date"] = pd.to_datetime(
         data2026["Date"],
         errors="coerce"
