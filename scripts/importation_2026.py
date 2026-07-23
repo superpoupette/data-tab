@@ -131,6 +131,8 @@ def load_2026():
         engine="openpyxl"
     )
 
+    print(data2026.columns.tolist())
+
     return data2026
 
 
