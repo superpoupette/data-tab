@@ -113,7 +113,7 @@ with col2:
             font-size:16px;
             font-weight:600;
         ">
-            {temps_sport/60:.1f} / 300 h
+            {temps_sport/60:.1f} / 300 h de sport
         </div>
         """,
         unsafe_allow_html=True
@@ -157,7 +157,7 @@ with col2:
             font-size:16px;
             font-weight:600;
         ">
-            {nb_pompes} / 1000
+            {nb_pompes} / 1000 pompes
         </div>
         """,
         unsafe_allow_html=True
