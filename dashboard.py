@@ -9,7 +9,6 @@ def format_heures(minutes):
     return f"{round(minutes / 60)}h"
 
 
-
 st.title("📊 Mon tableau de bord personnel")
 
 
@@ -19,52 +18,39 @@ st.title("📊 Mon tableau de bord personnel")
 
 df_sport = charger_tableau_sport()
 
-
-# Ajout année et semaine
-
-df_sport["Annee"] = (
-    df_sport["Date"]
-    .dt.year
-)
-
-df_sport["Semaine"] = (
-    df_sport["Date"]
-    .dt.to_period("W")
-    .astype(str)
-)
-
+df_sport["Date"] = pd.to_datetime(df_sport["Date"])
 
 
 # ==========================
 # Filtre année
 # ==========================
 
-st.subheader("Analyse sportive")
-
-
 annees = sorted(
-    df_sport["Annee"]
-    .unique()
+    df_sport["Date"].dt.year.unique(),
+    reverse=True
 )
 
-
-choix_annee = st.selectbox(
+annees_selection = st.selectbox(
     "Année",
     ["Toutes"] + annees
 )
 
 
-if choix_annee == "Toutes":
+if annees_selection != "Toutes":
 
-    df_filtre = df_sport.copy()
+    df_filtre = df_sport[
+        df_sport["Date"].dt.year == annees_selection
+    ]
 
 else:
 
-    df_filtre = df_sport[
-        df_sport["Annee"] == choix_annee
-    ]
+    df_filtre = df_sport.copy()
 
 
+
+# ==========================
+# Données synthèse
+# ==========================
 
 activites = [
     "Danse",
@@ -77,110 +63,96 @@ activites = [
 ]
 
 
+totaux = df_filtre[activites].sum()
+
+temps_total = totaux.sum()
+
+
 
 # ==========================
-# Graphiques
+# Première ligne dashboard
 # ==========================
 
-
-col_gauche, col_droite = st.columns(
-    [2,1]
+gauche, droite = st.columns(
+    [1, 1.5]
 )
 
 
+# --------------------------
+# KPIs
+# --------------------------
 
-# ---- Evolution semaine ----
+with gauche:
 
-with col_gauche:
-
-    st.subheader(
-        "Temps de sport par semaine"
-    )
-
-
-    df_semaine = (
-        df_filtre
-        .copy()
-    )
+    st.subheader("🏆 Synthèse")
 
 
-    df_semaine["Total"] = (
-        df_semaine[activites]
-        .sum(axis=1)
-    )
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.metric(
+            "Temps total",
+            format_heures(temps_total)
+        )
+
+    with col2:
+        st.metric(
+            "Danse",
+            format_heures(totaux["Danse"])
+        )
 
 
-    evolution = (
-        df_semaine
-        .groupby("Semaine", as_index=False)
-        ["Total"]
-        .sum()
-    )
+    col3, col4 = st.columns(2)
 
+    with col3:
+        st.metric(
+            "Course",
+            format_heures(totaux["Course"])
+        )
 
-    evolution["Heures"] = (
-        evolution["Total"]
-        /
-        60
-    )
-
-
-    fig = px.line(
-        evolution,
-        x="Semaine",
-        y="Heures",
-        markers=True,
-    )
-
-
-    fig.update_layout(
-        xaxis_title="Semaine",
-        yaxis_title="Temps (heures)"
-    )
-
-
-    st.plotly_chart(
-        fig,
-        use_container_width=True
-    )
+    with col4:
+        st.metric(
+            "Muscu",
+            format_heures(totaux["Muscu"])
+        )
 
 
 
-# ---- Répartition ----
+# --------------------------
+# Camembert
+# --------------------------
 
-with col_droite:
+with droite:
 
     st.subheader(
-        "Répartition"
+        "Répartition des activités"
     )
 
 
-    totaux = (
-        df_filtre[activites]
-        .sum()
+    df_repartition = (
+        totaux
         .reset_index()
     )
 
-
-    totaux.columns = [
+    df_repartition.columns = [
         "Activite",
         "Temps"
     ]
 
 
-    totaux = totaux[
-        totaux["Temps"] > 0
+    df_repartition = df_repartition[
+        df_repartition["Temps"] > 0
     ]
 
 
-    totaux["Affichage"] = (
-        totaux["Temps"]
+    df_repartition["Affichage"] = (
+        df_repartition["Temps"]
         .apply(format_heures)
     )
 
 
     fig = px.pie(
-        totaux,
+        df_repartition,
         names="Activite",
         values="Temps",
         hole=0.35,
@@ -190,8 +162,7 @@ with col_droite:
     fig.update_traces(
         hovertemplate=
         "%{label}<br>%{customdata}",
-        customdata=
-        totaux["Affichage"]
+        customdata=df_repartition["Affichage"]
     )
 
 
@@ -203,50 +174,62 @@ with col_droite:
 
 
 # ==========================
-# Totaux année sélectionnée
+# Evolution hebdomadaire
 # ==========================
 
 st.subheader(
-    "Total des activités"
+    "📈 Temps de sport par semaine"
 )
 
 
-totaux = (
-    df_filtre[activites]
+df_semaine = df_filtre.copy()
+
+
+df_semaine["Semaine"] = (
+    df_semaine["Date"]
+    .dt.to_period("W")
+    .apply(lambda x: x.start_time)
+)
+
+
+df_semaine["Total"] = (
+    df_semaine[activites]
+    .sum(axis=1)
+)
+
+
+temps_semaine = (
+    df_semaine
+    .groupby("Semaine")["Total"]
     .sum()
+    .reset_index()
 )
 
 
-colonnes = st.columns(4)
+temps_semaine["Heures"] = (
+    temps_semaine["Total"] / 60
+)
 
 
-for col, activite in zip(
-    colonnes,
-    activites[:4]
-):
 
-    col.metric(
-        activite,
-        format_heures(
-            totaux[activite]
-        )
-    )
+fig = px.line(
+    temps_semaine,
+    x="Semaine",
+    y="Heures",
+    markers=True,
+)
 
 
-colonnes = st.columns(3)
+fig.update_layout(
+    yaxis_title="Heures",
+    xaxis_title="Semaine"
+)
 
 
-for col, activite in zip(
-    colonnes,
-    activites[4:]
-):
-
-    col.metric(
-        activite,
-        format_heures(
-            totaux[activite]
-        )
-    )
+st.plotly_chart(
+    fig,
+    use_container_width=True
+)
 
 
 
@@ -259,7 +242,7 @@ st.subheader(
 )
 
 
-df_affichage = df_sport.copy()
+df_affichage = df_filtre.copy()
 
 
 df_affichage["Total"] = (
