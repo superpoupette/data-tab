@@ -18,7 +18,9 @@ st.title("📊 Mon tableau de bord personnel")
 
 df_sport = charger_tableau_sport()
 
-df_sport["Date"] = pd.to_datetime(df_sport["Date"])
+df_sport["Date"] = pd.to_datetime(
+    df_sport["Date"]
+)
 
 
 # ==========================
@@ -26,30 +28,34 @@ df_sport["Date"] = pd.to_datetime(df_sport["Date"])
 # ==========================
 
 annees = sorted(
-    df_sport["Date"].dt.year.unique(),
+    df_sport["Date"]
+    .dt.year
+    .dropna()
+    .unique(),
     reverse=True
 )
 
+
 annees_selection = st.selectbox(
     "Année",
-    ["Toutes"] + annees
+    ["Toutes"] + list(annees)
 )
 
 
-if annees_selection != "Toutes":
+if annees_selection == "Toutes":
+
+    df_filtre = df_sport.copy()
+
+else:
 
     df_filtre = df_sport[
         df_sport["Date"].dt.year == annees_selection
     ]
 
-else:
-
-    df_filtre = df_sport.copy()
-
 
 
 # ==========================
-# Données synthèse
+# Activités
 # ==========================
 
 activites = [
@@ -63,7 +69,11 @@ activites = [
 ]
 
 
-totaux = df_filtre[activites].sum()
+totaux = (
+    df_filtre[activites]
+    .sum()
+)
+
 
 temps_total = totaux.sum()
 
@@ -78,9 +88,10 @@ gauche, droite = st.columns(
 )
 
 
-# --------------------------
-# KPIs
-# --------------------------
+
+# ==========================
+# KPI
+# ==========================
 
 with gauche:
 
@@ -95,7 +106,9 @@ with gauche:
             format_heures(temps_total)
         )
 
+
     with col2:
+
         st.metric(
             "Danse",
             format_heures(totaux["Danse"])
@@ -104,13 +117,17 @@ with gauche:
 
     col3, col4 = st.columns(2)
 
+
     with col3:
+
         st.metric(
             "Course",
             format_heures(totaux["Course"])
         )
 
+
     with col4:
+
         st.metric(
             "Muscu",
             format_heures(totaux["Muscu"])
@@ -118,9 +135,9 @@ with gauche:
 
 
 
-# --------------------------
+# ==========================
 # Camembert
-# --------------------------
+# ==========================
 
 with droite:
 
@@ -133,6 +150,7 @@ with droite:
         totaux
         .reset_index()
     )
+
 
     df_repartition.columns = [
         "Activite",
@@ -174,13 +192,16 @@ with droite:
 
 
 # ==========================
-# Evolution du temps de sport
+# Evolution du sport
 # ==========================
 
-st.subheader("Evolution du temps de sport")
+st.subheader(
+    "Evolution du temps de sport"
+)
 
 
 df_evolution = df_filtre.copy()
+
 
 df_evolution["Total"] = (
     df_evolution[activites]
@@ -188,16 +209,19 @@ df_evolution["Total"] = (
 )
 
 
+
 # ==========================
-# Toutes les années
+# Toutes les années = par mois
 # ==========================
 
-if annee_selection == "Toutes":
+if annees_selection == "Toutes":
+
 
     df_evolution["Année"] = (
         df_evolution["Date"]
         .dt.year
     )
+
 
     df_evolution["Mois"] = (
         df_evolution["Date"]
@@ -208,14 +232,16 @@ if annee_selection == "Toutes":
     evolution = (
         df_evolution
         .groupby(
-            ["Année", "Mois"],
+            [
+                "Année",
+                "Mois"
+            ],
             as_index=False
         )["Total"]
         .sum()
     )
 
 
-    # Nom des mois pour affichage
     mois_noms = [
         "",
         "Jan",
@@ -232,9 +258,12 @@ if annee_selection == "Toutes":
         "Déc",
     ]
 
+
     evolution["Mois_nom"] = (
         evolution["Mois"]
-        .apply(lambda x: mois_noms[x])
+        .apply(
+            lambda x: mois_noms[x]
+        )
     )
 
 
@@ -260,16 +289,19 @@ if annee_selection == "Toutes":
     )
 
 
+
 # ==========================
-# Une année sélectionnée
+# Une année = par semaine
 # ==========================
 
 else:
+
 
     df_evolution["Semaine"] = (
         df_evolution["Date"]
         .dt.isocalendar()
         .week
+        .astype(int)
     )
 
 
@@ -280,6 +312,9 @@ else:
             as_index=False
         )["Total"]
         .sum()
+        .sort_values(
+            "Semaine"
+        )
     )
 
 
@@ -295,10 +330,13 @@ else:
     )
 
 
+
 st.plotly_chart(
     fig_evolution,
     use_container_width=True
 )
+
+
 
 # ==========================
 # Tableau détaillé
@@ -331,7 +369,9 @@ colonnes = [
 ]
 
 
-df_affichage = df_affichage[colonnes]
+df_affichage = df_affichage[
+    colonnes
+]
 
 
 st.dataframe(
