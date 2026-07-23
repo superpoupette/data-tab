@@ -25,6 +25,12 @@ df_sport["Date"] = pd.to_datetime(
     df_sport["Date"]
 )
 
+# ==========================
+# Objectifs 2026
+# ==========================
+
+temps_sport = sport_2026()
+nb_pompes = pompes_2026()
 
 # ==========================
 # Objectifs
