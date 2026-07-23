@@ -93,8 +93,6 @@ col1, col2 = st.columns([3, 2])
 
 with col1:
 
-    st.write("🏃 **300 heures de sport en 2026**")
-
     st.markdown(
         barre_objectif(
             progression_sport,
@@ -124,12 +122,10 @@ progression_pompes = min(
 )
 
 
-col1, col2 = st.columns([3, 1])
+col1, col2 = st.columns([3, 2])
 
 
 with col1:
-
-    st.write("💪 **1000 pompes en 2026**")
 
     st.markdown(
         barre_objectif(
