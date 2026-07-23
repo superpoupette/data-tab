@@ -17,7 +17,7 @@ def pompes_2026():
     )
 
     # Suppression de la première ligne de la colonne
-    pompes = pompes.iloc[1:]
+    pompes = pompes.iloc[2:]
 
     # Somme
     total = pompes.fillna(0).sum()
