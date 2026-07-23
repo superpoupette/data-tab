@@ -21,7 +21,7 @@ df_sport = charger_tableau_sport()
 # Synthèse des activités
 # ==========================
 
-st.subheader("🏆 Total des activités")
+st.subheader("Total des activités")
 
 
 activites = [
@@ -62,7 +62,7 @@ for col, activite in zip(colonnes, activites[4:]):
 # Graphique répartition
 # ==========================
 
-st.subheader("📈 Répartition du temps par sport")
+st.subheader("Répartition du temps par sport")
 
 
 df_repartition = (
@@ -113,7 +113,7 @@ st.plotly_chart(
 # Tableau détaillé
 # ==========================
 
-st.subheader("📅 Détail quotidien")
+st.subheader("Détail quotidien")
 
 
 df_affichage = df_sport.copy()
