@@ -4,6 +4,7 @@ from scripts.importation_2024 import prepare_2024
 from scripts.importation_2025 import prepare_2025
 from scripts.importation_strava import charger_donnees_strava
 from scripts.importation_2026 import prepare_2026
+from scripts.importation_hevy import prepare_data
 
 
 COLONNES_SPORT = [
@@ -200,6 +201,119 @@ def importer_2026(df_sport, data2026):
         ignore_index=True
     )
 
+def importer_hevy(df_sport, workouts, sessions):
+
+    # Durée Stretching et Danse par séance
+    special = (
+        workouts[
+            workouts["exercise_title"].isin(
+                [
+                    "Stretching",
+                    "Danse"
+                ]
+            )
+        ]
+        .groupby(
+            "start_time"
+        )
+        ["duration_seconds"]
+        .sum()
+        .reset_index()
+    )
+
+
+    # Conversion secondes -> minutes
+    special["minutes"] = (
+        special["duration_seconds"]
+        /
+        60
+    )
+
+
+    # Séparation danse / stretching
+
+    stretching = (
+        workouts[
+            workouts["exercise_title"] == "Stretching"
+        ]
+        .groupby("start_time")["duration_seconds"]
+        .sum()
+        /
+        60
+    )
+
+
+    danse = (
+        workouts[
+            workouts["exercise_title"] == "Danse"
+        ]
+        .groupby("start_time")["duration_seconds"]
+        .sum()
+        /
+        60
+    )
+
+
+    # Ajout des valeurs aux sessions
+
+    sessions["Stretching"] = (
+        sessions["start_time"]
+        .map(stretching)
+        .fillna(0)
+    )
+
+
+    sessions["Danse"] = (
+        sessions["start_time"]
+        .map(danse)
+        .fillna(0)
+    )
+
+
+    # Muscu = durée totale - danse - stretching
+
+    sessions["Muscu"] = (
+        sessions["duree_minutes"]
+        -
+        sessions["Stretching"]
+        -
+        sessions["Danse"]
+    )
+
+
+    # Sécurité si valeur négative
+    sessions["Muscu"] = sessions["Muscu"].clip(
+        lower=0
+    )
+
+
+    df_hevy = pd.DataFrame({
+
+        "Date": sessions["start_time"].dt.normalize(),
+
+        "Danse": sessions["Danse"],
+
+        "Muscu": sessions["Muscu"],
+
+        "Stretching": sessions["Stretching"],
+
+        "Course": 0,
+
+        "Escalade": 0,
+
+        "Randonnée": 0,
+
+        "Autre": 0,
+    })
+
+
+    return pd.concat(
+        [
+            df_sport,
+            df_hevy
+        ],
+        ignore_index=True
+    )
 
 def charger_tableau_sport():
 
@@ -220,6 +334,18 @@ def charger_tableau_sport():
     # Strava
     data_strava = charger_donnees_strava()
     df_sport = importer_strava(df_sport, data_strava)
+
+    # Hevy
+    workouts, sessions = prepare_data(
+        "data/workouts.csv",
+        "data/exercices.csv"
+    )
+
+    df_sport = importer_hevy(
+        df_sport,
+        workouts,
+        sessions
+    )
 
     # Suppression des lignes sans date
     df_sport = df_sport.dropna(
