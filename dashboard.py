@@ -3,6 +3,10 @@ import pandas as pd
 import plotly.express as px
 
 from scripts.gestion_sport import charger_tableau_sport
+from scripts.objectifs import (
+    sport_2026,
+    pompes_2026,
+)
 
 
 def format_heures(minutes):
@@ -26,39 +30,49 @@ df_sport["Date"] = pd.to_datetime(
 # Objectifs
 # ==========================
 
-st.header("🎯 Objectifs")
+st.subheader("🎯 Objectifs")
 
-# Données 2026 uniquement
-df_2026 = df_sport[
-    df_sport["Date"].dt.year == 2026
-].copy()
+# -------- Sport --------
 
-activites = [
-    "Danse",
-    "Muscu",
-    "Stretching",
-    "Course",
-    "Escalade",
-    "Randonnée",
-    "Autre",
-]
+objectif_sport = 300 * 60
 
-temps_sport = df_2026[activites].sum().sum()
+progression = min(
+    temps_sport / objectif_sport,
+    1
+)
 
-objectif = 300 * 60  # 300 heures en minutes
-
-progression = min(temps_sport / objectif, 1.0)
-
-col1, col2 = st.columns([3, 2])
+col1, col2 = st.columns([3, 1])
 
 with col1:
-    st.write("**300 heures de sport en 2026**")
+    st.caption("🏃 300 h de sport en 2026")
     st.progress(progression)
 
 with col2:
     st.metric(
-        "Progression",
+        "Sport",
         f"{temps_sport/60:.1f} / 300 h"
+    )
+
+
+# -------- Pompes --------
+
+objectif_pompes = 1000
+
+progression = min(
+    nb_pompes / objectif_pompes,
+    1
+)
+
+col1, col2 = st.columns([3, 1])
+
+with col1:
+    st.caption("💪 1000 pompes")
+    st.progress(progression)
+
+with col2:
+    st.metric(
+        "Pompes",
+        f"{nb_pompes:.0f} / 1000"
     )
 
 st.write("")
