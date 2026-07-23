@@ -16,23 +16,37 @@ df_sport = charger_tableau_sport()
 # Synthèse des activités
 # ==========================
 
-
-activites = [
+activites_ligne1 = [
     "Danse",
     "Muscu",
     "Stretching",
     "Course",
-    "Escalade",
-    "Randonnée",
 ]
 
-totaux = df_sport[activites].sum()
+activites_ligne2 = [
+    "Escalade",
+    "Randonnée",
+    "Autre",
+]
 
 
-# Affichage en colonnes
-colonnes = st.columns(len(activites))
+totaux = df_sport[activites_ligne1 + activites_ligne2].sum()
 
-for col, activite in zip(colonnes, activites):
+
+# Première ligne
+colonnes = st.columns(4)
+
+for col, activite in zip(colonnes, activites_ligne1):
+    col.metric(
+        label=activite,
+        value=f"{totaux[activite]:.0f} min"
+    )
+
+
+# Deuxième ligne
+colonnes = st.columns(3)
+
+for col, activite in zip(colonnes, activites_ligne2):
     col.metric(
         label=activite,
         value=f"{totaux[activite]:.0f} min"
