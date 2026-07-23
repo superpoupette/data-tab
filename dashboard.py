@@ -12,6 +12,17 @@ def format_heures(minutes):
 st.title("📊 Mon tableau de bord personnel")
 
 # ==========================
+# Chargement données
+# ==========================
+
+df_sport = charger_tableau_sport()
+
+df_sport["Date"] = pd.to_datetime(
+    df_sport["Date"]
+)
+
+
+# ==========================
 # Objectifs
 # ==========================
 
@@ -50,22 +61,12 @@ with col2:
         f"{temps_sport/60:.1f} / 300 h"
     )
 
-st.header("Sport")
-
-# ==========================
-# Chargement données
-# ==========================
-
-df_sport = charger_tableau_sport()
-
-df_sport["Date"] = pd.to_datetime(
-    df_sport["Date"]
-)
 
 
 # ==========================
 # Filtre année
 # ==========================
+st.header("Sport")
 
 annees = sorted(
     df_sport["Date"]
