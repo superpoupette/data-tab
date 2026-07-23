@@ -96,7 +96,7 @@ with col1:
     st.markdown(
         barre_objectif(
             progression_sport,
-            "#7ed6c1"   # vert turquoise clair
+            "#7ed6c1"
         ),
         unsafe_allow_html=True
     )
@@ -104,9 +104,19 @@ with col1:
 
 with col2:
 
-    st.metric(
-        "",
-        f"{temps_sport/60:.1f} / 300 h"
+    st.markdown(
+        f"""
+        <div style="
+            height:18px;
+            display:flex;
+            align-items:center;
+            font-size:16px;
+            font-weight:600;
+        ">
+            {temps_sport/60:.1f} / 300 h
+        </div>
+        """,
+        unsafe_allow_html=True
     )
 
 
@@ -130,7 +140,7 @@ with col1:
     st.markdown(
         barre_objectif(
             progression_pompes,
-            "#f7a8c4"   # rose clair
+            "#f7a8c4"
         ),
         unsafe_allow_html=True
     )
@@ -138,9 +148,19 @@ with col1:
 
 with col2:
 
-    st.metric(
-        "",
-        f"{nb_pompes} / 1000"
+    st.markdown(
+        f"""
+        <div style="
+            height:18px;
+            display:flex;
+            align-items:center;
+            font-size:16px;
+            font-weight:600;
+        ">
+            {nb_pompes} / 1000
+        </div>
+        """,
+        unsafe_allow_html=True
     )
 
 
