@@ -61,21 +61,32 @@ def importer_2025(df_sport, data2025):
 
     # Stretching
     stretch = data2025["Stretch"].fillna(False).astype(int) * 10
-    stretch_split = data2025["Stretch_split"].fillna(False).astype(int) * 7
+    stretch_split = data2025["Stretch-split"].fillna(False).astype(int) * 7
     stretch_bonus = data2025["Stretch_bonus"].fillna(0)
 
     stretching = stretch + stretch_split + stretch_bonus
 
-    # On conserve uniquement les jours où il y a une activité
-    masque = (danse > 0) | (stretching > 0)
+    # Musculation
+    muscu = data2025["Muscu_duree"].fillna(0)
+
+    # Escalade
+    escalade = data2025["Escalade"].fillna(0)
+
+    # On conserve uniquement les jours avec une activité
+    masque = (
+        (danse > 0)
+        | (stretching > 0)
+        | (muscu > 0)
+        | (escalade > 0)
+    )
 
     df_2025 = pd.DataFrame({
         "Date": data2025.loc[masque, "Date"],
         "Danse": danse.loc[masque],
-        "Muscu": 0,
+        "Muscu": muscu.loc[masque],
         "Stretching": stretching.loc[masque],
         "Course": 0,
-        "Escalade": 0,
+        "Escalade": escalade.loc[masque],
         "Randonnée": 0,
         "Autre": 0,
     })
@@ -86,7 +97,6 @@ def importer_2025(df_sport, data2025):
     )
 
     return df_sport
-
 
 
 def charger_tableau_sport():
