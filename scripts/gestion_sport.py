@@ -31,14 +31,17 @@ def importer_2024(df_sport, data2024):
         + data2024["Autre"].fillna(0)
     )
 
+    # Stretching : 10 minutes si la case est cochée
+    stretching = data2024["Stretching"].fillna(False).astype(int) * 10
+
     # On ne conserve que les jours où il y a de la danse
-    masque = danse > 0
+    masque = (danse > 0) | (stretching > 0)
 
     df_2024 = pd.DataFrame({
         "Date": data2024.loc[masque, "Date"],
         "Danse": danse.loc[masque],
         "Muscu": 0,
-        "Stretching": 0,
+        "Stretching": stretching.loc[masque],
         "Course": 0,
         "Escalade": 0,
         "Randonnée": 0,
