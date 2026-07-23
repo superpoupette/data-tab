@@ -9,7 +9,7 @@ def format_heures(minutes):
     return f"{round(minutes / 60)}h"
 
 
-st.title("📊 Mon tableau de bord personnel")
+st.title("Tableau de bord")
 
 # ==========================
 # Chargement données
@@ -66,7 +66,7 @@ with col2:
 # ==========================
 # Filtre année
 # ==========================
-st.header("Sport")
+st.header("🏃 Sport")
 
 annees = sorted(
     df_sport["Date"]
