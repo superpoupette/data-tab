@@ -2,8 +2,16 @@
 
 import streamlit as st
 
+from gestion_sport import charger_tableau_sport
+
 st.title("📊 Mon tableau de bord personnel")
 
-st.write(
-    "Sélectionne une rubrique dans le menu à gauche."
+st.write("Suivi des activités sportives")
+
+df_sport = charger_tableau_sport()
+
+st.dataframe(
+    df_sport,
+    use_container_width=True,
+    hide_index=True,
 )
