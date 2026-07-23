@@ -3,6 +3,7 @@ import pandas as pd
 import plotly.express as px
 
 from scripts.gestion_sport import charger_tableau_sport
+from scripts.objectifs import pompes_2026
 
 
 
@@ -22,6 +23,7 @@ df_sport["Date"] = pd.to_datetime(
     df_sport["Date"]
 )
 
+nb_pompes = pompes_2026()
 
 # ==========================
 # Objectifs
@@ -61,6 +63,20 @@ with col2:
         "Progression",
         f"{temps_sport/60:.1f} / 300 h"
     )
+
+objectif_pompes = 1000
+
+progression = min(
+    nb_pompes / objectif_pompes,
+    1
+)
+
+st.progress(progression)
+
+st.metric(
+    "Pompes",
+    f"{nb_pompes} / {objectif_pompes}"
+)
 
 st.write("")
 st.divider()
