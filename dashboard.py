@@ -11,6 +11,7 @@ def format_heures(minutes):
 
 st.title("📊 Mon tableau de bord personnel")
 
+st.header("Sport")
 
 # ==========================
 # Chargement données
@@ -83,6 +84,8 @@ temps_total = totaux.sum()
 # Première ligne dashboard
 # ==========================
 
+
+
 gauche, droite = st.columns(
     [1, 1.5]
 )
@@ -95,7 +98,7 @@ gauche, droite = st.columns(
 
 with gauche:
 
-    st.subheader("🏆 Synthèse")
+    st.subheader("Synthèse")
 
 
     col1, col2 = st.columns(2)
@@ -343,7 +346,7 @@ st.plotly_chart(
 # ==========================
 
 st.subheader(
-    "📅 Détail quotidien"
+    "Détail quotidien"
 )
 
 
