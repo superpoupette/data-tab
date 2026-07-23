@@ -5,11 +5,14 @@ def load_workouts(filepath):
     workouts = pd.read_csv(filepath)
     return workouts
 
+
 def load_exercices(filepath):
     exercices = pd.read_csv(filepath, sep=";")
     return exercices
 
+
 def clean_dates(workouts):
+
     mois = {
         "janv.": "Jan",
         "févr.": "Feb",
@@ -26,78 +29,104 @@ def clean_dates(workouts):
     }
 
     for fr, en in mois.items():
-        workouts["start_time"] = workouts["start_time"].str.replace(fr, en)
-        workouts["end_time"] = workouts["end_time"].str.replace(fr, en)
+
+        workouts["start_time"] = (
+            workouts["start_time"]
+            .astype(str)
+            .str.replace(fr, en, regex=False)
+        )
+
+        workouts["end_time"] = (
+            workouts["end_time"]
+            .astype(str)
+            .str.replace(fr, en, regex=False)
+        )
+
 
     workouts["start_time"] = pd.to_datetime(
         workouts["start_time"],
-        format="%d %b %Y, %H:%M"
+        format="%d %b %Y, %H:%M",
+        errors="coerce"
     )
 
     workouts["end_time"] = pd.to_datetime(
         workouts["end_time"],
-        format="%d %b %Y, %H:%M"
+        format="%d %b %Y, %H:%M",
+        errors="coerce"
     )
 
     return workouts
+
 
 
 def add_volume(workouts):
+
     workouts["volume"] = (
-        workouts["weight_kg"] * workouts["reps"]
+        pd.to_numeric(workouts["weight_kg"], errors="coerce")
+        *
+        pd.to_numeric(workouts["reps"], errors="coerce")
     )
 
     return workouts
 
-def add_muscle(workouts, exercices):
-    workouts = workouts.merge(
-        exercices[["exercise_title", "muscle"]],
-        on="exercise_title",
-        how="left"
-    )
-
-    return workouts
 
 
 def create_sessions(workouts):
-    sessions = workouts.groupby("start_time").agg(
-        end_time=("end_time", "first"),
-        nombre_series=("set_index", "count"),
-        nombre_exercices=("exercise_title", "nunique"),
-        volume_total=("volume", "sum"),
 
-        # Liste des exercices de la séance
-        exercices=("exercise_title",
-                   lambda x: ", ".join(x.drop_duplicates())),
-
-        # Liste des groupes musculaires travaillés
-        muscles=("muscle",
-                 lambda x: ", ".join(x.dropna().drop_duplicates()))
+    sessions = (
+        workouts
+        .dropna(
+            subset=[
+                "start_time",
+                "end_time"
+            ]
+        )
+        .groupby("start_time")
+        .agg(
+            end_time=("end_time", "first"),
+            nombre_series=("set_index", "count"),
+            nombre_exercices=("exercise_title", "nunique"),
+            volume_total=("volume", "sum"),
+        )
+        .reset_index()
     )
 
-    sessions = sessions.reset_index()
 
-    # Ajout du mois
-    sessions["mois"] = sessions["start_time"].dt.to_period("M")
+    # Durée de séance en minutes
 
-    # Calcul de la durée de séance en minutes
     sessions["duree_minutes"] = (
-        (sessions["end_time"] - sessions["start_time"])
+        (
+            sessions["end_time"]
+            -
+            sessions["start_time"]
+        )
         .dt.total_seconds()
-        / 60
+        /
+        60
     )
+
+
+    # Date sans l'heure
+    sessions["Date"] = (
+        sessions["start_time"]
+        .dt.normalize()
+    )
+
 
     return sessions
 
 
-def prepare_data(workouts_filepath, exercices_filepath):
+
+def prepare_data(workouts_filepath, exercices_filepath=None):
+
     workouts = load_workouts(workouts_filepath)
-    exercices = load_exercices(exercices_filepath)
 
     workouts = clean_dates(workouts)
+
     workouts = add_volume(workouts)
-    workouts = add_muscle(workouts, exercices)
+
 
     sessions = create_sessions(workouts)
+
 
     return workouts, sessions
