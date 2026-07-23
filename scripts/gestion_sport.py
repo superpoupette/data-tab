@@ -61,7 +61,7 @@ def importer_2025(df_sport, data2025):
 
     # Stretching
     stretch = data2025["Stretch"].fillna(False).astype(int) * 10
-    stretch_split = data2025["Stretch-split"].fillna(False).astype(int) * 7
+    stretch_split = data2025["Stretch_split"].fillna(False).astype(int) * 7
     stretch_bonus = data2025["Stretch_bonus"].fillna(0)
 
     stretching = stretch + stretch_split + stretch_bonus
