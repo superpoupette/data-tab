@@ -185,52 +185,102 @@ st.subheader(
 df_semaine = df_filtre.copy()
 
 
-df_semaine["Semaine"] = (
-    df_semaine["Date"]
-    .dt.to_period("W")
-    .apply(lambda x: x.start_time)
-)
-
-
 df_semaine["Total"] = (
     df_semaine[activites]
     .sum(axis=1)
 )
 
 
-temps_semaine = (
-    df_semaine
-    .groupby("Semaine")["Total"]
-    .sum()
-    .reset_index()
-)
+# Cas : toutes les années
+if annees_selection == "Toutes":
+
+    df_semaine["Année"] = (
+        df_semaine["Date"]
+        .dt.year
+    )
+
+    df_semaine["Semaine"] = (
+        df_semaine["Date"]
+        .dt.isocalendar()
+        .week
+    )
 
 
-temps_semaine["Heures"] = (
-    temps_semaine["Total"] / 60
-)
+    temps_semaine = (
+        df_semaine
+        .groupby(
+            ["Année", "Semaine"]
+        )["Total"]
+        .sum()
+        .reset_index()
+    )
 
 
-
-fig = px.line(
-    temps_semaine,
-    x="Semaine",
-    y="Heures",
-    markers=True,
-)
+    temps_semaine["Heures"] = (
+        temps_semaine["Total"] / 60
+    )
 
 
-fig.update_layout(
-    yaxis_title="Heures",
-    xaxis_title="Semaine"
-)
+    fig = px.line(
+        temps_semaine,
+        x="Semaine",
+        y="Heures",
+        color="Année",
+        markers=True,
+    )
+
+
+    fig.update_layout(
+        xaxis=dict(
+            title="Semaine de l'année",
+            dtick=4
+        ),
+        yaxis_title="Heures de sport",
+        legend_title="Année"
+    )
+
+
+# Cas : une seule année
+else:
+
+    df_semaine["Semaine"] = (
+        df_semaine["Date"]
+        .dt.to_period("W")
+        .apply(lambda x: x.start_time)
+    )
+
+
+    temps_semaine = (
+        df_semaine
+        .groupby("Semaine")["Total"]
+        .sum()
+        .reset_index()
+    )
+
+
+    temps_semaine["Heures"] = (
+        temps_semaine["Total"] / 60
+    )
+
+
+    fig = px.line(
+        temps_semaine,
+        x="Semaine",
+        y="Heures",
+        markers=True,
+    )
+
+
+    fig.update_layout(
+        xaxis_title="Semaine",
+        yaxis_title="Heures de sport"
+    )
 
 
 st.plotly_chart(
     fig,
     use_container_width=True
 )
-
 
 
 # ==========================
