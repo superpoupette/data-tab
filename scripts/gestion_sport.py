@@ -19,19 +19,39 @@ def creer_tableau_sport():
 
 
 def importer_2024(df_sport, data2024):
-    df_sport["Date"] = data2024["Date"]
-    df_sport["Danse"] = data2024["Total Danse"]
 
-    for col in COLONNES_SPORT:
-        if col not in ("Date", "Danse"):
-            df_sport[col] = 0
+    # Calcul du temps de danse
+    danse = (
+        data2024["Choree1_duree"].fillna(0)
+        + data2024["Choree2_duree"].fillna(0)
+        + data2024["Choree3_duree"].fillna(0)
+        + data2024["Choree4_duree"].fillna(0)
+        + data2024["Choree5_duree"].fillna(0)
+    )
+
+    # On ne conserve que les jours où il y a de la danse
+    masque = danse > 0
+
+    df_2024 = pd.DataFrame({
+        "Date": data2024.loc[masque, "Date"],
+        "Danse": danse.loc[masque],
+        "Muscu": 0,
+        "Stretching": 0,
+        "Course": 0,
+        "Escalade": 0,
+        "Randonnée": 0,
+        "Autre": 0,
+    })
+
+    # Ajout au tableau général
+    df_sport = pd.concat([df_sport, df_2024], ignore_index=True)
 
     return df_sport
 
 
 def charger_tableau_sport():
     """Construit le tableau complet de sport."""
-    st.write(data2024.columns.tolist())
+    
 
     df_sport = creer_tableau_sport()
 
