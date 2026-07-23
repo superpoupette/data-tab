@@ -2,6 +2,8 @@ import pandas as pd
 
 from scripts.importation_2024 import prepare_2024
 from scripts.importation_2025 import prepare_2025
+from scripts.importation_strava import charger_donnees_strava
+
 
 COLONNES_SPORT = [
     "Date",
@@ -98,9 +100,48 @@ def importer_2025(df_sport, data2025):
 
     return df_sport
 
+def importer_strava(df_sport, data_strava):
+
+    # Initialisation des colonnes
+    course = pd.Series(0, index=data_strava.index)
+    randonnee = pd.Series(0, index=data_strava.index)
+
+    # Conversion du temps écoulé en minutes
+    temps = data_strava["Temps écoulé"].fillna(0) / 60
+
+    # Répartition selon le type d'activité
+    course[data_strava["Type d'activité"] == "Course à pied"] = (
+        temps[data_strava["Type d'activité"] == "Course à pied"]
+    )
+
+    randonnee[data_strava["Type d'activité"] == "Randonnée"] = (
+        temps[data_strava["Type d'activité"] == "Randonnée"]
+    )
+
+    # On garde uniquement les activités utiles
+    masque = (course > 0) | (randonnee > 0)
+
+    df_strava = pd.DataFrame({
+        "Date": data_strava.loc[masque, "Date de l'activité"].dt.normalize(),
+        "Danse": 0,
+        "Muscu": 0,
+        "Stretching": 0,
+        "Course": course.loc[masque],
+        "Escalade": 0,
+        "Randonnée": randonnee.loc[masque],
+        "Autre": 0,
+    })
+
+    df_sport = pd.concat(
+        [df_sport, df_strava],
+        ignore_index=True
+    )
+
+    return df_sport
+
+
 
 def charger_tableau_sport():
-    """Construit le tableau complet de sport."""
 
     df_sport = creer_tableau_sport()
 
@@ -112,7 +153,15 @@ def charger_tableau_sport():
     data2025 = prepare_2025("data/2025.csv")
     df_sport = importer_2025(df_sport, data2025)
 
-    # Tri chronologique
-    df_sport = df_sport.sort_values("Date").reset_index(drop=True)
+    # Strava
+    data_strava = charger_donnees_strava()
+    df_sport = importer_strava(df_sport, data_strava)
+
+    # Tri par date
+    df_sport = (
+        df_sport
+        .sort_values("Date")
+        .reset_index(drop=True)
+    )
 
     return df_sport
