@@ -55,81 +55,102 @@ temps_sport = (
 )
 
 
+def barre_objectif(progression, couleur):
+
+    return f"""
+    <div style="
+        background-color:#eeeeee;
+        border-radius:10px;
+        height:18px;
+        width:100%;
+        margin-top:5px;
+    ">
+        <div style="
+            background-color:{couleur};
+            width:{progression*100:.1f}%;
+            height:18px;
+            border-radius:10px;
+        ">
+        </div>
+    </div>
+    """
+
+
 # ==========================
-# Objectifs côte à côte
+# Objectif sport
 # ==========================
 
-col1, col2 = st.columns(2)
+objectif_sport = 300 * 60
+
+progression_sport = min(
+    temps_sport / objectif_sport,
+    1
+)
 
 
-# -------- Objectif sport --------
+col1, col2 = st.columns([3, 1])
+
 
 with col1:
 
-    objectif_sport = 300 * 60
-
-    progression_sport = min(
-        temps_sport / objectif_sport,
-        1.0
-    )
-
     st.write("🏃 **300 heures de sport en 2026**")
 
-    st.progress(
-        progression_sport
-    )
-
-    st.metric(
-        "Progression",
-        f"{temps_sport/60:.1f} / 300 h"
-    )
-
-
-# -------- Objectif pompes --------
-
-with col2:
-
-    objectif_pompes = 1000
-
-    progression_pompes = min(
-        nb_pompes / objectif_pompes,
-        1.0
-    )
-
-    st.write("💪 **1000 pompes en 2026**")
-
-
-    # Barre personnalisée rose clair
     st.markdown(
-        f"""
-        <div style="
-            background-color:#f3e6eb;
-            border-radius:10px;
-            height:20px;
-            width:100%;
-        ">
-            <div style="
-                background-color:#f7a8c4;
-                width:{progression_pompes*100}%;
-                height:20px;
-                border-radius:10px;
-            ">
-            </div>
-        </div>
-        """,
+        barre_objectif(
+            progression_sport,
+            "#7ed6c1"   # vert turquoise clair
+        ),
         unsafe_allow_html=True
     )
 
 
+with col2:
+
     st.metric(
-        "Progression",
+        "",
+        f"{temps_sport/60:.1f} / 300 h"
+    )
+
+
+# ==========================
+# Objectif pompes
+# ==========================
+
+objectif_pompes = 1000
+
+progression_pompes = min(
+    nb_pompes / objectif_pompes,
+    1
+)
+
+
+col1, col2 = st.columns([3, 1])
+
+
+with col1:
+
+    st.write("💪 **1000 pompes en 2026**")
+
+    st.markdown(
+        barre_objectif(
+            progression_pompes,
+            "#f7a8c4"   # rose clair
+        ),
+        unsafe_allow_html=True
+    )
+
+
+with col2:
+
+    st.metric(
+        "",
         f"{nb_pompes} / 1000"
     )
 
 
-
 st.write("")
 st.divider()
+
 
 # ==========================
 # Filtre année
