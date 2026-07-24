@@ -85,9 +85,8 @@ volume_muscles["pourcentage"] = (
 )
 
 
-col_gauche, col_droite = st.columns([2, 1])
+col_gauche, col_droite = st.columns([1, 1])
 
-col_gauche, col_droite = st.columns([2, 1])
 
 with col_gauche:
     st.subheader("Répartition musculaire")
