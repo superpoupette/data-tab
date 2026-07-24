@@ -138,6 +138,27 @@ def create_sessions(workouts):
 
     return sessions
 
+def replace_exercise_title(workouts):
+
+    # Lignes où les notes ne sont pas vides
+    masque = (
+        workouts["exercise_notes"].notna()
+        &
+        (workouts["exercise_notes"].str.strip() != "")
+        &
+        ~(
+            (workouts["exercise_title"] == "Hip Thrust (Barbell)")
+            &
+            (workouts["start_time"] == pd.Timestamp("2026-07-10 08:00:00"))
+        )
+    )
+
+    # Remplacement
+    workouts.loc[masque, "exercise_title"] = (
+        workouts.loc[masque, "exercise_notes"]
+    )
+
+    return workouts
 
 
 def prepare_data(
@@ -158,6 +179,10 @@ def prepare_data(
         workouts
     )
 
+    workouts = replace_exercise_title(
+        workouts
+    )
+
     workouts = add_volume(
         workouts
     )
@@ -174,3 +199,4 @@ def prepare_data(
 
 
     return workouts, sessions
+
