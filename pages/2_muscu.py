@@ -89,7 +89,7 @@ col_gauche, col_droite = st.columns([1, 1])
 
 
 with col_gauche:
-    st.subheader("Répartition musculaire")
+    st.subheader("Volume par muscles")
 
     chart_muscles = alt.Chart(volume_muscles).mark_bar().encode(
         x=alt.X(
@@ -122,7 +122,7 @@ with col_gauche:
     )
 
 with col_droite:
-    st.subheader("Temps d'entraînement")
+    st.subheader("Temps par muscles")
 
     # Nombre de séries par muscle dans chaque séance
     temps_muscles = (
