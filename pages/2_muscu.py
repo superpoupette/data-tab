@@ -123,8 +123,71 @@ with col_gauche:
     )
 
 with col_droite:
-    st.subheader("Autre information")
-    st.write("Ton autre contenu ici")
+    with col_droite:
+    st.subheader("Temps d'entraînement")
+
+    # Nombre de séries par muscle dans chaque séance
+    temps_muscles = (
+        workouts
+        .dropna(subset=["muscle"])
+        .groupby(["start_time", "muscle"])
+        .size()
+        .reset_index(name="nb_series")
+    )
+
+    # Nombre total de séries par séance
+    total_series = (
+        temps_muscles
+        .groupby("start_time")["nb_series"]
+        .sum()
+        .reset_index(name="total_series")
+    )
+
+    # Ajout de la durée de séance
+    temps_muscles = (
+        temps_muscles
+        .merge(total_series, on="start_time")
+        .merge(
+            sessions[["start_time", "duree_minutes"]],
+            on="start_time"
+        )
+    )
+
+    # Répartition de la durée
+    temps_muscles["minutes"] = (
+        temps_muscles["duree_minutes"]
+        * temps_muscles["nb_series"]
+        / temps_muscles["total_series"]
+    )
+
+    # Temps total par muscle
+    temps_muscles = (
+        temps_muscles
+        .groupby("muscle", as_index=False)["minutes"]
+        .sum()
+        .sort_values("minutes", ascending=False)
+    )
+
+    chart_temps = alt.Chart(temps_muscles).mark_bar().encode(
+        x=alt.X(
+            "minutes:Q",
+            title="Temps (min)"
+        ),
+        y=alt.Y(
+            "muscle:N",
+            sort="-x",
+            title=""
+        ),
+        tooltip=[
+            alt.Tooltip("muscle:N", title="Muscle"),
+            alt.Tooltip("minutes:Q", title="Minutes", format=".0f")
+        ]
+    )
+
+    st.altair_chart(
+        chart_temps,
+        use_container_width=True
+    )
 
 
 
