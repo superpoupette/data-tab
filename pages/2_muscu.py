@@ -237,3 +237,17 @@ st.altair_chart(
     chart_evolution,
     use_container_width=True
 )
+
+
+# -----------------------------
+# Données brutes
+# -----------------------------
+
+st.divider()
+
+st.subheader("Tableau des données brutes (workouts)")
+
+st.dataframe(
+    workouts,
+    use_container_width=True
+)
