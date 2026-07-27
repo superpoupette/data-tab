@@ -219,6 +219,9 @@ div[data-testid="stButton"] button {
     color: inherit;
     width: 32px;
     height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 div[data-testid="stButton"] button:hover {
