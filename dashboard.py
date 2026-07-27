@@ -222,6 +222,7 @@ div[data-testid="stButton"] button {
     display: flex;
     align-items: center;
     justify-content: center;
+    transform: translateY(-2px);
 }
 
 div[data-testid="stButton"] button:hover {
