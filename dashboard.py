@@ -71,7 +71,8 @@ def barre_objectif(progression, couleur):
         border-radius:10px;
         height:18px;
         width:100%;
-        margin-top:5px;
+        margin-top:0px;
+        margin-bottom:0px;
     ">
         <div style="
             background-color:{couleur};
@@ -221,12 +222,13 @@ div[data-testid="stButton"] button {
     font-size: 40px;
     font-weight: 600;
     color: inherit;
-    width: 40px;
-    height: 40px;
+    width: 32px;
+    height: 20px;
+    min-height: 20px;
     display: flex;
     align-items: center;
     justify-content: center;
-    transform: translateY(-10px);
+    transform: translateY(-2px);
 }
 
 div[data-testid="stButton"] button:hover {
