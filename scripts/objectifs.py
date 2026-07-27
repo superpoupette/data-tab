@@ -103,3 +103,13 @@ def ajouter_page_dessin():
     actuel = pages_dessin()
 
     sheet.update("B2", [[actuel + 1]])
+
+def retirer_page_dessin():
+
+    sheet = _sheet_objectifs()
+
+    actuel = pages_dessin()
+
+    nouveau = max(0, actuel - 1)
+
+    sheet.update("B2", [[nouveau]])
