@@ -208,6 +208,26 @@ with col2:
         unsafe_allow_html=True
     )
 
+st.markdown("""
+<style>
+div[data-testid="stButton"] button {
+    background: transparent;
+    border: none;
+    padding: 0;
+    font-size: 22px;
+    font-weight: 600;
+    color: inherit;
+    width: 32px;
+    height: 32px;
+}
+
+div[data-testid="stButton"] button:hover {
+    background: transparent;
+    border: none;
+}
+</style>
+""", unsafe_allow_html=True)
+
 with col3:
     if st.button("-", key="dessin_moins"):
         retirer_page_dessin()
