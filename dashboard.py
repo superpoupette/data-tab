@@ -209,12 +209,12 @@ with col2:
     )
 
 with col3:
-    if st.button("➖", key="dessin_moins"):
+    if st.button("-", key="dessin_moins"):
         retirer_page_dessin()
         st.rerun()
 
 with col4:
-    if st.button("➕", key="dessin_plus"):
+    if st.button("+", key="dessin_plus"):
         ajouter_page_dessin()
         st.rerun()
 
