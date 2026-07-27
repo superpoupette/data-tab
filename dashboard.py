@@ -7,7 +7,10 @@ from scripts.objectifs import (
     pompes_2026,
     pages_dessin,
     ajouter_page_dessin,
-    retirer_page_dessin
+    retirer_page_dessin,
+    detox,
+    ajouter_detox,
+    retirer_detox
 )
 
 def format_heures(minutes):
@@ -28,6 +31,7 @@ df_sport["Date"] = pd.to_datetime(
 
 nb_pompes = pompes_2026()
 nb_pages = pages_dessin()
+nb_detox = detox()
 
 # ==========================
 # Objectifs
@@ -240,6 +244,62 @@ with col3:
 with col4:
     if st.button("+", key="dessin_plus"):
         ajouter_page_dessin()
+        st.rerun()
+
+# ==========================
+# Objectif detox
+# ==========================
+
+objectif_detox = 10
+
+progression_detox = min(
+    nb_detox / objectif_detox,
+    1
+)
+
+col1, col2, col3, col4 = st.columns([7, 2, 0.5, 0.5])
+
+
+with col1:
+
+    st.markdown(
+        barre_objectif(
+            progression_detox,
+            "#9b8cff"
+        ),
+        unsafe_allow_html=True
+    )
+
+
+with col2:
+
+    st.markdown(
+        f"""
+        <div style="
+            height:18px;
+            display:flex;
+            align-items:center;
+            font-size:16px;
+            font-weight:600;
+        ">
+            {nb_detox} / {objectif_detox} detox
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+with col3:
+
+    if st.button("-", key="detox_moins"):
+        retirer_detox()
+        st.rerun()
+
+
+with col4:
+
+    if st.button("+", key="detox_plus"):
+        ajouter_detox()
         st.rerun()
 
 # ==========================

@@ -113,3 +113,42 @@ def retirer_page_dessin():
     nouveau = max(0, actuel - 1)
 
     sheet.update("B2", [[nouveau]])
+
+
+
+# ==========================
+# Detox
+# ==========================
+
+def detox():
+
+    sheet = _sheet_objectifs()
+
+    valeur = sheet.acell("C2").value
+
+    if not valeur:
+        return 0
+
+    return int(valeur)
+
+
+def ajouter_detox():
+
+    sheet = _sheet_objectifs()
+
+    actuel = detox()
+
+    nouveau = min(10, actuel + 1)
+
+    sheet.update("C2", [[nouveau]])
+
+
+def retirer_detox():
+
+    sheet = _sheet_objectifs()
+
+    actuel = detox()
+
+    nouveau = max(0, actuel - 1)
+
+    sheet.update("C2", [[nouveau]])
