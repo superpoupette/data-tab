@@ -4,7 +4,11 @@ import plotly.express as px
 
 from scripts.gestion_sport import charger_tableau_sport
 from scripts.objectifs import pompes_2026
-
+from scripts.objectifs import (
+    pompes_2026,
+    pages_dessin,
+    ajouter_page_dessin
+)
 
 
 def format_heures(minutes):
@@ -24,6 +28,7 @@ df_sport["Date"] = pd.to_datetime(
 )
 
 nb_pompes = pompes_2026()
+nb_pages = pages_dessin()
 
 # ==========================
 # Objectifs
@@ -166,6 +171,48 @@ with col2:
 
 st.write("")
 st.divider()
+
+
+st.write("")
+
+objectif_pages = 80
+
+progression_pages = min(
+    nb_pages / objectif_pages,
+    1
+)
+
+col1, col2, col3 = st.columns([3, 2, 0.5])
+
+with col1:
+    st.markdown(
+        barre_objectif(
+            progression_pages,
+            "#f6c667"
+        ),
+        unsafe_allow_html=True
+    )
+
+with col2:
+    st.markdown(
+        f"""
+        <div style="
+            height:18px;
+            display:flex;
+            align-items:center;
+            font-size:16px;
+            font-weight:600;
+        ">
+            {nb_pages} / {objectif_pages} pages
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+with col3:
+    if st.button("➕", key="dessin"):
+        ajouter_page_dessin()
+        st.rerun()
 
 
 # ==========================

@@ -1,4 +1,7 @@
 import pandas as pd
+import gspread
+import streamlit as st
+from google.oauth2.service_account import Credentials
 
 from scripts.importation_2026 import prepare_2026
 from scripts.importation_hevy import load_workouts, clean_dates
@@ -60,3 +63,43 @@ def pompes_2026():
     total = total_excel + pompes_hevy
 
     return int(total)
+
+
+# ==========================
+# Google Sheets
+# ==========================
+
+def _sheet_objectifs():
+
+    credentials = Credentials.from_service_account_info(
+        st.secrets["gcp_service_account"],
+        scopes=[
+            "https://www.googleapis.com/auth/spreadsheets"
+        ]
+    )
+
+    client = gspread.authorize(credentials)
+
+    return client.open_by_key(
+        "1AZ-DudhWGHJP6-A5mXDsPgoYIgUvZL5YsVbTaK5eeMk"
+    ).worksheet("objectifs")
+
+
+def pages_dessin():
+
+    sheet = _sheet_objectifs()
+
+    valeur = sheet.acell("B2").value
+
+    if not valeur:
+        return 0
+
+    return int(valeur)
+
+def ajouter_page_dessin():
+
+    sheet = _sheet_objectifs()
+
+    actuel = pages_dessin()
+
+    sheet.update("B2", [[actuel + 1]])
