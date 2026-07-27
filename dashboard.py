@@ -174,6 +174,8 @@ with col2:
 
 
 st.write("")
+st.write("")
+st.write("")
 
 # ==========================
 # Objectif dessin
@@ -206,7 +208,6 @@ with col2:
             align-items:center;
             font-size:16px;
             font-weight:600;
-            gap: 0rem;
         ">
             {nb_pages} / {objectif_pages} pages
         </div>
@@ -284,7 +285,6 @@ with col2:
             align-items:center;
             font-size:16px;
             font-weight:600;
-            gap: 0rem;
         ">
             {nb_detox} / {objectif_detox} detox
         </div>
