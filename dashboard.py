@@ -181,7 +181,7 @@ progression_pages = min(
     1
 )
 
-col1, col2, col3, col4 = st.columns([5, 2, 0.25, 0.25])
+col1, col2, col3, col4 = st.columns([5, 2, 0.3, 0.3])
 
 with col1:
     st.markdown(
