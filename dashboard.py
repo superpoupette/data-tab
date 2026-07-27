@@ -181,7 +181,7 @@ progression_pages = min(
     1
 )
 
-col1, col2, col3, col4 = st.columns([3, 2, 0.5, 0.5])
+col1, col2, col3, col4 = st.columns([3, 2, 0.25, 0.25])
 
 with col1:
     st.markdown(
@@ -209,10 +209,14 @@ with col2:
     )
 
 with col3:
-    if st.button(":material/remove:", key="dessin_moins"):
+    if st.button("➖", key="dessin_moins"):
+        retirer_page_dessin()
+        st.rerun()
 
 with col4:
-    if st.button(":material/add:", key="dessin_plus"):
+    if st.button("➕", key="dessin_plus"):
+        ajouter_page_dessin()
+        st.rerun()
 
 # ==========================
 # Filtre année
