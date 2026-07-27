@@ -3,13 +3,12 @@ import pandas as pd
 import plotly.express as px
 
 from scripts.gestion_sport import charger_tableau_sport
-from scripts.objectifs import pompes_2026
 from scripts.objectifs import (
     pompes_2026,
     pages_dessin,
-    ajouter_page_dessin
+    ajouter_page_dessin,
+    retirer_page_dessin
 )
-
 
 def format_heures(minutes):
     return f"{round(minutes / 60)}h"
