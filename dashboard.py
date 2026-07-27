@@ -181,7 +181,7 @@ progression_pages = min(
     1
 )
 
-col1, col2, col3, col4 = st.columns([5, 2, 0.5, 0.5])
+col1, col2, col3, col4 = st.columns([7, 2, 0.5, 0.5])
 
 with col1:
     st.markdown(
@@ -214,7 +214,7 @@ div[data-testid="stButton"] button {
     background: transparent;
     border: none;
     padding: 0;
-    font-size: 22px;
+    font-size: 30px;
     font-weight: 600;
     color: inherit;
     width: 32px;
