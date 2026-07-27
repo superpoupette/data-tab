@@ -209,14 +209,10 @@ with col2:
     )
 
 with col3:
-    if st.button("➖", key="dessin_moins"):
-        retirer_page_dessin()
-        st.rerun()
+    if st.button(":material/remove:", key="dessin_moins"):
 
 with col4:
-    if st.button("➕", key="dessin_plus"):
-        ajouter_page_dessin()
-        st.rerun()
+    if st.button(":material/add:", key="dessin_plus"):
 
 # ==========================
 # Filtre année
