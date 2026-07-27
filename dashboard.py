@@ -93,7 +93,7 @@ progression_sport = min(
 )
 
 
-col1, col2 = st.columns([3, 2])
+col1, col2, col3 = st.columns([3, 2, 0.5])
 
 
 with col1:
@@ -137,7 +137,7 @@ progression_pompes = min(
 )
 
 
-col1, col2 = st.columns([3, 2])
+col1, col2, col3 = st.columns([3, 2, 0.5])
 
 
 with col1:
@@ -167,13 +167,6 @@ with col2:
         """,
         unsafe_allow_html=True
     )
-
-
-st.write("")
-st.divider()
-
-
-st.write("")
 
 objectif_pages = 80
 
