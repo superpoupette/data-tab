@@ -168,6 +168,13 @@ with col2:
         unsafe_allow_html=True
     )
 
+
+st.write("")
+
+# ==========================
+# Objectif dessin
+# ==========================
+
 objectif_pages = 80
 
 progression_pages = min(
