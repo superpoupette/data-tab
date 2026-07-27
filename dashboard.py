@@ -214,15 +214,15 @@ div[data-testid="stButton"] button {
     background: transparent;
     border: none;
     padding: 0;
-    font-size: 30px;
+    font-size: 40px;
     font-weight: 600;
     color: inherit;
-    width: 32px;
-    height: 32px;
+    width: 40px;
+    height: 40px;
     display: flex;
     align-items: center;
     justify-content: center;
-    transform: translateY(-2px);
+    transform: translateY(-5px);
 }
 
 div[data-testid="stButton"] button:hover {
