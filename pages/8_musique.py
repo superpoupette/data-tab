@@ -49,7 +49,7 @@ c1.metric(
     f"{len(df_filtre):,}".replace(",", " ")
 )
 
-jours_ecoute = df["minutes"].sum() / 60 / 24
+jours_ecoute = df_filtre["minutes"].sum() / 60 / 24
 
 c2.metric(
     "Jours d'écoute",
@@ -62,7 +62,7 @@ c3.metric(
 
 c4.metric(
     "Morceaux différents",
-    df["master_metadata_track_name"].nunique()
+    df_filtre["master_metadata_track_name"].nunique()
 )
 
 st.divider()
@@ -97,40 +97,38 @@ with col1:
 
     top_artistes = (
         df_filtre
-        .groupby("master_metadata_album_artist_name")
-        .agg(
-            Ecoutes=("master_metadata_track_name", "count"),
-            Minutes=("minutes", "sum"),
-            Titres=("master_metadata_track_name", "nunique")
-        )
-        .sort_values("Minutes", ascending=False)
+        .groupby("master_metadata_album_artist_name")["minutes"]
+        .sum()
+        .sort_values(ascending=False)
+        .head(5)
         .reset_index()
     )
 
-    top_artistes["Jours"] = (top_artistes["Minutes"] / 60 / 24).round(2)
-
-    top_artistes = top_artistes.rename(columns={
-        "master_metadata_album_artist_name": "Artiste"
-    })
-
-    st.subheader("Top artistes")
-
-    st.dataframe(
-        top_artistes[
-            ["Artiste", "Ecoutes", "Titres", "Jours"]
-        ],
-        use_container_width=True,
-        hide_index=True
+    fig = px.bar(
+        top_artistes,
+        x="minutes",
+        y="master_metadata_album_artist_name",
+        orientation="h",
+        text_auto=".1f",
+        title="Top 5 des artistes"
     )
+
+    fig.update_layout(
+        yaxis_title="",
+        xaxis_title="Minutes d'écoute",
+        yaxis={"categoryorder": "total ascending"}
+    )
+
+    st.plotly_chart(fig, use_container_width=True)
 
 with col2:
 
     top_titres = (
-        df_filtre.groupby("master_metadata_track_name")
-        ["minutes"]
+        df_filtre
+        .groupby("master_metadata_track_name")["minutes"]
         .sum()
         .sort_values(ascending=False)
-        .head(15)
+        .head(5)
         .reset_index()
     )
 
@@ -139,10 +137,15 @@ with col2:
         x="minutes",
         y="master_metadata_track_name",
         orientation="h",
-        title="Top morceaux"
+        text_auto=".1f",
+        title="Top 5 des morceaux"
     )
 
-    fig.update_layout(yaxis={"categoryorder": "total ascending"})
+    fig.update_layout(
+        yaxis_title="",
+        xaxis_title="Minutes d'écoute",
+        yaxis={"categoryorder": "total ascending"}
+    )
 
     st.plotly_chart(fig, use_container_width=True)
 
