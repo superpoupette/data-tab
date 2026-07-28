@@ -49,12 +49,13 @@ c1.metric(
     f"{len(df_filtre):,}".replace(",", " ")
 )
 
-jours_ecoute = df_filtre["minutes"].sum() / 60 / 24
+heures_ecoute = df_filtre["minutes"].sum() / 60
 
 c2.metric(
-    "Jours d'écoute",
-    f"{jours_ecoute:.1f}"
+    "Heures d'écoute",
+    f"{heures_ecoute:.1f} h"
 )
+
 c3.metric(
     "Artistes",
     df_filtre["master_metadata_album_artist_name"].nunique()
@@ -67,25 +68,6 @@ c4.metric(
 
 st.divider()
 
-# ------------------------
-# Temps d'écoute mensuel
-# ------------------------
-
-ecoute_mois = (
-    df_filtre.groupby("mois")["minutes"]
-    .sum()
-    .reset_index()
-)
-
-fig = px.line(
-    ecoute_mois,
-    x="mois",
-    y="minutes",
-    markers=True,
-    title="Temps d'écoute par mois"
-)
-
-st.plotly_chart(fig, use_container_width=True)
 
 # ------------------------
 # Deux colonnes
@@ -149,3 +131,57 @@ with col2:
 
     st.plotly_chart(fig, use_container_width=True)
 
+
+# ------------------------
+# Temps d'écoute mensuel
+# ------------------------
+
+ecoute_mois = (
+    df_filtre.groupby("mois")["minutes"]
+    .sum()
+    .reset_index()
+)
+
+fig = px.line(
+    ecoute_mois,
+    x="mois",
+    y="minutes",
+    markers=True,
+    title="Temps d'écoute par mois"
+)
+
+st.plotly_chart(fig, use_container_width=True)
+
+
+
+df_filtre = df_filtre.sort_values("ts").reset_index(drop=True)
+
+# Identifie un changement de morceau
+df_filtre["groupe"] = (
+    df_filtre["master_metadata_track_name"]
+    != df_filtre["master_metadata_track_name"].shift()
+).cumsum()
+
+series = (
+    df_filtre.groupby("groupe")
+    .agg(
+        Titre=("master_metadata_track_name", "first"),
+        Artiste=("master_metadata_album_artist_name", "first"),
+        Nb_ecoutes=("master_metadata_track_name", "size"),
+        Minutes=("minutes", "sum")
+    )
+)
+
+top_series = (
+    series
+    .sort_values(["Nb_ecoutes", "Minutes"], ascending=False)
+    .head(10)
+)
+
+st.subheader("🔁 Plus longues séries d'écoute")
+
+st.dataframe(
+    top_series,
+    use_container_width=True,
+    hide_index=True
+)
