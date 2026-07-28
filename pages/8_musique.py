@@ -153,29 +153,52 @@ fig = px.line(
 st.plotly_chart(fig, use_container_width=True)
 
 
+# ------------------------
+# Replay
+# ------------------------
 
-df_filtre = df_filtre.sort_values("ts").reset_index(drop=True)
+series = []
 
-# Identifie un changement de morceau
-df_filtre["groupe"] = (
-    df_filtre["master_metadata_track_name"]
-    != df_filtre["master_metadata_track_name"].shift()
-).cumsum()
+courant = None
+artiste = None
+compteur = 0
+minutes = 0
 
-series = (
-    df_filtre.groupby("groupe")
-    .agg(
-        Titre=("master_metadata_track_name", "first"),
-        Artiste=("master_metadata_album_artist_name", "first"),
-        Nb_ecoutes=("master_metadata_track_name", "size"),
-        Minutes=("minutes", "sum")
-    )
-)
+for _, row in df_series.iterrows():
+
+    morceau = row["spotify_track_uri"]
+
+    if morceau == courant:
+        compteur += 1
+        minutes += row["minutes"]
+
+    else:
+        if compteur > 1:
+            series.append({
+                "Titre": titre,
+                "Artiste": artiste,
+                "Nb écoutes": compteur,
+                "Minutes": minutes,
+            })
+
+        courant = morceau
+        titre = row["master_metadata_track_name"]
+        artiste = row["master_metadata_album_artist_name"]
+        compteur = 1
+        minutes = row["minutes"]
+
+# dernière série
+if compteur > 1:
+    series.append({
+        "Titre": titre,
+        "Artiste": artiste,
+        "Nb écoutes": compteur,
+        "Minutes": minutes,
+    })
 
 top_series = (
-    series
-    .sort_values(["Nb_ecoutes", "Minutes"], ascending=False)
-    .head(10)
+    pd.DataFrame(series)
+    .sort_values("Nb écoutes", ascending=False)
 )
 
 st.subheader("🔁 Plus longues séries d'écoute")
