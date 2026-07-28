@@ -82,7 +82,7 @@ with col1:
         .groupby("master_metadata_album_artist_name")["minutes"]
         .sum()
         .sort_values(ascending=False)
-        .head(5)
+        .head(10)
         .reset_index()
     )
 
@@ -92,7 +92,7 @@ with col1:
         y="master_metadata_album_artist_name",
         orientation="h",
         text_auto=".1f",
-        title="Top 5 des artistes"
+        title="Top 10 des artistes"
     )
 
     fig.update_layout(
@@ -110,7 +110,7 @@ with col2:
         .groupby("master_metadata_track_name")["minutes"]
         .sum()
         .sort_values(ascending=False)
-        .head(5)
+        .head(10)
         .reset_index()
     )
 
@@ -120,7 +120,7 @@ with col2:
         y="master_metadata_track_name",
         orientation="h",
         text_auto=".1f",
-        title="Top 5 des morceaux"
+        title="Top 10 des morceaux"
     )
 
     fig.update_layout(
@@ -151,60 +151,3 @@ fig = px.line(
 )
 
 st.plotly_chart(fig, use_container_width=True)
-
-
-# ------------------------
-# Replay
-# ------------------------
-
-series = []
-
-courant = None
-artiste = None
-compteur = 0
-minutes = 0
-
-for _, row in df_series.iterrows():
-
-    morceau = row["spotify_track_uri"]
-
-    if morceau == courant:
-        compteur += 1
-        minutes += row["minutes"]
-
-    else:
-        if compteur > 1:
-            series.append({
-                "Titre": titre,
-                "Artiste": artiste,
-                "Nb écoutes": compteur,
-                "Minutes": minutes,
-            })
-
-        courant = morceau
-        titre = row["master_metadata_track_name"]
-        artiste = row["master_metadata_album_artist_name"]
-        compteur = 1
-        minutes = row["minutes"]
-
-# dernière série
-if compteur > 1:
-    series.append({
-        "Titre": titre,
-        "Artiste": artiste,
-        "Nb écoutes": compteur,
-        "Minutes": minutes,
-    })
-
-top_series = (
-    pd.DataFrame(series)
-    .sort_values("Nb écoutes", ascending=False)
-)
-
-st.subheader("🔁 Plus longues séries d'écoute")
-
-st.dataframe(
-    top_series,
-    use_container_width=True,
-    hide_index=True
-)
