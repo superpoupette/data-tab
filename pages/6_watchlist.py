@@ -7,6 +7,12 @@ from scripts.watchlist.load_watchlist import (
     load_series_google_sheet
 )
 
+st.set_page_config(
+    page_title="Watchlist",
+    page_icon="🍿",
+    layout="wide"
+)
+
 # =====================
 # Chargement données
 # =====================
@@ -529,7 +535,7 @@ with col_series:
                 unsafe_allow_html=True
             )
 
-
+        st.markdown("<br>", unsafe_allow_html=True)
         c4, c5, c6 = st.columns(3)
 
 
@@ -582,6 +588,10 @@ with col_series:
                 """,
                 unsafe_allow_html=True
             )
+        st.markdown(
+        "<div style='height:20px'></div>",
+        unsafe_allow_html=True
+    )
 
 # =====================
 # Animés
