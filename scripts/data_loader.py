@@ -1,4 +1,6 @@
 from scripts.google_drive import load_csv_from_drive
+from scripts.google_drive import load_excel_from_drive
+from scripts.importation_2026 import clean_2026
 
 from scripts.importation_2024 import clean_csv as clean_2024
 from scripts.importation_2025 import clean_csv as clean_2025
@@ -6,15 +8,11 @@ from scripts.importation_2025 import clean_csv as clean_2025
 
 FILES_DRIVE = {
 
-    2024: {
-        "id": "17onD34HL2QKC4OP0oPrvt_ynfq63XO0Z",
-        "separator": ";"
-    },
+    2024: "17onD34HL2QKC4OP0oPrvt_ynfq63XO0Z",
 
-    2025: {
-        "id": "1dBvQMHY3gLOIEmTWvx21MY-PKeawLmms",
-        "separator": ","
-    }
+    2025: "1dBvQMHY3gLOIEmTWvx21MY-PKeawLmms",
+
+    2026: "1PVyEQ02T-TEfofWoJAtzorob6AU8tImU"
 
 }
 
@@ -57,6 +55,18 @@ def load_year(year):
     if year == 2025:
         data = clean_2025(data)
 
+
+    return data
+
+
+def load_2026():
+
+    data = load_excel_from_drive(
+        FILES_DRIVE[2026],
+        sheet_name="DATA"
+    )
+
+    data = clean_2026(data)
 
     return data
 

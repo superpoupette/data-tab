@@ -1,21 +1,8 @@
 ﻿import pandas as pd
 
 
-def load_danse():
 
-    danse = pd.read_excel(
-        "data/2026.xlsx",
-        sheet_name="DANSE",
-        engine="openpyxl"
-    )
-
-    return danse
-
-
-
-def clean_danses_2026():
-
-    danse = load_danse()
+def clean_danses_2026(danse):
 
 
     # ==========================
@@ -87,10 +74,6 @@ def clean_danses_2026():
     )
 
 
-    # ==========================
-    # Format final Google Sheet
-    # ==========================
-
     colonnes = [
         "artiste",
         "titre",
@@ -123,49 +106,31 @@ def clean_danses_2026():
 
 
 
-def load_2026():
-
-    data2026 = pd.read_excel(
-        "data/2026.xlsx",
-        sheet_name="DATA",
-        engine="openpyxl"
-    )
-
-    print(data2026.columns.tolist())
-
-    return data2026
-
-
-
 def clean_2026(data2026):
 
-    # Nettoyage des noms de colonnes
+
+    # Nettoyage noms colonnes
+
     data2026.columns = (
         data2026.columns
         .astype(str)
         .str.strip()
     )
 
+
     # La colonne "/" contient les dates
+
     data2026 = data2026.rename(
         columns={
             "/": "Date"
         }
     )
 
-    # Conversion date
+
     data2026["Date"] = pd.to_datetime(
         data2026["Date"],
         errors="coerce"
     )
 
-    return data2026
-
-
-
-def prepare_2026():
-
-    data2026 = load_2026()
-    data2026 = clean_2026(data2026)
 
     return data2026
