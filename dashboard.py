@@ -465,7 +465,7 @@ with droite:
         df_repartition["Temps"]
         .apply(format_heures)
     )
-    
+
     # Couleurs fixes
     couleurs_activites = {
         "Course": "#F6C667",      # Jaune doux
@@ -515,6 +515,19 @@ df_evolution["Total"] = (
     .sum(axis=1)
 )
 
+
+# ==========================
+# Couleurs fixes par année
+# ==========================
+
+couleurs_annees = {
+    2021: "#7ED6C1",  # Vert menthe
+    2022: "#6FA8DC",  # Bleu pastel
+    2023: "#9B8CFF",  # Violet pastel
+    2024: "#D85C7A",  # Framboise
+    2025: "#F7A8C4",  # Rose pastel
+    2026: "#F7C8A8"   # Pêche pastel
+}
 
 
 # ==========================
@@ -580,6 +593,7 @@ if annees_selection == "Toutes":
         y="Total",
         color="Année",
         markers=True,
+        color_discrete_map=couleurs_annees,
         labels={
             "Mois_nom": "Mois",
             "Total": "Temps (minutes)",
@@ -594,7 +608,6 @@ if annees_selection == "Toutes":
             "categoryarray": mois_noms[1:]
         }
     )
-
 
 
 # ==========================
@@ -637,6 +650,18 @@ else:
     )
 
 
+    # Couleur fixe selon l'année sélectionnée
+    fig_evolution.update_traces(
+        line_color=couleurs_annees.get(
+            annees_selection,
+            "#C7CCD6"
+        )
+    )
+
+
+# ==========================
+# Affichage
+# ==========================
 
 st.plotly_chart(
     fig_evolution,
