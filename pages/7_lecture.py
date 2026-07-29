@@ -1,15 +1,15 @@
 ﻿import streamlit as st
 import pandas as pd
 
-from scripts.importation_babelio import prepare_babelio
+from scripts.data_loader import load_babelio
+
+
+livres = load_babelio()
 
 
 st.title("📚 Lecture")
 
 
-livres = prepare_babelio(
-    "data/biblio.csv"
-)
 
 
 livres_lus = livres[

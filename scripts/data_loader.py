@@ -27,6 +27,12 @@ FILES_DRIVE = {
     2026: {
         "id": "1PVyEQ02T-TEfofWoJAtzorob6AU8tImU",
         "type": "excel"
+    },
+
+    "babelio": {
+        "id": "1umai5aXgS22YKV3Mgk2tbvklrg9sFt_T",
+        "type": "csv",
+        "separator": ";"
     }
 
 }
@@ -118,3 +124,13 @@ def load_danse_2026():
     )
 
     return clean_danses_2026(danse)
+
+
+def load_babelio():
+
+    data = load_csv_from_drive(
+        FILES_DRIVE["babelio"]["id"],
+        separator=FILES_DRIVE["babelio"]["separator"]
+    )
+
+    return data
