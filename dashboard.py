@@ -17,6 +17,19 @@ def format_heures(minutes):
     return f"{round(minutes / 60)}h"
 
 
+def separateur():
+    st.markdown(
+        """
+        <hr style="
+            border: none;
+            border-top: 1px solid #d9d9d9;
+            margin: 20px 0;
+        ">
+        """,
+        unsafe_allow_html=True
+    )
+
+
 st.title("Tableau de bord")
 
 # ==========================
@@ -307,6 +320,7 @@ with col4:
         st.rerun()
 
 st.write("")
+separateur()
 st.write("")
 # ==========================
 # Filtre année
