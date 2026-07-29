@@ -103,4 +103,28 @@ def save_to_google_sheet(row):
         "1AZ-DudhWGHJP6-A5mXDsPgoYIgUvZL5YsVbTaK5eeMk"
     ).sheet1
 
-    sheet.append_row(row)
+    # Récupération des données existantes
+    records = sheet.get_all_values()
+
+    date_value = row[0]
+
+    # Recherche de la date existante
+    ligne_existante = None
+
+    for i, ligne in enumerate(records):
+        if ligne[0] == date_value:
+            ligne_existante = i + 1  # Google Sheets commence à 1
+            break
+
+    # Si la date existe : remplacement de la ligne
+    if ligne_existante:
+
+        sheet.update(
+            f"A{ligne_existante}:E{ligne_existante}",
+            [row]
+        )
+
+    # Sinon : ajout d'une nouvelle ligne
+    else:
+
+        sheet.append_row(row)
