@@ -15,24 +15,24 @@ from scripts.danse.google_sheet import (
 
 st.set_page_config(page_title="Today")
 
-
 st.title("Données du jour")
-
 
 st.subheader("Général")
 
-today = date.today().strftime('%d/%m/%Y')
+# Date sélectionnable (aujourd'hui par défaut)
+selected_date = st.date_input(
+    "📅 Date",
+    value=date.today(),
+    format="DD/MM/YYYY"
+)
 
-st.write(f"📅 Aujourd'hui : {today}")
-
+today = selected_date.strftime("%d/%m/%Y")
 
 best_moment = st.text_input(
     "Meilleur moment du jour :"
 )
 
-
 col1, col2, col3 = st.columns([1, 3, 3])
-
 
 with col1:
     st.write("Travail :")
@@ -42,26 +42,17 @@ with col1:
         label_visibility="collapsed"
     )
 
-
 with col2:
     people_seen = st.text_input(
         "Personnes vues aujourd'hui :",
         placeholder="Ex : Alice, Marc, Julie"
     )
 
-
 with col3:
     sommeil = st.text_input(
         "Sommeil (heures) :",
         placeholder="Ex : 7,5"
     )
-
-
-
-from scripts.danse.google_sheet import (
-    load_danse_google_sheet,
-    add_practice_time
-)
 
 
 st.subheader("Danse")
@@ -71,6 +62,10 @@ danses = load_danse_google_sheet()
 danses_en_cours = danses[
     danses["statut"] == "en cours"
 ]
+
+# Valeurs par défaut si aucune danse n'est ajoutée
+Choree1_morceau = ""
+Choree1_duree = 0
 
 if len(danses_en_cours) > 0:
 
@@ -96,7 +91,7 @@ if len(danses_en_cours) > 0:
         )
 
     with col3:
-        st.write("")   # espace pour aligner
+        st.write("")
         st.write("")
 
         ajouter = st.button(
@@ -124,6 +119,11 @@ if len(danses_en_cours) > 0:
             st.success(
                 "Temps ajouté à la chorégraphie !"
             )
+
+            # Valeurs enregistrées avec la journée
+            Choree1_morceau = choix_danse
+            Choree1_duree = duree_danse
+
         else:
             st.error(
                 "Impossible de trouver la chorégraphie."
@@ -135,13 +135,8 @@ else:
     )
 
 
-
-
-
 # Chargement du dataframe existant
 df = create_today_dataframe()
-
-
 
 if st.button("💾 Sauvegarder"):
 
@@ -155,7 +150,6 @@ if st.button("💾 Sauvegarder"):
                 sommeil.replace(",", ".")
             )
 
-
         df = add_today_entry(
             df,
             today,
@@ -167,7 +161,6 @@ if st.button("💾 Sauvegarder"):
             Choree1_duree
         )
 
-
         save_to_google_sheet([
             today,
             best_moment,
@@ -178,9 +171,9 @@ if st.button("💾 Sauvegarder"):
             Choree1_duree
         ])
 
-
-        st.success("Donnée enregistrée !")
-
+        st.success(
+            f"Donnée enregistrée pour le {today} !"
+        )
 
     except ValueError:
 
@@ -240,7 +233,6 @@ with col5:
         key="new_duree"
     )
 
-# Ligne 3
 if st.button(
     "➕ Ajouter la chorégraphie",
     use_container_width=True
@@ -254,7 +246,6 @@ if st.button(
     )
 
     st.success("Chorégraphie ajoutée !")
-
 
 st.subheader("Tableau des données")
 
