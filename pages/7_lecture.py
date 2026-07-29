@@ -12,7 +12,8 @@ st.title("📚 Lecture")
 # =====================
 
 livres = load_babelio()
-
+st.write(livres.columns.tolist())
+st.write(livres.head())
 
 # =====================
 # Livres lus
