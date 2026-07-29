@@ -498,6 +498,32 @@ with col_series:
             int(total_series_episodes_watched)
         )
 
+st.markdown(
+    f"""
+    <div style="font-size:13px;">
+
+    <span style="color:#7987E8;">●</span>
+    Terminées : {finished}
+
+    &nbsp;&nbsp;
+
+    <span style="color:#86D474;">●</span>
+    En cours : {watching}
+
+    &nbsp;&nbsp;
+
+    <span style="color:#FACD6B;">●</span>
+    À voir : {to_watch}
+
+    &nbsp;&nbsp;
+
+    <span style="color:#F55BA3;">●</span>
+    Stoppées : {stopped}
+
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
 # =====================
 # Animés
