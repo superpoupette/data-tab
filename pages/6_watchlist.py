@@ -399,6 +399,11 @@ with col_series:
             .sum()
         )
 
+
+        # =====================
+        # Barre progression
+        # =====================
+
         stats_series = pd.DataFrame(
             {
                 "Statut": [
@@ -424,6 +429,7 @@ with col_series:
 
         stats_series["Catégorie"] = "Total"
 
+
         fig = px.bar(
             stats_series,
             x="Pourcentage",
@@ -438,6 +444,7 @@ with col_series:
                 "Stoppées": "#F55BA3"
             }
         )
+
 
         fig.update_layout(
             barmode="stack",
@@ -459,71 +466,105 @@ with col_series:
             )
         )
 
+
         st.plotly_chart(
             fig,
             use_container_width=True
         )
 
+
+        # =====================
+        # Fonction KPI coloré
+        # =====================
+
+        def metric_pastille(
+            col,
+            couleur,
+            titre,
+            valeur
+        ):
+
+            with col:
+
+                st.markdown(
+                    f"""
+                    <div>
+                        <div style="
+                            font-size:14px;
+                            color:rgba(49,51,63,0.7);
+                            margin-bottom:5px;
+                        ">
+                            <span style="
+                                color:{couleur};
+                                font-size:18px;
+                            ">
+                                ●
+                            </span>
+                            {titre}
+                        </div>
+
+                        <div style="
+                            font-size:28px;
+                            font-weight:600;
+                        ">
+                            {valeur}
+                        </div>
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+
+
+        # =====================
+        # KPI
+        # =====================
+
         c1, c2, c3 = st.columns(3)
 
-        c1.metric(
+        metric_pastille(
+            c1,
+            "#C7CCD6",
             "Total",
             total_series
         )
 
-        c2.metric(
+        metric_pastille(
+            c2,
+            "#7987E8",
             "Terminées",
             finished
         )
 
-        c3.metric(
+        metric_pastille(
+            c3,
+            "#86D474",
             "En cours",
             watching
         )
 
+
         c4, c5, c6 = st.columns(3)
 
-        c4.metric(
+        metric_pastille(
+            c4,
+            "#FACD6B",
             "À voir",
             to_watch
         )
 
-        c5.metric(
+        metric_pastille(
+            c5,
+            "#F55BA3",
             "Stoppées",
             stopped
         )
 
-        c6.metric(
+        metric_pastille(
+            c6,
+            "#7987E8",
             "Épisodes vus",
             int(total_series_episodes_watched)
         )
-
-st.markdown(
-    f"""
-    <div style="font-size:13px;">
-
-    <span style="color:#7987E8;">●</span>
-    Terminées : {finished}
-
-    &nbsp;&nbsp;
-
-    <span style="color:#86D474;">●</span>
-    En cours : {watching}
-
-    &nbsp;&nbsp;
-
-    <span style="color:#FACD6B;">●</span>
-    À voir : {to_watch}
-
-    &nbsp;&nbsp;
-
-    <span style="color:#F55BA3;">●</span>
-    Stoppées : {stopped}
-
-    </div>
-    """,
-    unsafe_allow_html=True
-)
 
 # =====================
 # Animés
