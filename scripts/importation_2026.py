@@ -4,7 +4,6 @@
 
 def clean_danses_2026(danse):
 
-
     # ==========================
     # Séparation Nom
     # ==========================
@@ -29,7 +28,6 @@ def clean_danses_2026(danse):
         else ""
     )
 
-
     # ==========================
     # Renommage colonnes
     # ==========================
@@ -41,7 +39,6 @@ def clean_danses_2026(danse):
             "Temps apprentissage (m)": "duree_apprentissage"
         }
     )
-
 
     # ==========================
     # Colonnes absentes
@@ -59,7 +56,6 @@ def clean_danses_2026(danse):
 
     danse["statut"] = "en cours"
 
-
     # ==========================
     # Nettoyage
     # ==========================
@@ -73,6 +69,9 @@ def clean_danses_2026(danse):
         errors="ignore"
     )
 
+    # ==========================
+    # Format final
+    # ==========================
 
     colonnes = [
         "artiste",
@@ -91,25 +90,16 @@ def clean_danses_2026(danse):
         "statut"
     ]
 
-
     for col in colonnes:
-
         if col not in danse.columns:
             danse[col] = ""
 
-
-    danse = danse[colonnes]
-
-
-    return danse
-
+    return danse[colonnes]
 
 
 
 def clean_2026(data2026):
 
-
-    # Nettoyage noms colonnes
 
     data2026.columns = (
         data2026.columns
@@ -117,8 +107,6 @@ def clean_2026(data2026):
         .str.strip()
     )
 
-
-    # La colonne "/" contient les dates
 
     data2026 = data2026.rename(
         columns={

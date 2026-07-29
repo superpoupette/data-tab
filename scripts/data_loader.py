@@ -104,3 +104,12 @@ def load_hevy():
         workouts,
         exercices
     )
+
+def load_danse_2026():
+
+    danse = load_excel_from_drive(
+        FILES_DRIVE[2026]["id"],
+        sheet_name="DANSE"
+    )
+
+    return clean_danses_2026(danse)
