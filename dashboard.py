@@ -36,7 +36,7 @@ nb_detox = detox()
 # ==========================
 # Objectifs
 # ==========================
-st.header("🎯 Objectifs")
+st.header("🎯 Objectifs 2026")
 
 
 # Données 2026 uniquement
