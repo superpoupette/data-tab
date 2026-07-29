@@ -75,8 +75,8 @@ def load_hevy():
 
 
     exercices = load_csv_from_drive(
-        HEVY_FILES["exercices"]["id"],
-        separator=HEVY_FILES["exercices"]["separator"]
+        HEVY_FILES["exercises"]["id"]
+        separator=HEVY_FILES["exercises"]["separator"]
     )
 
 
