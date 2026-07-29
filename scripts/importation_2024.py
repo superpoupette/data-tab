@@ -11,10 +11,10 @@ def load_csv(filepath):
 
 def clean_csv(data2024):
 
-    # Conversion date
     data2024["Date"] = pd.to_datetime(
         data2024["Date"],
-        format="%d/%m/%y"
+        dayfirst=True,
+        format="mixed"
     )
 
 
