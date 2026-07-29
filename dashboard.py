@@ -469,12 +469,12 @@ with droite:
     # Couleurs fixes
     couleurs_activites = {
         "Course": "#EF4444",      # Rouge
-        "Muscu": "#3B82F6",       # Bleu
-        "Danse": "#f7a8c4",       # Rose
-        "Escalade": "#8B5CF6",    # Violet
-        "Randonnée": "#22C55E",   # Vert
-        "Stretching": "#f6c667",  # Jaune
-        "Autre": "#9CA3AF"        # Gris
+        "Muscu": "#6FA8DC",       # Bleu pastel
+        "Danse": "#F7A8C4",       # Rose pastel
+        "Escalade": "#9B8CFF",    # Violet pastel
+        "Randonnée": "#7ED6C1",   # Vert menthe
+        "Stretching": "#F6C667",  # Jaune doux
+        "Autre": "#C7CCD6"        # Gris bleuté pastel
     }
 
     fig = px.pie(
