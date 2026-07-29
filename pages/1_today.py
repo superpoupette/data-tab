@@ -76,8 +76,8 @@ if st.button("💾 Sauvegarder"):
             people_seen,
             int(people_work),
             sommeil_val,
-            Choree1_morceau,
-            Choree1_duree
+            "",
+            0
         )
 
         save_to_google_sheet([
@@ -86,8 +86,8 @@ if st.button("💾 Sauvegarder"):
             people_seen,
             int(people_work),
             sommeil_val,
-            Choree1_morceau,
-            Choree1_duree
+            "",
+            0
         ])
 
         st.success(
