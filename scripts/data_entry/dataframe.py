@@ -43,18 +43,38 @@ def add_today_entry(
     sommeil
 ):
 
-    new_row = pd.DataFrame([{
-        "date": today_date,
-        "best_moment": best_moment,
-        "people_seen": people_seen,
-        "people_work": people_work,
-        "sommeil": sommeil
-    }])
+    # La date existe déjà
+    if today_date in df["date"].astype(str).values:
 
-    df = pd.concat(
-        [df, new_row],
-        ignore_index=True
-    )
+        idx = df.index[df["date"].astype(str) == today_date][0]
+
+        if best_moment != "":
+            df.at[idx, "best_moment"] = best_moment
+
+        if people_seen != "":
+            df.at[idx, "people_seen"] = people_seen
+
+        # Toujours mettre à jour la case Travail
+        df.at[idx, "people_work"] = people_work
+
+        if sommeil is not None:
+            df.at[idx, "sommeil"] = sommeil
+
+    # Nouvelle date
+    else:
+
+        new_row = pd.DataFrame([{
+            "date": today_date,
+            "best_moment": best_moment,
+            "people_seen": people_seen,
+            "people_work": people_work,
+            "sommeil": sommeil
+        }])
+
+        df = pd.concat(
+            [df, new_row],
+            ignore_index=True
+        )
 
     return df
 
