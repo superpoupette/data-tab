@@ -2,7 +2,10 @@
 
 
 def load_csv(filepath):
-    data2024 = pd.read_csv(filepath)
+    data2024 = pd.read_csv(
+        filepath,
+        sep=";"
+    )
     return data2024
 
 
