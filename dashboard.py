@@ -473,7 +473,7 @@ with droite:
         "Danse": "#f7a8c4",       # Rose
         "Escalade": "#8B5CF6",    # Violet
         "Randonnée": "#22C55E",   # Vert
-        "Stretching": "#F59E0B",  # Orange
+        "Stretching": "#f6c667",  # Jaune
         "Autre": "#9CA3AF"        # Gris
     }
 
