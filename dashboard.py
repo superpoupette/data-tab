@@ -472,7 +472,7 @@ with droite:
         "Muscu": "#6FA8DC",       # Bleu pastel
         "Danse": "#F7A8C4",       # Rose pastel
         "Escalade": "#9B8CFF",    # Violet pastel
-        "Randonnée": "#9EE6B2",   # Vert menthe
+        "Randonnée": "#7ed6c1",   # Vert menthe
         "Stretching": "#D85C7A",  # Jaune doux
         "Autre": "#C7CCD6"        # Gris bleuté pastel
     }
