@@ -1,9 +1,13 @@
-from scripts.google_drive import load_csv_from_drive
-from scripts.google_drive import load_excel_from_drive
-from scripts.importation_2026 import clean_2026
+from scripts.google_drive import (
+    load_csv_from_drive,
+    load_excel_from_drive
+)
 
 from scripts.importation_2024 import clean_csv as clean_2024
 from scripts.importation_2025 import clean_csv as clean_2025
+from scripts.importation_2026 import clean_2026
+
+from scripts.importation_hevy import prepare_data
 
 
 FILES_DRIVE = {
@@ -27,6 +31,7 @@ FILES_DRIVE = {
 
 }
 
+
 HEVY_FILES = {
 
     "workouts": {
@@ -49,57 +54,51 @@ def load_year(year):
             f"Aucune donnée disponible pour {year}"
         )
 
-
     config = FILES_DRIVE[year]
 
+    if config["type"] == "csv":
 
-    data = load_csv_from_drive(
-        config["id"],
-        separator=config["separator"]
-    )
+        data = load_csv_from_drive(
+            config["id"],
+            separator=config["separator"]
+        )
 
+    elif config["type"] == "excel":
+
+        data = load_excel_from_drive(
+            config["id"],
+            sheet_name="DATA"
+        )
+
+    else:
+
+        raise ValueError(
+            f"Type de fichier inconnu : {config['type']}"
+        )
 
     if year == 2024:
         data = clean_2024(data)
 
-
-    if year == 2025:
+    elif year == 2025:
         data = clean_2025(data)
 
+    elif year == 2026:
+        data = clean_2026(data)
 
     return data
-
-
-def load_2026():
-
-    data = load_excel_from_drive(
-        FILES_DRIVE[2026],
-        sheet_name="DATA"
-    )
-
-    data = clean_2026(data)
-
-    return data
-
-
-from scripts.google_drive import load_csv_from_drive
-from scripts.importation_hevy import prepare_data
 
 
 def load_hevy():
-
 
     workouts = load_csv_from_drive(
         HEVY_FILES["workouts"]["id"],
         separator=HEVY_FILES["workouts"]["separator"]
     )
 
-
     exercices = load_csv_from_drive(
         HEVY_FILES["exercises"]["id"],
         separator=HEVY_FILES["exercises"]["separator"]
     )
-
 
     return prepare_data(
         workouts,

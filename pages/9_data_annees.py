@@ -7,7 +7,7 @@ data2024 = load_year(2024)
 
 data2025 = load_year(2025)
 
-data2026 = load_2026()
+data2026 = load_year(2026)
 
 
 st.title("📚 Données 2026")
