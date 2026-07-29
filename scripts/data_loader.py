@@ -46,6 +46,11 @@ HEVY_FILES = {
 
 }
 
+STRAVA_FILE = {
+    "id": "ID_DU_FICHIER_STRAVA",
+    "separator": ","
+}
+
 
 def load_year(year):
 

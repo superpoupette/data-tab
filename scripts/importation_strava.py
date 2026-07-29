@@ -1,13 +1,13 @@
 import pandas as pd
-import streamlit as st
+from scripts.google_drive import load_csv_from_drive
+from scripts.data_loader import STRAVA_FILE
 
 
 def charger_donnees_strava():
 
-    df = pd.read_csv(
-        "data/strava_activities.csv",
-        encoding="utf-8",
-        low_memory=False
+    df = load_csv_from_drive(
+        STRAVA_FILE["id"],
+        separator=STRAVA_FILE["separator"]
     )
 
     # Conversion des dates Strava en français
