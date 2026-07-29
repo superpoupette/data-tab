@@ -6,9 +6,15 @@ from scripts.importation_2025 import clean_csv as clean_2025
 
 FILES_DRIVE = {
 
-    2024: "17onD34HL2QKC4OP0oPrvt_ynfq63XO0Z",
+    2024: {
+        "id": "17onD34HL2QKC4OP0oPrvt_ynfq63XO0Z",
+        "separator": ";"
+    },
 
-    2025: "1dBvQMHY3gLOIEmTWvx21MY-PKeawLmms"
+    2025: {
+        "id": "1dBvQMHY3gLOIEmTWvx21MY-PKeawLmms",
+        "separator": ","
+    }
 
 }
 
@@ -22,8 +28,12 @@ def load_year(year):
         )
 
 
+    config = FILES_DRIVE[year]
+
+
     data = load_csv_from_drive(
-        FILES_DRIVE[year]
+        config["id"],
+        separator=config["separator"]
     )
 
 
