@@ -447,44 +447,49 @@ with droite:
         "Répartition des activités"
     )
 
-
     df_repartition = (
         totaux
         .reset_index()
     )
-
 
     df_repartition.columns = [
         "Activite",
         "Temps"
     ]
 
-
     df_repartition = df_repartition[
         df_repartition["Temps"] > 0
     ]
-
 
     df_repartition["Affichage"] = (
         df_repartition["Temps"]
         .apply(format_heures)
     )
 
+    # Couleurs fixes
+    couleurs_activites = {
+        "Course": "#EF4444",      # Rouge
+        "Muscu": "#3B82F6",       # Bleu
+        "Danse": "#EC4899",       # Rose
+        "Escalade": "#8B5CF6",    # Violet
+        "Randonnée": "#22C55E",   # Vert
+        "Stretching": "#F59E0B",  # Orange
+        "Autre": "#9CA3AF"        # Gris
+    }
 
     fig = px.pie(
         df_repartition,
         names="Activite",
         values="Temps",
         hole=0.35,
+        color="Activite",
+        color_discrete_map=couleurs_activites
     )
-
 
     fig.update_traces(
-        hovertemplate=
-        "%{label}<br>%{customdata}",
+        hovertemplate="%{label}<br>%{customdata}",
         customdata=df_repartition["Affichage"]
     )
-
 
     st.plotly_chart(
         fig,
