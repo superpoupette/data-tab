@@ -1,7 +1,5 @@
 import pandas as pd
 import io
-import requests
-from io import StringIO
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseDownload
 from google.oauth2.service_account import Credentials
@@ -68,31 +66,21 @@ def load_excel_from_drive(
 
 def load_csv_from_drive(
     file_id,
-    separator=",",
-    encoding="utf-8"
+    separator=";"
 ):
 
-    url = (
-        f"https://drive.google.com/uc?id={file_id}"
-        "&export=download"
+    service = get_drive_service()
+
+    request = service.files().get_media(
+        fileId=file_id
     )
 
-
-    response = requests.get(url)
-
-    response.raise_for_status()
-
-
-    data = response.content.decode(
-        encoding,
-        errors="replace"
-    )
-
+    content = request.execute()
 
     df = pd.read_csv(
-        StringIO(data),
-        sep=separator
+        io.BytesIO(content),
+        sep=separator,
+        encoding="utf-8-sig"
     )
-
 
     return df
