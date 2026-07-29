@@ -5,7 +5,7 @@ import io
 import streamlit as st
 
 
-def load_csv_from_drive(file_id):
+def get_drive_service():
 
     credentials = Credentials.from_service_account_info(
         st.secrets["gcp_service_account"],
@@ -20,6 +20,17 @@ def load_csv_from_drive(file_id):
         credentials=credentials
     )
 
+    return service
+
+
+
+def load_csv_from_drive(
+    file_id,
+    separator=";"
+):
+
+    service = get_drive_service()
+
     request = service.files().get_media(
         fileId=file_id
     )
@@ -28,7 +39,7 @@ def load_csv_from_drive(file_id):
 
     df = pd.read_csv(
         io.BytesIO(content),
-        sep=";",
+        sep=separator,
         encoding="utf-8-sig"
     )
 

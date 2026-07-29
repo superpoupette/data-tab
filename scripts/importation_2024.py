@@ -1,16 +1,9 @@
 ﻿import pandas as pd
 
 
-def load_csv(filepath):
-    data2024 = pd.read_csv(
-        filepath,
-        sep=";"
-    )
-    return data2024
-
-
 def clean_csv(data2024):
 
+    # Conversion des dates
     data2024["Date"] = pd.to_datetime(
         data2024["Date"],
         dayfirst=True,
@@ -20,6 +13,7 @@ def clean_csv(data2024):
 
     # Renommage des colonnes chorées
     rename_columns = {
+
         "Chorée": "Choree1_morceau",
         "Chorée_1": "Choree2_morceau",
         "Chorée_3": "Choree3_morceau",
@@ -43,14 +37,5 @@ def clean_csv(data2024):
         }
     )
 
-
-    return data2024
-
-
-def prepare_2024(filepath):
-
-    data2024 = load_csv(filepath)
-
-    data2024 = clean_csv(data2024)
 
     return data2024
