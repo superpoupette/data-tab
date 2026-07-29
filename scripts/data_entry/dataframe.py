@@ -14,13 +14,14 @@ def create_today_dataframe():
         "best_moment",
         "people_seen",
         "people_work",
-        "sommeil",
-        "Choree1_morceau",
-        "Choree1_duree"
+        "sommeil"
     ]
 
     if os.path.exists(CSV_FILE):
         df = pd.read_csv(CSV_FILE)
+
+        # Au cas où le CSV contient encore les anciennes colonnes
+        df = df[columns]
 
     else:
         df = pd.DataFrame(columns=columns)
@@ -39,9 +40,7 @@ def add_today_entry(
     best_moment,
     people_seen,
     people_work,
-    sommeil,
-    Choree1_morceau,
-    Choree1_duree
+    sommeil
 ):
 
     new_row = pd.DataFrame([{
@@ -49,9 +48,7 @@ def add_today_entry(
         "best_moment": best_moment,
         "people_seen": people_seen,
         "people_work": people_work,
-        "sommeil": sommeil,
-        "Choree1_morceau": Choree1_morceau,
-        "Choree1_duree": Choree1_duree
+        "sommeil": sommeil
     }])
 
     df = pd.concat(
@@ -82,6 +79,8 @@ def save_to_google_sheet(row):
 
     client = gspread.authorize(credentials)
 
-    sheet = client.open_by_key("1AZ-DudhWGHJP6-A5mXDsPgoYIgUvZL5YsVbTaK5eeMk").sheet1
+    sheet = client.open_by_key(
+        "1AZ-DudhWGHJP6-A5mXDsPgoYIgUvZL5YsVbTaK5eeMk"
+    ).sheet1
 
     sheet.append_row(row)

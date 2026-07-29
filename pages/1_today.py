@@ -63,7 +63,6 @@ if st.button("💾 Sauvegarder"):
 
         if sommeil.strip() == "":
             sommeil_val = None
-
         else:
             sommeil_val = float(
                 sommeil.replace(",", ".")
@@ -75,9 +74,7 @@ if st.button("💾 Sauvegarder"):
             best_moment,
             people_seen,
             int(people_work),
-            sommeil_val,
-            "",
-            0
+            sommeil_val
         )
 
         save_to_google_sheet([
@@ -85,9 +82,7 @@ if st.button("💾 Sauvegarder"):
             best_moment,
             people_seen,
             int(people_work),
-            sommeil_val,
-            "",
-            0
+            sommeil_val
         ])
 
         st.success(
