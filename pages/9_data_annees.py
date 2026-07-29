@@ -1,6 +1,6 @@
 ﻿import streamlit as st
 
-from scripts.data_loader import load_year, load_2026
+from scripts.data_loader import load_year
 
 
 data2024 = load_year(2024)
