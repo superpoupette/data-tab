@@ -306,6 +306,8 @@ with col4:
         ajouter_detox()
         st.rerun()
 
+st.write("")
+st.write("")
 # ==========================
 # Filtre année
 # ==========================
