@@ -47,7 +47,7 @@ HEVY_FILES = {
 }
 
 STRAVA_FILE = {
-    "id": "ID_DU_FICHIER_STRAVA",
+    "id": "1ns7SCQfEc4YsycnzjH2lUk7Q8gOBnNhc",
     "separator": ","
 }
 
