@@ -10,12 +10,14 @@ FILES_DRIVE = {
 
     2024: {
         "id": "17onD34HL2QKC4OP0oPrvt_ynfq63XO0Z",
-        "type": "csv"
+        "type": "csv",
+        "separator": ";"
     },
 
     2025: {
         "id": "1dBvQMHY3gLOIEmTWvx21MY-PKeawLmms",
-        "type": "csv"
+        "type": "csv",
+        "separator": ","
     },
 
     2026: {
