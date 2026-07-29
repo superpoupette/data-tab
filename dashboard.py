@@ -465,15 +465,15 @@ with droite:
         df_repartition["Temps"]
         .apply(format_heures)
     )
-
+    
     # Couleurs fixes
     couleurs_activites = {
-        "Course": "#F6C667",      # Rouge orangé doux
+        "Course": "#F6C667",      # Jaune doux
         "Muscu": "#6FA8DC",       # Bleu pastel
         "Danse": "#F7A8C4",       # Rose pastel
         "Escalade": "#9B8CFF",    # Violet pastel
-        "Randonnée": "#7ed6c1",   # Vert menthe
-        "Stretching": "#D85C7A",  # Jaune doux
+        "Randonnée": "#7ED6C1",   # Vert menthe
+        "Stretching": "#D85C7A",  # Framboise
         "Autre": "#C7CCD6"        # Gris bleuté pastel
     }
 
