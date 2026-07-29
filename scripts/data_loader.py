@@ -8,7 +8,6 @@ from scripts.importation_2025 import clean_csv as clean_2025
 from scripts.importation_2026 import clean_2026
 
 from scripts.importation_hevy import prepare_data
-from scripts.importation_babelio import prepare_babelio
 
 
 FILES_DRIVE = {
@@ -38,10 +37,12 @@ OTHER_FILES = {
     "babelio": {
         "id": "1umai5aXgS22YKV3Mgk2tbvklrg9sFt_T",
         "type": "csv",
-        "separator": ";"
+        "separator": ";",
+        "encoding": "cp1252"
     }
 
 }
+
 
 
 HEVY_FILES = {
@@ -59,6 +60,7 @@ HEVY_FILES = {
 }
 
 
+
 STRAVA_FILE = {
     "id": "1ns7SCQfEc4YsycnzjH2lUk7Q8gOBnNhc",
     "separator": ","
@@ -69,6 +71,7 @@ STRAVA_FILE = {
 def load_year(year):
 
     if year not in FILES_DRIVE:
+
         raise ValueError(
             f"Aucune donnée disponible pour {year}"
         )
@@ -98,7 +101,6 @@ def load_year(year):
         raise ValueError(
             f"Type de fichier inconnu : {config['type']}"
         )
-
 
 
     if year == 2024:
@@ -160,11 +162,9 @@ def load_babelio():
 
     data = load_csv_from_drive(
         OTHER_FILES["babelio"]["id"],
-        separator=OTHER_FILES["babelio"]["separator"]
+        separator=OTHER_FILES["babelio"]["separator"],
+        encoding=OTHER_FILES["babelio"]["encoding"]
     )
-
-
-    data = prepare_babelio(data)
 
 
     return data

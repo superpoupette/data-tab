@@ -1,51 +1,164 @@
-﻿import streamlit as st
-import pandas as pd
+﻿from scripts.google_drive import (
+    load_csv_from_drive,
+    load_excel_from_drive
+)
 
-from scripts.data_loader import load_babelio
+from scripts.importation_2024 import clean_csv as clean_2024
+from scripts.importation_2025 import clean_csv as clean_2025
+from scripts.importation_2026 import clean_2026
 
-
-livres = load_babelio()
-
-
-st.title("📚 Lecture")
-
-
+from scripts.importation_hevy import prepare_data
 
 
-livres_lus = livres[
-    livres["Statut"] == "Lu"
-]
+
+FILES_DRIVE = {
+
+    2024: {
+        "id": "17onD34HL2QKC4OP0oPrvt_ynfq63XO0Z",
+        "type": "csv",
+        "separator": ";"
+    },
+
+    2025: {
+        "id": "1dBvQMHY3gLOIEmTWvx21MY-PKeawLmms",
+        "type": "csv",
+        "separator": ","
+    },
+
+    2026: {
+        "id": "1PVyEQ02T-TEfofWoJAtzorob6AU8tImU",
+        "type": "excel"
+    }
+
+}
 
 
-col1, col2 = st.columns(2)
 
-with col1:
-    st.metric(
-        "Livres lus",
-        len(livres_lus)
+OTHER_FILES = {
+
+    "babelio": {
+        "id": "1umai5aXgS22YKV3Mgk2tbvklrg9sFt_T",
+        "type": "csv",
+        "separator": ";",
+        "encoding": "cp1252"
+    }
+
+}
+
+
+
+HEVY_FILES = {
+
+    "workouts": {
+        "id": "16Mvq3QUPBmSQf0S2m6Y-KM6NAOgzZXLf",
+        "separator": ","
+    },
+
+    "exercises": {
+        "id": "1W1bPXm02LNXcd73dX5yB7odylps0Dtfa",
+        "separator": ";"
+    }
+
+}
+
+
+
+STRAVA_FILE = {
+
+    "id": "1ns7SCQfEc4YsycnzjH2lUk7Q8gOBnNhc",
+    "separator": ","
+
+}
+
+
+
+def load_year(year):
+
+    if year not in FILES_DRIVE:
+
+        raise ValueError(
+            f"Aucune donnée disponible pour {year}"
+        )
+
+
+    config = FILES_DRIVE[year]
+
+
+    if config["type"] == "csv":
+
+        data = load_csv_from_drive(
+            config["id"],
+            separator=config["separator"]
+        )
+
+
+    elif config["type"] == "excel":
+
+        data = load_excel_from_drive(
+            config["id"],
+            sheet_name="DATA"
+        )
+
+
+    else:
+
+        raise ValueError(
+            f"Type de fichier inconnu : {config['type']}"
+        )
+
+
+
+    if year == 2024:
+
+        data = clean_2024(data)
+
+
+    elif year == 2025:
+
+        data = clean_2025(data)
+
+
+    elif year == 2026:
+
+        data = clean_2026(data)
+
+
+    return data
+
+
+
+
+
+def load_babelio():
+
+    data = load_csv_from_drive(
+        OTHER_FILES["babelio"]["id"],
+        separator=OTHER_FILES["babelio"]["separator"],
+        encoding=OTHER_FILES["babelio"]["encoding"]
     )
 
-with col2:
-    st.metric(
-        "Note moyenne",
-        f"{livres_lus['Note'].mean():.1f}/5"
+
+    return data
+
+
+
+
+
+def load_hevy():
+
+    workouts = load_csv_from_drive(
+        HEVY_FILES["workouts"]["id"],
+        separator=HEVY_FILES["workouts"]["separator"]
     )
 
 
-st.subheader("📅 Livres lus par mois")
+    exercices = load_csv_from_drive(
+        HEVY_FILES["exercises"]["id"],
+        separator=HEVY_FILES["exercises"]["separator"]
+    )
 
 
-livres_lus["date_entree"] = (
-    livres_lus["Date d`entrée dans Babelio"]
-    .pipe(lambda x: pd.to_datetime(x))
-)
-
-livres_lus["mois"] = (
-    livres_lus["date_entree"]
-    .dt.to_period("M")
-)
-
-
-st.bar_chart(
-    livres_lus.groupby("mois").size()
-)
+    return prepare_data(
+        workouts,
+        exercices
+    )
