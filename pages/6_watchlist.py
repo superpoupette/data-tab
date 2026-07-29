@@ -484,7 +484,7 @@ with col_series:
             st.markdown(
                 f"""
                 <div>
-                    <div style="font-size:14px;color:#555;">
+                    <div style="font-size:18px;color:#555;">
                         Total
                     </div>
                     <div style="font-size:28px;font-weight:600;">
@@ -500,7 +500,7 @@ with col_series:
             st.markdown(
                 f"""
                 <div>
-                    <div style="font-size:14px;color:#555;">
+                    <div style="font-size:18px;color:#555;">
                         <span style="color:#7987E8;">●</span>
                         Terminées
                     </div>
@@ -517,7 +517,7 @@ with col_series:
             st.markdown(
                 f"""
                 <div>
-                    <div style="font-size:14px;color:#555;">
+                    <div style="font-size:18px;color:#555;">
                         <span style="color:#86D474;">●</span>
                         En cours
                     </div>
@@ -537,7 +537,7 @@ with col_series:
             st.markdown(
                 f"""
                 <div>
-                    <div style="font-size:14px;color:#555;">
+                    <div style="font-size:18px;color:#555;">
                         <span style="color:#FACD6B;">●</span>
                         À voir
                     </div>
@@ -554,7 +554,7 @@ with col_series:
             st.markdown(
                 f"""
                 <div>
-                    <div style="font-size:14px;color:#555;">
+                    <div style="font-size:18px;color:#555;">
                         <span style="color:#F55BA3;">●</span>
                         Stoppées
                     </div>
@@ -571,7 +571,7 @@ with col_series:
             st.markdown(
                 f"""
                 <div>
-                    <div style="font-size:14px;color:#555;">
+                    <div style="font-size:18px;color:#555;">
                         <span style="color:#7987E8;">●</span>
                         Épisodes vus
                     </div>
