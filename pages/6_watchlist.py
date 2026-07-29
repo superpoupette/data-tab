@@ -627,6 +627,7 @@ with col_animes:
             .sum()
         )
 
+
         stats_animes = pd.DataFrame(
             {
                 "Statut": [
@@ -644,13 +645,18 @@ with col_animes:
             }
         )
 
+
         stats_animes["Pourcentage"] = (
             stats_animes["Nombre"]
-            / max(total_animes, 1)
-            * 100
+            /
+            max(total_animes, 1)
+            *
+            100
         )
 
+
         stats_animes["Catégorie"] = "Total"
+
 
         fig = px.bar(
             stats_animes,
@@ -666,6 +672,7 @@ with col_animes:
                 "Stoppés": "#F55BA3"
             }
         )
+
 
         fig.update_layout(
             barmode="stack",
@@ -687,46 +694,131 @@ with col_animes:
             )
         )
 
+
         st.plotly_chart(
             fig,
             use_container_width=True
         )
 
+
+        # =====================
+        # KPI
+        # =====================
+
         c1, c2, c3 = st.columns(3)
 
-        c1.metric(
-            "Total",
-            total_animes
-        )
 
-        c2.metric(
-            "Terminés",
-            watched
-        )
+        with c1:
+            st.markdown(
+                f"""
+                <div>
+                    <div style="font-size:18px;color:#555;">
+                        Total
+                    </div>
+                    <div style="font-size:28px;font-weight:600;">
+                        {total_animes}
+                    </div>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
 
-        c3.metric(
-            "En cours",
-            watching
-        )
+
+        with c2:
+            st.markdown(
+                f"""
+                <div>
+                    <div style="font-size:18px;color:#555;">
+                        <span style="color:#7987E8;">●</span>
+                        Terminés
+                    </div>
+                    <div style="font-size:28px;font-weight:600;">
+                        {watched}
+                    </div>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+
+
+        with c3:
+            st.markdown(
+                f"""
+                <div>
+                    <div style="font-size:18px;color:#555;">
+                        <span style="color:#86D474;">●</span>
+                        En cours
+                    </div>
+                    <div style="font-size:28px;font-weight:600;">
+                        {watching}
+                    </div>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+
+
+        st.markdown("<br>", unsafe_allow_html=True)
+
 
         c4, c5, c6 = st.columns(3)
 
-        c4.metric(
-            "À voir",
-            to_watch
+
+        with c4:
+            st.markdown(
+                f"""
+                <div>
+                    <div style="font-size:18px;color:#555;">
+                        <span style="color:#FACD6B;">●</span>
+                        À voir
+                    </div>
+                    <div style="font-size:28px;font-weight:600;">
+                        {to_watch}
+                    </div>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+
+
+        with c5:
+            st.markdown(
+                f"""
+                <div>
+                    <div style="font-size:18px;color:#555;">
+                        <span style="color:#F55BA3;">●</span>
+                        Stoppés
+                    </div>
+                    <div style="font-size:28px;font-weight:600;">
+                        {stopped}
+                    </div>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+
+
+        with c6:
+            st.markdown(
+                f"""
+                <div>
+                    <div style="font-size:18px;color:#555;">
+                        <span style="color:#7987E8;">●</span>
+                        Épisodes vus
+                    </div>
+                    <div style="font-size:28px;font-weight:600;">
+                        {int(total_episodes_watched)}
+                    </div>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+
+
+        st.markdown(
+            "<div style='height:20px'></div>",
+            unsafe_allow_html=True
         )
-
-        c5.metric(
-            "Stoppés",
-            stopped
-        )
-
-        c6.metric(
-            "Épisodes vus",
-            int(total_episodes_watched)
-        )
-
-
 
 # =====================
 # DERNIÈRES SÉRIES VUES
