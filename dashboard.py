@@ -470,7 +470,7 @@ with droite:
     couleurs_activites = {
         "Course": "#EF4444",      # Rouge
         "Muscu": "#3B82F6",       # Bleu
-        "Danse": "#EC4899",       # Rose
+        "Danse": "#f7a8c4",       # Rose
         "Escalade": "#8B5CF6",    # Violet
         "Randonnée": "#22C55E",   # Vert
         "Stretching": "#F59E0B",  # Orange
