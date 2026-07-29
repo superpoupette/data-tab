@@ -1,164 +1,86 @@
-﻿from scripts.google_drive import (
-    load_csv_from_drive,
-    load_excel_from_drive
+﻿import streamlit as st
+import pandas as pd
+
+from scripts.data_loader import load_babelio
+
+
+st.title("📚 Lecture")
+
+
+# =====================
+# Chargement données
+# =====================
+
+livres = load_babelio()
+
+
+# =====================
+# Livres lus
+# =====================
+
+livres_lus = livres[
+    livres["Statut"] == "Lu"
+].copy()
+
+
+
+# =====================
+# KPI
+# =====================
+
+col1, col2 = st.columns(2)
+
+
+with col1:
+
+    st.metric(
+        "Livres lus",
+        len(livres_lus)
+    )
+
+
+with col2:
+
+    note_moyenne = (
+        livres_lus["Note"]
+        .astype(float)
+        .mean()
+    )
+
+    st.metric(
+        "Note moyenne",
+        f"{note_moyenne:.1f}/5"
+    )
+
+
+
+# =====================
+# Livres lus par mois
+# =====================
+
+st.subheader("📅 Livres lus par mois")
+
+
+livres_lus["date_entree"] = pd.to_datetime(
+    livres_lus["Date d`entrée dans Babelio"],
+    errors="coerce"
 )
 
-from scripts.importation_2024 import clean_csv as clean_2024
-from scripts.importation_2025 import clean_csv as clean_2025
-from scripts.importation_2026 import clean_2026
 
-from scripts.importation_hevy import prepare_data
+livres_lus["mois"] = (
+    livres_lus["date_entree"]
+    .dt.to_period("M")
+    .astype(str)
+)
 
 
+livres_par_mois = (
+    livres_lus
+    .groupby("mois")
+    .size()
+)
 
-FILES_DRIVE = {
 
-    2024: {
-        "id": "17onD34HL2QKC4OP0oPrvt_ynfq63XO0Z",
-        "type": "csv",
-        "separator": ";"
-    },
-
-    2025: {
-        "id": "1dBvQMHY3gLOIEmTWvx21MY-PKeawLmms",
-        "type": "csv",
-        "separator": ","
-    },
-
-    2026: {
-        "id": "1PVyEQ02T-TEfofWoJAtzorob6AU8tImU",
-        "type": "excel"
-    }
-
-}
-
-
-
-OTHER_FILES = {
-
-    "babelio": {
-        "id": "1umai5aXgS22YKV3Mgk2tbvklrg9sFt_T",
-        "type": "csv",
-        "separator": ";",
-        "encoding": "cp1252"
-    }
-
-}
-
-
-
-HEVY_FILES = {
-
-    "workouts": {
-        "id": "16Mvq3QUPBmSQf0S2m6Y-KM6NAOgzZXLf",
-        "separator": ","
-    },
-
-    "exercises": {
-        "id": "1W1bPXm02LNXcd73dX5yB7odylps0Dtfa",
-        "separator": ";"
-    }
-
-}
-
-
-
-STRAVA_FILE = {
-
-    "id": "1ns7SCQfEc4YsycnzjH2lUk7Q8gOBnNhc",
-    "separator": ","
-
-}
-
-
-
-def load_year(year):
-
-    if year not in FILES_DRIVE:
-
-        raise ValueError(
-            f"Aucune donnée disponible pour {year}"
-        )
-
-
-    config = FILES_DRIVE[year]
-
-
-    if config["type"] == "csv":
-
-        data = load_csv_from_drive(
-            config["id"],
-            separator=config["separator"]
-        )
-
-
-    elif config["type"] == "excel":
-
-        data = load_excel_from_drive(
-            config["id"],
-            sheet_name="DATA"
-        )
-
-
-    else:
-
-        raise ValueError(
-            f"Type de fichier inconnu : {config['type']}"
-        )
-
-
-
-    if year == 2024:
-
-        data = clean_2024(data)
-
-
-    elif year == 2025:
-
-        data = clean_2025(data)
-
-
-    elif year == 2026:
-
-        data = clean_2026(data)
-
-
-    return data
-
-
-
-
-
-def load_babelio():
-
-    data = load_csv_from_drive(
-        OTHER_FILES["babelio"]["id"],
-        separator=OTHER_FILES["babelio"]["separator"],
-        encoding=OTHER_FILES["babelio"]["encoding"]
-    )
-
-
-    return data
-
-
-
-
-
-def load_hevy():
-
-    workouts = load_csv_from_drive(
-        HEVY_FILES["workouts"]["id"],
-        separator=HEVY_FILES["workouts"]["separator"]
-    )
-
-
-    exercices = load_csv_from_drive(
-        HEVY_FILES["exercises"]["id"],
-        separator=HEVY_FILES["exercises"]["separator"]
-    )
-
-
-    return prepare_data(
-        workouts,
-        exercices
-    )
+st.bar_chart(
+    livres_par_mois
+)
