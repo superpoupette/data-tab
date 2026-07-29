@@ -66,21 +66,31 @@ def load_excel_from_drive(
 
 def load_csv_from_drive(
     file_id,
-    separator=";"
+    separator=",",
+    encoding="utf-8"
 ):
 
-    service = get_drive_service()
-
-    request = service.files().get_media(
-        fileId=file_id
+    url = (
+        f"https://drive.google.com/uc?id={file_id}"
+        "&export=download"
     )
 
-    content = request.execute()
+
+    response = requests.get(url)
+
+    response.raise_for_status()
+
+
+    data = response.content.decode(
+        encoding,
+        errors="replace"
+    )
+
 
     df = pd.read_csv(
-        io.BytesIO(content),
-        sep=separator,
-        encoding="utf-8-sig"
+        StringIO(data),
+        sep=separator
     )
+
 
     return df
