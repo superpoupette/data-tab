@@ -153,11 +153,42 @@ else:
     meilleur_10 = "-"
 
 
+# Record sur 1 km
+courses_1 = df_calculs[
+    (df_calculs["Distance"] >= 0.95)
+    &
+    (df_calculs["Distance"] <= 1.05)
+]
+
+if len(courses_1):
+
+    meilleur_temps = (
+        courses_1["Durée de déplacement"]
+        .min()
+    )
+
+    heures = int(meilleur_temps // 3600)
+    minutes = int((meilleur_temps % 3600) // 60)
+    secondes = int(meilleur_temps % 60)
+
+    if heures:
+        meilleur_1 = (
+            f"{heures}:{minutes:02d}:{secondes:02d}"
+        )
+    else:
+        meilleur_1 = (
+            f"{minutes}:{secondes:02d}"
+        )
+
+else:
+    meilleur_1 = "-"
+
+
 # ==========================
 # Affichage KPI
 # ==========================
 
-c1, c2, c3, c4 = st.columns(4)
+c1, c2, c3, c4, c5 = st.columns(5)
 
 
 c1.metric(
@@ -176,6 +207,11 @@ c3.metric(
 )
 
 c4.metric(
+    "Meilleur 1 km",
+    meilleur_1    
+)
+
+c5.metric(
     "Sortie max",
     f"{distance_max:.1f} km"
 )
