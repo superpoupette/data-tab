@@ -54,6 +54,53 @@ with col3:
         placeholder="Ex : 7,5"
     )
 
+# Chargement du dataframe existant
+df = create_today_dataframe()
+
+if st.button("💾 Sauvegarder"):
+
+    try:
+
+        if sommeil.strip() == "":
+            sommeil_val = None
+
+        else:
+            sommeil_val = float(
+                sommeil.replace(",", ".")
+            )
+
+        df = add_today_entry(
+            df,
+            today,
+            best_moment,
+            people_seen,
+            int(people_work),
+            sommeil_val,
+            Choree1_morceau,
+            Choree1_duree
+        )
+
+        save_to_google_sheet([
+            today,
+            best_moment,
+            people_seen,
+            int(people_work),
+            sommeil_val,
+            Choree1_morceau,
+            Choree1_duree
+        ])
+
+        st.success(
+            f"Donnée enregistrée pour le {today} !"
+        )
+
+    except ValueError:
+
+        st.error(
+            "⚠️ Format incorrect pour le sommeil. Exemple attendu : 7 ou 7,5"
+        )
+
+
 
 st.subheader("Danse")
 
@@ -135,51 +182,6 @@ else:
     )
 
 
-# Chargement du dataframe existant
-df = create_today_dataframe()
-
-if st.button("💾 Sauvegarder"):
-
-    try:
-
-        if sommeil.strip() == "":
-            sommeil_val = None
-
-        else:
-            sommeil_val = float(
-                sommeil.replace(",", ".")
-            )
-
-        df = add_today_entry(
-            df,
-            today,
-            best_moment,
-            people_seen,
-            int(people_work),
-            sommeil_val,
-            Choree1_morceau,
-            Choree1_duree
-        )
-
-        save_to_google_sheet([
-            today,
-            best_moment,
-            people_seen,
-            int(people_work),
-            sommeil_val,
-            Choree1_morceau,
-            Choree1_duree
-        ])
-
-        st.success(
-            f"Donnée enregistrée pour le {today} !"
-        )
-
-    except ValueError:
-
-        st.error(
-            "⚠️ Format incorrect pour le sommeil. Exemple attendu : 7 ou 7,5"
-        )
 
 
 st.subheader("Nouvelle chorégraphie")
