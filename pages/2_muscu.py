@@ -1,16 +1,11 @@
 ﻿import streamlit as st
 import altair as alt
-from scripts.importation_hevy import prepare_data
+from scripts.data_loader import load_hevy
 
 
 st.title("🏋️ Entraînement")
 
-
-workouts, sessions = prepare_data(
-    "data/workouts.csv",
-    "data/exercices.csv"
-)
-
+workouts, sessions = load_hevy()
 
 # Indicateurs principaux
 

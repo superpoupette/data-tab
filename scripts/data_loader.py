@@ -18,6 +18,19 @@ FILES_DRIVE = {
 
 }
 
+HEVY_FILES = {
+
+    "workouts": {
+        "id": "16Mvq3QUPBmSQf0S2m6Y-KM6NAOgzZXLf",
+        "separator": ","
+    },
+
+    "exercises": {
+        "id": "1W1bPXm02LNXcd73dX5yB7odylps0Dtfa",
+        "separator": ";"
+    }
+
+}
 
 
 def load_year(year):
@@ -46,3 +59,28 @@ def load_year(year):
 
 
     return data
+
+
+from scripts.google_drive import load_csv_from_drive
+from scripts.importation_hevy import prepare_data
+
+
+def load_hevy():
+
+
+    workouts = load_csv_from_drive(
+        HEVY_FILES["workouts"]["id"],
+        separator=HEVY_FILES["workouts"]["separator"]
+    )
+
+
+    exercices = load_csv_from_drive(
+        HEVY_FILES["exercices"]["id"],
+        separator=HEVY_FILES["exercices"]["separator"]
+    )
+
+
+    return prepare_data(
+        workouts,
+        exercices
+    )

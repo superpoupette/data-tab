@@ -1,16 +1,6 @@
 import pandas as pd
 
 
-def load_workouts(filepath):
-    return pd.read_csv(filepath)
-
-
-
-def load_exercices(filepath):
-    return pd.read_csv(filepath, sep=";")
-
-
-
 def clean_dates(workouts):
 
     mois = {
@@ -162,18 +152,9 @@ def replace_exercise_title(workouts):
 
 
 def prepare_data(
-    workouts_filepath,
-    exercices_filepath
+    workouts,
+    exercices
 ):
-
-    workouts = load_workouts(
-        workouts_filepath
-    )
-
-    exercices = load_exercices(
-        exercices_filepath
-    )
-
 
     workouts = clean_dates(
         workouts
