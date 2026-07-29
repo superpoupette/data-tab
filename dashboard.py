@@ -468,12 +468,12 @@ with droite:
 
     # Couleurs fixes
     couleurs_activites = {
-        "Course": "#E76F51",      # Rouge orangé doux
-        "Muscu": "#6FA8DC",       # Bleu pastel
+        "Course": "#F6C667",      # Rouge orangé doux
+        "Muscu": "#7ED6C1",       # Bleu pastel
         "Danse": "#F7A8C4",       # Rose pastel
         "Escalade": "#9B8CFF",    # Violet pastel
-        "Randonnée": "#7ED6C1",   # Vert menthe
-        "Stretching": "#F6C667",  # Jaune doux
+        "Randonnée": "#A3C957",   # Vert menthe
+        "Stretching": "#6FA8DC",  # Jaune doux
         "Autre": "#C7CCD6"        # Gris bleuté pastel
     }
 
