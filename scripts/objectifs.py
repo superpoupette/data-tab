@@ -3,8 +3,10 @@ import gspread
 import streamlit as st
 from google.oauth2.service_account import Credentials
 
-from scripts.importation_2026 import prepare_2026
-from scripts.importation_hevy import load_workouts, clean_dates
+from scripts.data_loader import (
+    load_year,
+    load_hevy
+)
 
 
 def pompes_2026():
@@ -13,14 +15,14 @@ def pompes_2026():
     # Pompes depuis Excel 2026
     # ==========================
 
-    data = prepare_2026()
+    data2026 = load_year(2026)
 
     total_excel = 0
 
-    if "Pompes" in data.columns:
+    if "Pompes" in data2026.columns:
 
         pompes_excel = pd.to_numeric(
-            data["Pompes"],
+            data2026["Pompes"],
             errors="coerce"
         )
 
@@ -38,13 +40,7 @@ def pompes_2026():
     # Pompes depuis Hevy
     # ==========================
 
-    workouts = load_workouts(
-        "data/workouts.csv"
-    )
-
-    workouts = clean_dates(
-        workouts
-    )
+    workouts, sessions = load_hevy()
 
 
     pompes_hevy = (
