@@ -3,7 +3,15 @@ import pandas as pd
 
 from scripts.data_loader import load_babelio
 
-st.title("📚 Lecture")
+
+st.set_page_config(
+    page_title="Lecture",
+    page_icon="📖",
+    layout="wide"
+)
+
+
+st.title("📖 Lecture")
 
 
 # =====================
@@ -86,4 +94,4 @@ st.bar_chart(
 
 
 st.subheader("Récapitulatif")
-st.write(livres.head())
+st.dataframe(livres)
