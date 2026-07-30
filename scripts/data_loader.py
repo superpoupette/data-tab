@@ -154,17 +154,3 @@ def load_danse_2026():
     return danse
 
 
-
-
-def load_babelio():
-
-    data = load_csv_from_drive(
-        OTHER_FILES["babelio"]["id"],
-        separator=OTHER_FILES["babelio"]["separator"]
-    )
-
-
-    data = prepare_babelio(data)
-
-
-    return data
