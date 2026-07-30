@@ -66,7 +66,8 @@ def load_excel_from_drive(
 
 def load_csv_from_drive(
     file_id,
-    separator=";"
+    separator=";",
+    encoding="utf-8-sig"
 ):
 
     service = get_drive_service()
@@ -80,7 +81,7 @@ def load_csv_from_drive(
     df = pd.read_csv(
         io.BytesIO(content),
         sep=separator,
-        encoding="utf-8-sig"
+        encoding=encoding
     )
 
     return df

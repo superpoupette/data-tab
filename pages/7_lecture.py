@@ -3,7 +3,6 @@ import pandas as pd
 
 from scripts.data_loader import load_babelio
 
-
 st.title("📚 Lecture")
 
 

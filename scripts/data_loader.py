@@ -38,7 +38,8 @@ OTHER_FILES = {
     "babelio": {
         "id": "1umai5aXgS22YKV3Mgk2tbvklrg9sFt_T",
         "type": "csv",
-        "separator": ";"
+        "separator": ";",
+        "encoding": "cp1252"
     }
 
 }
@@ -153,4 +154,12 @@ def load_danse_2026():
 
     return danse
 
+
+def load_babelio():
+
+    return load_csv_from_drive(
+        OTHER_FILES["babelio"]["id"],
+        separator=OTHER_FILES["babelio"]["separator"],
+        encoding=OTHER_FILES["babelio"]["encoding"]
+    )
 
