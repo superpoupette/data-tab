@@ -49,7 +49,7 @@ nb_detox = detox()
 # ==========================
 # Objectifs
 # ==========================
-st.header("🎯 Objectifs 2026")
+st.header("Objectifs 2026")
 
 
 # Données 2026 uniquement
@@ -325,7 +325,7 @@ st.write("")
 # ==========================
 # Filtre année
 # ==========================
-st.header("🏃 Sport")
+st.header("Sport")
 
 annees = sorted(
     df_sport["Date"]
