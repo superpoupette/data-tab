@@ -35,6 +35,9 @@ def enrichir_google_sheet():
         if colonne not in df.columns:
             df[colonne] = ""
 
+    for colonne in COLONNES_SPOTIFY:
+        df[colonne] = df[colonne].astype(str)
+
 
     for index, ligne in df.head(5).iterrows():
 
@@ -53,7 +56,10 @@ def enrichir_google_sheet():
 
             for cle, valeur in infos.items():
 
-                df.loc[index, cle] = valeur
+                if valeur is None:
+                    valeur = ""
+
+                df.loc[index, cle] = str(valeur)
 
 
 

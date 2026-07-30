@@ -61,8 +61,8 @@ def enrichir_album(album, artiste):
         "spotify_url": details["external_urls"]["spotify"],
 
         "cover_url": details["images"][0]["url"]
-        if details["images"]
-        else None,
+        if details.get("images")
+        else "",
 
         "spotify_date_sortie": details["release_date"],
 
