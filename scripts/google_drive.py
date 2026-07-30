@@ -4,7 +4,7 @@ from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseDownload
 from google.oauth2.service_account import Credentials
 import streamlit as st
-
+import json
 
 def get_drive_service():
 
@@ -85,3 +85,59 @@ def load_csv_from_drive(
     )
 
     return df
+
+
+def load_json_folder_from_drive(
+    folder_id,
+    filename_prefix=None
+):
+
+    service = get_drive_service()
+
+    query = (
+        f"'{folder_id}' in parents "
+        "and trashed = false"
+    )
+
+    results = service.files().list(
+        q=query,
+        fields="files(id,name)"
+    ).execute()
+
+    fichiers = results.get(
+        "files",
+        []
+    )
+
+    if filename_prefix is not None:
+
+        fichiers = [
+            f
+            for f in fichiers
+            if f["name"].startswith(
+                filename_prefix
+            )
+        ]
+
+    fichiers = sorted(
+        fichiers,
+        key=lambda x: x["name"]
+    )
+
+    data = []
+
+    for fichier in fichiers:
+
+        request = service.files().get_media(
+            fileId=fichier["id"]
+        )
+
+        content = request.execute()
+
+        data.extend(
+            json.loads(
+                content.decode("utf-8")
+            )
+        )
+
+    return data

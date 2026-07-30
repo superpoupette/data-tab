@@ -9,6 +9,11 @@ from scripts.importation_2026 import clean_2026
 
 from scripts.importation_hevy import prepare_data
 from scripts.importation_babelio import prepare_babelio
+from scripts.google_drive import (
+    load_csv_from_drive,
+    load_excel_from_drive,
+    load_json_folder_from_drive
+)
 
 
 FILES_DRIVE = {
@@ -65,6 +70,9 @@ STRAVA_FILE = {
     "separator": ","
 }
 
+SPOTIFY_FOLDER = {
+    "id": "1-6fwYwjbAdqN1ty4xpWf6OIm_cWWDDk6"
+}
 
 
 def load_year(year):
@@ -162,4 +170,18 @@ def load_babelio():
         separator=OTHER_FILES["babelio"]["separator"],
         encoding=OTHER_FILES["babelio"]["encoding"]
     )
+
+
+
+def load_spotify():
+
+    return load_json_folder_from_drive(
+        SPOTIFY_FOLDER["id"],
+        filename_prefix="Streaming_History_Audio"
+    )
+
+
+
+
+
 

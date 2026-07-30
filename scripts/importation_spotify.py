@@ -2,22 +2,15 @@ from pathlib import Path
 import json
 import pandas as pd
 
+import pandas as pd
+
+from scripts.data_loader import (
+    load_spotify
+)
 
 def charger_historique_spotify():
 
-    dossier = (
-        Path(__file__).resolve().parents[1]
-        / "data"
-        / "Spotify Extended Streaming History"
-    )
-
-    fichiers = sorted(dossier.glob("Streaming_History_Audio*.json"))
-
-    data = []
-
-    for fichier in fichiers:
-        with open(fichier, "r", encoding="utf-8") as f:
-            data.extend(json.load(f))
+    data = load_spotify()
 
     df = pd.DataFrame(data)
 
@@ -34,6 +27,8 @@ def charger_historique_spotify():
     df["jour"] = df["ts"].dt.day_name()
 
     # On ne garde que la musique
-    df = df[df["master_metadata_track_name"].notna()]
+    df = df[
+        df["master_metadata_track_name"].notna()
+    ]
 
     return df
