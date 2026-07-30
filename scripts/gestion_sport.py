@@ -1,4 +1,5 @@
 import pandas as pd
+import streamlit as st
 
 from scripts.data_loader import (
     load_year,
@@ -323,6 +324,7 @@ def charger_tableau_sport():
 
     # 2024
     data2024 = load_year(2024)
+    st.write(data2024["Stretching"].unique())
     df_sport = importer_2024(df_sport, data2024)
 
     # 2025
