@@ -68,7 +68,7 @@ def enrichir_album(album, artiste):
 
         "nb_titres": details["total_tracks"],
 
-        "popularite": resultat["popularity"],
+        "popularite": resultat.get("popularity", ""),
 
         "spotify_artiste":
             resultat["artists"][0]["name"]
