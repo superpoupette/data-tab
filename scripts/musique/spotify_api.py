@@ -35,7 +35,6 @@ def rechercher_album(album, artiste):
     return albums[0]
 
 
-
 def enrichir_album(album, artiste):
 
     sp = get_spotify_client()
@@ -49,27 +48,63 @@ def enrichir_album(album, artiste):
         return None
 
 
+    # Informations album
     details = sp.album(
         resultat["id"]
     )
 
 
+    # Informations artiste
+    artiste_id = (
+        resultat["artists"][0]["id"]
+    )
+
+    details_artiste = sp.artist(
+        artiste_id
+    )
+
+
+    genres = ", ".join(
+        details_artiste.get(
+            "genres",
+            []
+        )
+    )
+
+
     return {
 
-        "spotify_id": details["id"],
+        "spotify_id": details.get(
+            "id",
+            ""
+        ),
 
-        "spotify_url": details["external_urls"]["spotify"],
+        "spotify_date_sortie": details.get(
+            "release_date",
+            ""
+        ),
 
-        "cover_url": details["images"][0]["url"]
-        if details.get("images")
-        else "",
+        "nb_titres": details.get(
+            "total_tracks",
+            ""
+        ),
 
-        "spotify_date_sortie": details["release_date"],
+        "cover_url": (
+            details["images"][0]["url"]
+            if details.get("images")
+            else ""
+        ),
 
-        "nb_titres": details["total_tracks"],
-
-        "popularite": resultat.get("popularity", ""),
-
-        "spotify_artiste":
+        "spotify_artiste": (
             resultat["artists"][0]["name"]
+        ),
+
+        "spotify_album": (
+            details.get(
+                "name",
+                ""
+            )
+        ),
+
+        "spotify_genres": genres
     }

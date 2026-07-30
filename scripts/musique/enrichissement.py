@@ -12,12 +12,12 @@ from scripts.musique.spotify_api import (
 
 COLONNES_SPOTIFY = [
     "spotify_id",
-    "spotify_url",
-    "cover_url",
     "spotify_date_sortie",
     "nb_titres",
-    "popularite",
-    "spotify_artiste"
+    "cover_url",
+    "spotify_artiste",
+    "spotify_album",
+    "spotify_genres"
 ]
 
 
@@ -39,7 +39,7 @@ def enrichir_google_sheet():
         df[colonne] = df[colonne].astype(str)
 
 
-    for index, ligne in df.head(5).iterrows():
+    for index, ligne in df.head(10).iterrows():
 
         # déjà enrichi
         if ligne["spotify_id"]:
