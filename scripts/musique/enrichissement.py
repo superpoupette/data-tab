@@ -47,8 +47,7 @@ def enrichir_google_sheet():
 
 
         infos = enrichir_album(
-            ligne["Album"],
-            ligne["Artiste"]
+            ligne["spotify_id"]
         )
 
 

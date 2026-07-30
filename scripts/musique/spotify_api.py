@@ -15,96 +15,60 @@ def get_spotify_client():
     )
 
 
-
-def rechercher_album(album, artiste):
-
-    sp = get_spotify_client()
-
-    result = sp.search(
-        q=f"album:{album} artist:{artiste}",
-        type="album",
-        limit=5
-    )
-
-    albums = result["albums"]["items"]
-
-    if not albums:
-        return None
-
-    # On prend le premier résultat pour l'instant
-    return albums[0]
-
-
-def enrichir_album(album, artiste):
+def enrichir_album(spotify_id):
 
     sp = get_spotify_client()
 
-    resultat = rechercher_album(
-        album,
-        artiste
-    )
+    try:
 
-    if resultat is None:
-        return None
-
-
-    # Informations album
-    details = sp.album(
-        resultat["id"]
-    )
-
-
-    # Informations artiste
-    artiste_id = (
-        resultat["artists"][0]["id"]
-    )
-
-    details_artiste = sp.artist(
-        artiste_id
-    )
-
-
-    genres = ", ".join(
-        details_artiste.get(
-            "genres",
-            []
+        details = sp.album(
+            spotify_id
         )
-    )
+
+        artiste = details["artists"][0]
+
+        # récupération des genres artiste
+        artiste_details = sp.artist(
+            artiste["id"]
+        )
+
+        genres = ", ".join(
+            artiste_details.get("genres", [])
+        )
 
 
-    return {
+        return {
 
-        "spotify_id": details.get(
-            "id",
-            ""
-        ),
+            "spotify_id": details["id"],
 
-        "spotify_date_sortie": details.get(
-            "release_date",
-            ""
-        ),
+            "spotify_url": details["external_urls"]["spotify"],
 
-        "nb_titres": details.get(
-            "total_tracks",
-            ""
-        ),
+            "cover_url":
+                details["images"][0]["url"]
+                if details["images"]
+                else "",
 
-        "cover_url": (
-            details["images"][0]["url"]
-            if details.get("images")
-            else ""
-        ),
+            "spotify_date_sortie":
+                details["release_date"],
 
-        "spotify_artiste": (
-            resultat["artists"][0]["name"]
-        ),
+            "nb_titres":
+                details["total_tracks"],
 
-        "spotify_album": (
-            details.get(
-                "name",
-                ""
-            )
-        ),
+            "spotify_artiste":
+                artiste["name"],
 
-        "spotify_genres": genres
-    }
+            "spotify_album":
+                details["name"],
+
+            "spotify_genres":
+                genres
+        }
+
+
+    except Exception as e:
+
+        print(
+            f"Erreur Spotify {spotify_id} : {e}"
+        )
+
+        return None
