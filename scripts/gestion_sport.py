@@ -1,11 +1,10 @@
 import pandas as pd
 
-from scripts.importation_2024 import prepare_2024
-from scripts.importation_2025 import prepare_2025
+from scripts.data_loader import (
+    load_year,
+    load_hevy
+)
 from scripts.importation_strava import charger_donnees_strava
-from scripts.importation_2026 import prepare_2026
-from scripts.importation_hevy import prepare_data
-
 
 COLONNES_SPORT = [
     "Date",
@@ -19,8 +18,68 @@ COLONNES_SPORT = [
 ]
 
 
-def creer_tableau_sport():
-    return pd.DataFrame(columns=COLONNES_SPORT)
+def charger_tableau_sport():
+
+    df_sport = creer_tableau_sport()
+
+    # 2024
+    data2024 = load_year(2024)
+    df_sport = importer_2024(df_sport, data2024)
+
+    # 2025
+    data2025 = load_year(2025)
+    df_sport = importer_2025(df_sport, data2025)
+
+    # 2026
+    data2026 = load_year(2026)
+    df_sport = importer_2026(df_sport, data2026)
+
+    # Strava
+    data_strava = charger_donnees_strava()
+    df_sport = importer_strava(df_sport, data_strava)
+
+    # Hevy
+    workouts, sessions = load_hevy()
+
+    df_sport = importer_hevy(
+        df_sport,
+        workouts,
+        sessions
+    )
+
+    # Suppression des lignes sans date
+    df_sport = df_sport.dropna(
+        subset=["Date"]
+    )
+
+    # Regroupement des journées identiques
+    df_sport = (
+        df_sport
+        .groupby(
+            "Date",
+            as_index=False
+        )[
+            [
+                "Danse",
+                "Muscu",
+                "Stretching",
+                "Course",
+                "Escalade",
+                "Randonnée",
+                "Autre",
+            ]
+        ]
+        .sum()
+    )
+
+    # Tri par date
+    df_sport = (
+        df_sport
+        .sort_values("Date")
+        .reset_index(drop=True)
+    )
+
+    return df_sport
 
 
 def importer_2024(df_sport, data2024):
@@ -314,70 +373,3 @@ def importer_hevy(df_sport, workouts, sessions):
         ],
         ignore_index=True
     )
-
-def charger_tableau_sport():
-
-    df_sport = creer_tableau_sport()
-
-    # 2024
-    data2024 = prepare_2024("data/2024.csv")
-    df_sport = importer_2024(df_sport, data2024)
-
-    # 2025
-    data2025 = prepare_2025("data/2025.csv")
-    df_sport = importer_2025(df_sport, data2025)
-
-    # 2026
-    data2026 = prepare_2026()
-    df_sport = importer_2026(df_sport, data2026)
-
-    # Strava
-    data_strava = charger_donnees_strava()
-    df_sport = importer_strava(df_sport, data_strava)
-
-    # Hevy
-    workouts, sessions = prepare_data(
-        "data/workouts.csv",
-        "data/exercices.csv"
-    )
-
-    df_sport = importer_hevy(
-        df_sport,
-        workouts,
-        sessions
-    )
-
-    # Suppression des lignes sans date
-    df_sport = df_sport.dropna(
-        subset=["Date"]
-    )
-
-
-    # Regroupement des journées identiques
-    df_sport = (
-        df_sport
-        .groupby("Date", as_index=False)
-        [
-            [
-                "Danse",
-                "Muscu",
-                "Stretching",
-                "Course",
-                "Escalade",
-                "Randonnée",
-                "Autre",
-            ]
-        ]
-        .sum()
-    )
-
-
-    # Tri par date
-    df_sport = (
-        df_sport
-        .sort_values("Date")
-        .reset_index(drop=True)
-    )
-
-
-    return df_sport
