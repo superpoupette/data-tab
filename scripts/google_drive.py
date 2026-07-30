@@ -24,7 +24,7 @@ def get_drive_service():
     return service
 
 
-
+@st.cache_data
 def load_excel_from_drive(
     file_id,
     sheet_name
@@ -63,7 +63,7 @@ def load_excel_from_drive(
     )
 
 
-
+@st.cache_data
 def load_csv_from_drive(
     file_id,
     separator=";",
@@ -87,6 +87,7 @@ def load_csv_from_drive(
     return df
 
 
+@st.cache_data
 def load_json_folder_from_drive(
     folder_id,
     filename_prefix=None
