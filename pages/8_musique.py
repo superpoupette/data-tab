@@ -4,6 +4,8 @@ import plotly.express as px
 from scripts.importation_spotify import charger_historique_spotify
 from scripts.musique.google_sheet import charger_albums
 
+from scripts.musique.google_sheet import charger_musique
+
 st.set_page_config(page_title="Musique", layout="wide")
 
 st.title("🎵 Spotify Dashboard")
@@ -159,6 +161,21 @@ st.divider()
 st.subheader("💿 Collection d'albums")
 
 df_albums = charger_albums()
+
+st.dataframe(
+    df_albums,
+    use_container_width=True,
+    hide_index=True
+)
+
+
+st.divider()
+
+st.header("💿 Ma bibliothèque musicale")
+
+
+df_albums = charger_musique()
+
 
 st.dataframe(
     df_albums,
