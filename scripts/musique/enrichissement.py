@@ -39,7 +39,7 @@ def enrichir_google_sheet():
         df[colonne] = df[colonne].astype(str)
 
 
-    for index, ligne in df.head(10).iterrows():
+    for index, ligne in df.iterrows():
 
         # déjà enrichi
         if ligne["spotify_id"]:
