@@ -324,7 +324,7 @@ def importer_hevy(df_sport, workouts, sessions):
     )
 
 
-
+@st.cache_data
 def charger_tableau_sport():
 
     df_sport = creer_tableau_sport()
