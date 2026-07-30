@@ -11,8 +11,7 @@ st.title("📚 Lecture")
 # =====================
 
 livres = load_babelio()
-st.write(livres.columns.tolist())
-st.write(livres.head())
+
 
 # =====================
 # Livres lus
@@ -58,7 +57,7 @@ with col2:
 # Livres lus par mois
 # =====================
 
-st.subheader("📅 Livres lus par mois")
+st.subheader("Livres lus par mois")
 
 
 livres_lus["date_entree"] = pd.to_datetime(
@@ -84,3 +83,7 @@ livres_par_mois = (
 st.bar_chart(
     livres_par_mois
 )
+
+
+st.subheader("Récapitulatif")
+st.write(livres.head())
