@@ -2,6 +2,7 @@ import streamlit as st
 import plotly.express as px
 
 from scripts.importation_spotify import charger_historique_spotify
+from scripts.musique.google_sheet import charger_albums
 
 st.set_page_config(page_title="Musique", layout="wide")
 
@@ -151,3 +152,16 @@ fig = px.line(
 )
 
 st.plotly_chart(fig, use_container_width=True)
+
+
+st.divider()
+
+st.subheader("💿 Collection d'albums")
+
+df_albums = charger_albums()
+
+st.dataframe(
+    df_albums,
+    use_container_width=True,
+    hide_index=True
+)
