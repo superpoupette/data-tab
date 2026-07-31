@@ -26,3 +26,28 @@ def charger_musique():
     data = sheet.get_all_records()
 
     return pd.DataFrame(data)
+
+
+
+def ajouter_album_google_sheet(album):
+
+    sheet = get_music_sheet()
+
+    sheet.append_row(
+        [
+            album["Date"],
+            album["spotify_album"],
+            album["spotify_artiste"],
+            album["spotify_date_sortie"],
+            album["Genre (large)"],
+            "",
+            album["Note"],
+            album["spotify_id"],
+            album["spotify_url"],
+            album["cover_url"],
+            album["spotify_date_sortie"],
+            album["nb_titres"],
+            album["spotify_artiste"],
+            album["spotify_album"]
+        ]
+    )

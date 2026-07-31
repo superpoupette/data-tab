@@ -599,3 +599,144 @@ else:
     st.info(
         "Aucune série disponible."
     )
+
+
+st.divider()
+
+st.header("➕ Ajouter un album")
+
+
+nom_album = st.text_input(
+    "Nom de l'album"
+)
+
+
+if st.button("🔎 Rechercher"):
+
+    resultats = rechercher_album_spotify(
+        nom_album
+    )
+
+    st.session_state["albums_recherche"] = resultats
+
+
+
+if "albums_recherche" in st.session_state:
+
+
+    resultats = st.session_state["albums_recherche"]
+
+
+    if resultats:
+
+
+        choix = st.selectbox(
+            "Valider l'album",
+            [
+                f"{a['name']} - {a['artists'][0]['name']}"
+                for a in resultats
+            ]
+        )
+
+
+        album_selectionne = resultats[
+            [
+                f"{a['name']} - {a['artists'][0]['name']}"
+                for a in resultats
+            ].index(choix)
+        ]
+
+
+        infos = enrichir_album(
+            album_selectionne["id"]
+        )
+
+
+        col1, col2 = st.columns([1,3])
+
+
+        with col1:
+
+            st.image(
+                infos["cover_url"],
+                use_container_width=True
+            )
+
+
+        with col2:
+
+            st.subheader(
+                infos["spotify_album"]
+            )
+
+            st.write(
+                infos["spotify_artiste"]
+            )
+
+            st.write(
+                infos["spotify_date_sortie"]
+            )
+
+            st.write(
+                f"{infos['nb_titres']} titres"
+            )
+
+
+        genre = st.selectbox(
+            "Genre",
+            [
+                "Pop",
+                "Rock",
+                "Rap",
+                "Kpop",
+                "Electro/techno",
+                "Autre",
+                "Variété"
+            ]
+        )
+
+
+        note = st.select_slider(
+            "Note",
+            options=[
+                0,
+                1,
+                2,
+                3,
+                4,
+                5,
+                6
+            ],
+            value=3
+        )
+
+
+        date = st.date_input(
+            "Date d'ajout"
+        )
+
+
+        if st.button(
+            "💿 Ajouter l'album"
+        ):
+
+
+            infos["Date"] = (
+                date.strftime("%Y-%m-%d")
+            )
+
+            infos["Genre (large)"] = genre
+
+            infos["Note"] = note
+
+
+            ajouter_album_google_sheet(
+                infos
+            )
+
+
+            st.success(
+                "Album ajouté !"
+            )
+
+            st.rerun()
