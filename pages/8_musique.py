@@ -2,8 +2,6 @@ import streamlit as st
 import plotly.express as px
 
 from scripts.importation_spotify import charger_historique_spotify
-from scripts.musique.google_sheet import charger_albums
-
 from scripts.musique.google_sheet import charger_musique
 
 st.set_page_config(page_title="Musique", layout="wide")
