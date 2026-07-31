@@ -168,6 +168,11 @@ st.divider()
 
 st.subheader("🆕 Derniers albums écoutés")
 
+df_albums["Date"] = pd.to_datetime(
+    df_albums["Date"],
+    errors="coerce"
+)
+
 derniers = (
     df_albums
     .sort_values("Date", ascending=False)
@@ -181,14 +186,18 @@ for col, (_, album) in zip(cols, derniers.iterrows()):
     with col:
 
         if album["cover_url"]:
-            st.image(album["cover_url"])
+            st.image(
+                album["cover_url"],
+                use_container_width=True
+            )
+
+        note = album["Note"] if album["Note"] else "-"
 
         st.markdown(
             f"**{album['spotify_album']}**\n\n"
-            f"{album['spotify_artiste']}"
+            f"{album['spotify_artiste']}\n\n"
+            f"⭐ Note : {note}/6"
         )
-
-st.divider()
 
 # ==========================
 # Albums préférés
