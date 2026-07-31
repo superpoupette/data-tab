@@ -157,12 +157,69 @@ st.plotly_chart(fig, use_container_width=True)
 st.divider()
 
 st.subheader("💿 Collection d'albums")
+df_albums = charger_musique()
+
+st.divider()
+
+# ==========================
+# 5 derniers albums écoutés
+# ==========================
+
+st.subheader("🆕 Derniers albums écoutés")
+
+derniers = (
+    df_albums
+    .sort_values("Date", ascending=False)
+    .head(5)
+)
+
+cols = st.columns(5)
+
+for col, (_, album) in zip(cols, derniers.iterrows()):
+
+    with col:
+
+        if album["cover_url"]:
+            st.image(album["cover_url"])
+
+        st.markdown(
+            f"**{album['spotify_album']}**\n\n"
+            f"{album['spotify_artiste']}"
+        )
+
+st.divider()
+
+# ==========================
+# Albums préférés
+# ==========================
+
+st.subheader("❤️ Albums préférés")
+
+favoris = (
+    df_albums
+    .sort_values(["Note", "Date"], ascending=[False, False])
+    .head(5)
+)
+
+cols = st.columns(5)
+
+for col, (_, album) in zip(cols, favoris.iterrows()):
+
+    with col:
+
+        if album["cover_url"]:
+            st.image(album["cover_url"])
+
+        st.markdown(
+            f"**{album['spotify_album']}**\n\n"
+            f"{album['spotify_artiste']}"
+        )
 
 st.divider()
 
 st.header("💿 Ma bibliothèque musicale")
 
-df_albums = charger_musique()
+
 
 st.dataframe(
     df_albums,
