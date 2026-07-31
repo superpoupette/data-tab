@@ -168,6 +168,7 @@ df_albums["Date"] = pd.to_datetime(
     errors="coerce"
 )
 
+# Nettoyage des notes
 df_albums["Note"] = (
     df_albums["Note"]
     .astype(str)
@@ -179,30 +180,32 @@ df_albums["Note"] = pd.to_numeric(
     errors="coerce"
 )
 
+# Correction des anciennes notes enregistrées sans décimale
+# Exemple : 35 devient 3.5
+df_albums.loc[
+    df_albums["Note"] > 6,
+    "Note"
+] = (
+    df_albums.loc[
+        df_albums["Note"] > 6,
+        "Note"
+    ] / 10
+)
+
+
 # ==========================
 # Albums préférés
 # ==========================
 
 st.subheader("Albums préférés")
 
-df_notes = df_albums.copy()
 
-# Conversion des notes
-df_notes["Note"] = (
-    df_notes["Note"]
-    .astype(str)
-    .str.replace(",", ".", regex=False)
+df_notes = (
+    df_albums
+    .dropna(subset=["Note"])
+    .copy()
 )
 
-df_notes["Note"] = pd.to_numeric(
-    df_notes["Note"],
-    errors="coerce"
-)
-
-# Suppression des albums sans note
-df_notes = df_notes.dropna(
-    subset=["Note"]
-)
 
 favoris = (
     df_notes
@@ -213,22 +216,35 @@ favoris = (
     .head(5)
 )
 
+
 cols = st.columns(5)
+
 
 for col, (_, album) in zip(cols, favoris.iterrows()):
 
     with col:
 
         if album["cover_url"]:
-            st.image(album["cover_url"])
+            st.image(
+                album["cover_url"],
+                use_container_width=True
+            )
+
+        note_affichee = (
+            f"⭐ {album['Note']:.1f}/6"
+            if pd.notna(album["Note"])
+            else "⭐ Sans note"
+        )
 
         st.markdown(
             f"**{album['spotify_album']}**\n\n"
             f"{album['spotify_artiste']}\n\n"
-            f"⭐ {album['Note']:.1f}" if pd.notna(album["Note"]) else "⭐ Sans note"
+            f"{note_affichee}"
         )
 
+
 st.divider()
+
 
 # ==========================
 # 5 derniers albums écoutés
@@ -236,13 +252,19 @@ st.divider()
 
 st.subheader("Derniers albums écoutés")
 
+
 derniers = (
     df_albums
-    .sort_values("Date", ascending=False)
+    .sort_values(
+        "Date",
+        ascending=False
+    )
     .head(5)
 )
 
+
 cols = st.columns(5)
+
 
 for col, (_, album) in zip(cols, derniers.iterrows()):
 
@@ -254,10 +276,14 @@ for col, (_, album) in zip(cols, derniers.iterrows()):
                 use_container_width=True
             )
 
-        note = album["Note"] if album["Note"] else "-"
+        note_affichee = (
+            f"⭐ {album['Note']:.1f}/6"
+            if pd.notna(album["Note"])
+            else "⭐ Sans note"
+        )
 
         st.markdown(
             f"**{album['spotify_album']}**\n\n"
             f"{album['spotify_artiste']}\n\n"
-            f"⭐ {album['Note']:.1f}" if pd.notna(album["Note"]) else "⭐ Sans note"
+            f"{note_affichee}"
         )
