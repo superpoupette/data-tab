@@ -1,3 +1,4 @@
+import re
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
 import streamlit as st
@@ -15,23 +16,31 @@ def get_spotify_client():
     )
 
 
-def rechercher_album_spotify(nom_album):
 
-    sp = get_spotify_client()
+def extraire_spotify_id(url):
 
-    result = sp.search(
-        q=f"album:{nom_album}",
-        type="album",
-        limit=10
+    match = re.search(
+        r"album/([a-zA-Z0-9]+)",
+        url
     )
 
-    return result["albums"]["items"]
+    if match:
+        return match.group(1)
+
+    return None
 
 
 
-def enrichir_album(spotify_id):
+def enrichir_album_depuis_url(url):
+
+    spotify_id = extraire_spotify_id(url)
+
+    if not spotify_id:
+        return None
+
 
     sp = get_spotify_client()
+
 
     details = sp.album(
         spotify_id
@@ -43,7 +52,8 @@ def enrichir_album(spotify_id):
 
     return {
 
-        "spotify_id": details["id"],
+        "spotify_id":
+            details["id"],
 
         "spotify_url":
             details["external_urls"]["spotify"],
@@ -64,4 +74,5 @@ def enrichir_album(spotify_id):
 
         "spotify_album":
             details["name"]
+
     }

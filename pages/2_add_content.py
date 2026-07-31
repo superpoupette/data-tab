@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 
+
 from scripts.watchlist.google_sheet import (
     add_movie_google_sheet,
     add_series_google_sheet,
@@ -9,6 +10,7 @@ from scripts.watchlist.google_sheet import (
     save_google_sheet
 )
 
+
 from scripts.watchlist.tmdb import (
     search_movies_tmdb,
     get_movie_details_tmdb,
@@ -16,9 +18,15 @@ from scripts.watchlist.tmdb import (
     get_series_details_tmdb
 )
 
+
 from scripts.musique.spotify_api import (
     rechercher_album_spotify,
     enrichir_album
+)
+
+
+from scripts.musique.google_sheet import (
+    ajouter_album_google_sheet
 )
 
 
@@ -609,50 +617,30 @@ st.divider()
 st.header("➕ Ajouter un album")
 
 
-nom_album = st.text_input(
-    "Nom de l'album"
+lien_spotify = st.text_input(
+    "Lien Spotify de l'album",
+    placeholder="https://open.spotify.com/album/..."
 )
 
 
-if st.button("🔎 Rechercher"):
+if st.button(
+    "🔎 Charger l'album"
+):
 
-    resultats = rechercher_album_spotify(
-        nom_album
+    infos = enrichir_album_depuis_url(
+        lien_spotify
     )
 
-    st.session_state["albums_recherche"] = resultats
+    st.session_state["album_infos"] = infos
 
 
 
-if "albums_recherche" in st.session_state:
+if "album_infos" in st.session_state:
+
+    infos = st.session_state["album_infos"]
 
 
-    resultats = st.session_state["albums_recherche"]
-
-
-    if resultats:
-
-
-        choix = st.selectbox(
-            "Valider l'album",
-            [
-                f"{a['name']} - {a['artists'][0]['name']}"
-                for a in resultats
-            ]
-        )
-
-
-        album_selectionne = resultats[
-            [
-                f"{a['name']} - {a['artists'][0]['name']}"
-                for a in resultats
-            ].index(choix)
-        ]
-
-
-        infos = enrichir_album(
-            album_selectionne["id"]
-        )
+    if infos:
 
 
         col1, col2 = st.columns([1,3])
