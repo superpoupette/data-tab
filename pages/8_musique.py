@@ -244,16 +244,3 @@ for col, (_, album) in zip(cols, derniers.iterrows()):
             f"{album['spotify_artiste']}\n\n"
             f"⭐ Note : {note}/6"
         )
-
-
-st.divider()
-
-st.header("💿 Ma bibliothèque musicale")
-
-
-
-st.dataframe(
-    df_albums,
-    use_container_width=True,
-    hide_index=True
-)
