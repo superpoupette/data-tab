@@ -156,6 +156,17 @@ st.plotly_chart(fig, use_container_width=True)
 
 
 st.divider()
+# ==========================
+# Chargement bibliothèque albums
+# ==========================
+
+df_albums = charger_musique()
+
+# Conversion date
+df_albums["Date"] = pd.to_datetime(
+    df_albums["Date"],
+    errors="coerce"
+)
 
 # ==========================
 # Albums préférés
@@ -207,11 +218,6 @@ st.divider()
 # ==========================
 
 st.subheader("Derniers albums écoutés")
-
-df_albums["Date"] = pd.to_datetime(
-    df_albums["Date"],
-    errors="coerce"
-)
 
 derniers = (
     df_albums
