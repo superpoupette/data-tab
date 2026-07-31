@@ -231,7 +231,7 @@ for col, (_, album) in zip(cols, favoris.iterrows()):
             )
 
         note_affichee = (
-            f"⭐ {album['Note']:.1f}/6"
+            f"⭐ {album['Note']:.1f}"
             if pd.notna(album["Note"])
             else "⭐ Sans note"
         )
@@ -277,7 +277,7 @@ for col, (_, album) in zip(cols, derniers.iterrows()):
             )
 
         note_affichee = (
-            f"⭐ {album['Note']:.1f}/6"
+            f"⭐ {album['Note']:.1f}"
             if pd.notna(album["Note"])
             else "⭐ Sans note"
         )
@@ -287,3 +287,132 @@ for col, (_, album) in zip(cols, derniers.iterrows()):
             f"{album['spotify_artiste']}\n\n"
             f"{note_affichee}"
         )
+
+# ==========================
+# Statistiques bibliothèque
+# ==========================
+
+st.divider()
+
+st.header("Statistiques de ma bibliothèque")
+
+
+col1, col2 = st.columns(2)
+
+
+# ==========================
+# Répartition des genres
+# ==========================
+
+with col1:
+
+    genres = (
+        df_albums["Genre (large)"]
+        .replace("", "Non renseigné")
+        .fillna("Non renseigné")
+        .value_counts()
+        .reset_index()
+    )
+
+    genres.columns = [
+        "Genre",
+        "Nombre"
+    ]
+
+    fig_genres = px.pie(
+        genres,
+        names="Genre",
+        values="Nombre",
+        title="🎵 Répartition des genres",
+        hole=0.3
+    )
+
+    st.plotly_chart(
+        fig_genres,
+        use_container_width=True
+    )
+
+
+# ==========================
+# Répartition des pays
+# ==========================
+
+with col2:
+
+    pays = (
+        df_albums["Pays"]
+        .replace("", "Non renseigné")
+        .fillna("Non renseigné")
+        .value_counts()
+        .reset_index()
+    )
+
+    pays.columns = [
+        "Pays",
+        "Nombre"
+    ]
+
+    fig_pays = px.pie(
+        pays,
+        names="Pays",
+        values="Nombre",
+        title="🌍 Répartition des pays",
+        hole=0.3
+    )
+
+    st.plotly_chart(
+        fig_pays,
+        use_container_width=True
+    )
+
+
+# ==========================
+# Répartition des notes
+# ==========================
+
+notes = (
+    df_albums
+    .dropna(subset=["Note"])
+    .copy()
+)
+
+
+notes["Note"] = notes["Note"].astype(float)
+
+
+repartition_notes = (
+    notes["Note"]
+    .value_counts()
+    .sort_index()
+    .reset_index()
+)
+
+
+repartition_notes.columns = [
+    "Note",
+    "Nombre"
+]
+
+
+fig_notes = px.bar(
+    repartition_notes,
+    x="Note",
+    y="Nombre",
+    text="Nombre",
+    title="⭐ Répartition des notes",
+)
+
+
+fig_notes.update_layout(
+    xaxis_title="Note / 6",
+    yaxis_title="Nombre d'albums",
+    xaxis=dict(
+        dtick=0.5
+    )
+)
+
+
+st.plotly_chart(
+    fig_notes,
+    use_container_width=True
+)
