@@ -195,9 +195,25 @@ st.divider()
 
 st.subheader("❤️ Albums préférés")
 
+df_notes = df_albums.copy()
+
+# Conversion des notes
+df_notes["Note"] = pd.to_numeric(
+    df_notes["Note"],
+    errors="coerce"
+)
+
+# Suppression des albums sans note
+df_notes = df_notes.dropna(
+    subset=["Note"]
+)
+
 favoris = (
-    df_albums
-    .sort_values(["Note", "Date"], ascending=[False, False])
+    df_notes
+    .sort_values(
+        ["Note", "Date"],
+        ascending=[False, False]
+    )
     .head(5)
 )
 
@@ -212,7 +228,8 @@ for col, (_, album) in zip(cols, favoris.iterrows()):
 
         st.markdown(
             f"**{album['spotify_album']}**\n\n"
-            f"{album['spotify_artiste']}"
+            f"{album['spotify_artiste']}\n\n"
+            f"⭐ {album['Note']}"
         )
 
 st.divider()
