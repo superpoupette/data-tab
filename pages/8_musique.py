@@ -157,53 +157,11 @@ st.plotly_chart(fig, use_container_width=True)
 
 st.divider()
 
-st.subheader("💿 Collection d'albums")
-df_albums = charger_musique()
-
-st.divider()
-
-# ==========================
-# 5 derniers albums écoutés
-# ==========================
-
-st.subheader("🆕 Derniers albums écoutés")
-
-df_albums["Date"] = pd.to_datetime(
-    df_albums["Date"],
-    errors="coerce"
-)
-
-derniers = (
-    df_albums
-    .sort_values("Date", ascending=False)
-    .head(5)
-)
-
-cols = st.columns(5)
-
-for col, (_, album) in zip(cols, derniers.iterrows()):
-
-    with col:
-
-        if album["cover_url"]:
-            st.image(
-                album["cover_url"],
-                use_container_width=True
-            )
-
-        note = album["Note"] if album["Note"] else "-"
-
-        st.markdown(
-            f"**{album['spotify_album']}**\n\n"
-            f"{album['spotify_artiste']}\n\n"
-            f"⭐ Note : {note}/6"
-        )
-
 # ==========================
 # Albums préférés
 # ==========================
 
-st.subheader("❤️ Albums préférés")
+st.subheader("Albums préférés")
 
 df_notes = df_albums.copy()
 
@@ -241,6 +199,46 @@ for col, (_, album) in zip(cols, favoris.iterrows()):
             f"{album['spotify_artiste']}\n\n"
             f"⭐ {album['Note']}"
         )
+
+st.divider()
+
+# ==========================
+# 5 derniers albums écoutés
+# ==========================
+
+st.subheader("Derniers albums écoutés")
+
+df_albums["Date"] = pd.to_datetime(
+    df_albums["Date"],
+    errors="coerce"
+)
+
+derniers = (
+    df_albums
+    .sort_values("Date", ascending=False)
+    .head(5)
+)
+
+cols = st.columns(5)
+
+for col, (_, album) in zip(cols, derniers.iterrows()):
+
+    with col:
+
+        if album["cover_url"]:
+            st.image(
+                album["cover_url"],
+                use_container_width=True
+            )
+
+        note = album["Note"] if album["Note"] else "-"
+
+        st.markdown(
+            f"**{album['spotify_album']}**\n\n"
+            f"{album['spotify_artiste']}\n\n"
+            f"⭐ Note : {note}/6"
+        )
+
 
 st.divider()
 
