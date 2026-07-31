@@ -323,7 +323,7 @@ with col1:
         genres,
         names="Genre",
         values="Nombre",
-        title="🎵 Répartition des genres",
+        title="Genres",
         hole=0.3
     )
 
@@ -356,7 +356,7 @@ with col2:
         pays,
         names="Pays",
         values="Nombre",
-        title="🌍 Répartition des pays",
+        title="Pays",
         hole=0.3
     )
 
@@ -399,7 +399,7 @@ fig_notes = px.bar(
     x="Note",
     y="Nombre",
     text="Nombre",
-    title="⭐ Répartition des notes",
+    title="Notes",
 )
 
 
