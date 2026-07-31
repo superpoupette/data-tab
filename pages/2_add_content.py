@@ -672,29 +672,47 @@ if "album_infos" in st.session_state:
             )
 
 
-        genre = st.selectbox(
-            "Genre",
-            [
-                "Pop",
-                "Rock",
-                "Rap",
-                "Kpop",
-                "Electro/techno",
-                "Autre",
-                "Variété"
-            ]
-        )
+        col1, col2 = st.columns(2)
+
+        with col1:
+
+            genre = st.selectbox(
+                "Genre",
+                [
+                    "Pop",
+                    "Rock",
+                    "Rap",
+                    "Kpop",
+                    "Electro/techno",
+                    "Autre",
+                    "Variété"
+                ]
+            )
+
+
+        with col2:
+
+            pays = st.text_input(
+                "Pays",
+                placeholder="Ex : France, USA, Corée..."
+            )
 
 
         note = st.select_slider(
             "Note",
             options=[
                 0,
+                0.5,
                 1,
+                1.5,
                 2,
+                2.5,
                 3,
+                3.5,
                 4,
+                4.5,
                 5,
+                5.5,
                 6
             ],
             value=3
@@ -716,6 +734,7 @@ if "album_infos" in st.session_state:
             )
 
             infos["Genre (large)"] = genre
+            infos["Pays"] = pays
 
             infos["Note"] = note
 

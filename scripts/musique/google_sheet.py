@@ -53,7 +53,7 @@ def ajouter_album_google_sheet(album):
             album["spotify_artiste"],
             album["spotify_date_sortie"],
             album["Genre (large)"],
-            "",
+            album["Pays"],
             album["Note"],
             album["spotify_id"],
             album["spotify_url"],
