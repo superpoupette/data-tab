@@ -20,7 +20,6 @@ from scripts.watchlist.tmdb import (
 
 
 from scripts.musique.spotify_api import (
-    rechercher_album_spotify,
     enrichir_album_depuis_url
 )
 
