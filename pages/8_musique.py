@@ -1,5 +1,6 @@
 import streamlit as st
 import plotly.express as px
+import pandas as pd
 
 from scripts.importation_spotify import charger_historique_spotify
 from scripts.musique.google_sheet import charger_musique
