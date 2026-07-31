@@ -177,6 +177,12 @@ st.subheader("Albums préférés")
 df_notes = df_albums.copy()
 
 # Conversion des notes
+df_notes["Note"] = (
+    df_notes["Note"]
+    .astype(str)
+    .str.replace(",", ".", regex=False)
+)
+
 df_notes["Note"] = pd.to_numeric(
     df_notes["Note"],
     errors="coerce"
