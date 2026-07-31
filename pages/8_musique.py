@@ -160,34 +160,11 @@ st.divider()
 
 st.subheader("💿 Collection d'albums")
 
-df_albums = charger_albums()
-
-st.dataframe(
-    df_albums,
-    use_container_width=True,
-    hide_index=True
-)
-
-
 st.divider()
 
 st.header("💿 Ma bibliothèque musicale")
 
-
 df_albums = charger_musique()
-
-from scripts.musique.enrichissement import enrichir_google_sheet
-
-
-if st.button("🔄 Enrichir ma bibliothèque Spotify"):
-
-    with st.spinner("Recherche Spotify en cours..."):
-
-        enrichir_google_sheet()
-
-    st.success("Bibliothèque enrichie !")
-
-    st.rerun()
 
 st.dataframe(
     df_albums,
