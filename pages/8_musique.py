@@ -214,7 +214,7 @@ for col, (_, album) in zip(cols, favoris.iterrows()):
         st.markdown(
             f"**{album['spotify_album']}**\n\n"
             f"{album['spotify_artiste']}\n\n"
-            f"⭐ {album['Note']}"
+            f"⭐ {float(album['Note']):.1f}/6"
         )
 
 st.divider()
@@ -248,5 +248,5 @@ for col, (_, album) in zip(cols, derniers.iterrows()):
         st.markdown(
             f"**{album['spotify_album']}**\n\n"
             f"{album['spotify_artiste']}\n\n"
-            f"⭐ Note : {note}/6"
+            f"⭐ {float(album['Note']):.1f}/6"
         )
