@@ -168,6 +168,17 @@ df_albums["Date"] = pd.to_datetime(
     errors="coerce"
 )
 
+df_albums["Note"] = (
+    df_albums["Note"]
+    .astype(str)
+    .str.replace(",", ".", regex=False)
+)
+
+df_albums["Note"] = pd.to_numeric(
+    df_albums["Note"],
+    errors="coerce"
+)
+
 # ==========================
 # Albums préférés
 # ==========================
@@ -214,7 +225,7 @@ for col, (_, album) in zip(cols, favoris.iterrows()):
         st.markdown(
             f"**{album['spotify_album']}**\n\n"
             f"{album['spotify_artiste']}\n\n"
-            f"⭐ {float(album['Note']):.1f}/6"
+            f"⭐ {album['Note']:.1f}" if pd.notna(album["Note"]) else "⭐ Sans note"
         )
 
 st.divider()
@@ -248,5 +259,5 @@ for col, (_, album) in zip(cols, derniers.iterrows()):
         st.markdown(
             f"**{album['spotify_album']}**\n\n"
             f"{album['spotify_artiste']}\n\n"
-            f"⭐ {float(album['Note']):.1f}/6"
+            f"⭐ {album['Note']:.1f}" if pd.notna(album["Note"]) else "⭐ Sans note"
         )
