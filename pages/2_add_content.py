@@ -16,7 +16,10 @@ from scripts.watchlist.tmdb import (
     get_series_details_tmdb
 )
 
-
+from scripts.musique.spotify_api import (
+    rechercher_album_spotify,
+    enrichir_album
+)
 
 
 st.set_page_config(

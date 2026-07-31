@@ -27,7 +27,20 @@ def charger_musique():
 
     return pd.DataFrame(data)
 
+def get_music_sheet():
 
+    credentials = Credentials.from_service_account_info(
+        st.secrets["gcp_service_account"],
+        scopes=[
+            "https://www.googleapis.com/auth/spreadsheets"
+        ]
+    )
+
+    client = gspread.authorize(credentials)
+
+    return client.open_by_key(
+        SHEET_ID
+    ).sheet1
 
 def ajouter_album_google_sheet(album):
 
