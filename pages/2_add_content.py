@@ -700,22 +700,8 @@ if "album_infos" in st.session_state:
 
         note = st.select_slider(
             "Note",
-            options=[
-                0,
-                0.5,
-                1,
-                1.5,
-                2,
-                2.5,
-                3,
-                3.5,
-                4,
-                4.5,
-                5,
-                5.5,
-                6
-            ],
-            value=3
+            options=list(range(0, 11)),
+            value=5
         )
 
 

@@ -180,19 +180,6 @@ df_albums["Note"] = pd.to_numeric(
     errors="coerce"
 )
 
-# Correction des anciennes notes enregistrées sans décimale
-# Exemple : 35 devient 3.5
-df_albums.loc[
-    df_albums["Note"] > 6,
-    "Note"
-] = (
-    df_albums.loc[
-        df_albums["Note"] > 6,
-        "Note"
-    ] / 10
-)
-
-
 # ==========================
 # Albums préférés
 # ==========================
@@ -231,7 +218,7 @@ for col, (_, album) in zip(cols, favoris.iterrows()):
             )
 
         note_affichee = (
-            f"⭐ {album['Note']:.1f}"
+            f"⭐ {int(album['Note'])}"
             if pd.notna(album["Note"])
             else "⭐ Sans note"
         )
@@ -404,10 +391,11 @@ fig_notes = px.bar(
 
 
 fig_notes.update_layout(
-    xaxis_title="Note / 6",
+    xaxis_title="Note / 10",
     yaxis_title="Nombre d'albums",
     xaxis=dict(
-        dtick=0.5
+        dtick=1,
+        range=[-0.5, 10.5]
     )
 )
 
