@@ -264,7 +264,7 @@ for col, (_, album) in zip(cols, derniers.iterrows()):
             )
 
         note_affichee = (
-            f"⭐ {album['Note']:.1f}"
+            f"⭐ {int(album['Note'])}"
             if pd.notna(album["Note"])
             else "⭐ Sans note"
         )
