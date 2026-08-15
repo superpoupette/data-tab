@@ -145,7 +145,7 @@ st.write("")
 # DERNIERS FILMS VUS
 # =====================
 
-st.subheader("Mes 6 derniers films vus")
+st.subheader("Derniers films vus")
 
 
 last_6_movies = (
@@ -824,7 +824,7 @@ with col_animes:
 # DERNIÈRES SÉRIES VUES
 # =====================
 
-st.subheader("Mes 6 dernières séries vues")
+st.subheader("Dernières séries vues")
 
 
 last_6_series = (
