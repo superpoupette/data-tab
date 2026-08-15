@@ -4,8 +4,9 @@
     "\\pages",
     "\\scripts",
     "\\scripts\\danse",
+    "\\scripts\\musique",
     "\\scripts\\watchlist"
   ],
-  "SelectedNode": "\\pages\\_update_database.py",
+  "SelectedNode": "\\pages\\8_musique.py",
   "PreviewInSolutionExplorer": false
 }
