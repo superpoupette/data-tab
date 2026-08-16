@@ -35,10 +35,8 @@ FILES_DRIVE = {
 OTHER_FILES = {
 
     "babelio": {
-        "id": "1umai5aXgS22YKV3Mgk2tbvklrg9sFt_T",
-        "type": "csv",
-        "separator": ";",
-        "encoding": "cp1252"
+        "id": "1kxnEdkN0g0TdykcIXj8A0_9xvJPMlDVg",
+        "type": "excel"
     }
 
 }
@@ -159,10 +157,9 @@ def load_danse_2026():
 
 def load_babelio():
 
-    return load_csv_from_drive(
+    return load_excel_from_drive(
         OTHER_FILES["babelio"]["id"],
-        separator=OTHER_FILES["babelio"]["separator"],
-        encoding=OTHER_FILES["babelio"]["encoding"]
+        sheet_name="Books"
     )
 
 
