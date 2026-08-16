@@ -161,7 +161,7 @@ for col, (_, livre) in zip(
                 f"""
                 <div style="
                     width: 100%;
-                    height: 300px;
+                    height: 240px;
                     overflow: hidden;
                     border-radius: 8px;
                 ">
@@ -186,7 +186,7 @@ for col, (_, livre) in zip(
                 """
                 <div style="
                     width: 100%;
-                    height: 300px;
+                    height: 240px;
                     display: flex;
                     align-items: center;
                     justify-content: center;
@@ -207,8 +207,8 @@ for col, (_, livre) in zip(
             f"""
             <div style="
                 text-align: center;
-                color: #333333;
-                font-weight: 600;
+                color: #666666;
+                font-weight: 500;
                 margin-top: 8px;
             ">
                 {livre['date_fin'].strftime('%d/%m/%Y')}
