@@ -66,7 +66,16 @@ st.dataframe(
 # KPI
 # =====================
 
-col1, col2, col3, col4 = st.columns(4)
+livres_a_lire = livres[
+    livres["statut"].astype(str).str.strip().str.lower() == "à lire"
+]
+
+livres_abandonnes = livres[
+    livres["statut"].astype(str).str.strip().str.lower() == "abandonné"
+]
+
+
+col1, col2, col3, col4, col5, col6 = st.columns(6)
 
 
 with col1:
@@ -104,6 +113,22 @@ with col4:
     st.metric(
         f"Pages lues en {annee_actuelle}",
         f"{pages_lues_cette_annee:,.0f}".replace(",", " ")
+    )
+
+
+with col5:
+
+    st.metric(
+        "Livres à lire",
+        len(livres_a_lire)
+    )
+
+
+with col6:
+
+    st.metric(
+        "Livres abandonnés",
+        len(livres_abandonnes)
     )
 
 st.write("")
