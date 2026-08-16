@@ -49,19 +49,6 @@ livres_lus = livres[
 annee_actuelle = 2026
 
 
-livres_lus_cette_annee = livres_lus[
-    livres_lus["date_fin"].dt.year == annee_actuelle
-]
-
-st.write("Répartition des statuts :")
-st.dataframe(
-    livres["statut"]
-    .value_counts(dropna=False)
-    .rename_axis("Statut")
-    .reset_index(name="Nombre de livres"),
-    use_container_width=True
-)
-
 # =====================
 # KPI
 # =====================
@@ -293,7 +280,3 @@ st.line_chart(
 st.write("")
 st.write("")
 
-st.dataframe(
-    livres,
-    use_container_width=True
-)
