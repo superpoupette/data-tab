@@ -71,7 +71,7 @@ livres_a_lire = livres[
 ]
 
 livres_abandonnes = livres[
-    livres["statut"].astype(str).str.strip().str.lower() == "abandonné"
+    livres["statut"].astype(str).str.strip().str.lower() == "abandonnés"
 ]
 
 
