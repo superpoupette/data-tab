@@ -97,7 +97,6 @@ with col4:
         f"{pages_lues_cette_annee:,.0f}".replace(",", " ")
     )
 
-
 # =====================
 # Derniers livres terminés
 # =====================
@@ -127,46 +126,89 @@ for col, (_, livre) in zip(
 
     with col:
 
+        # =====================
         # Titre
+        # =====================
+
         st.markdown(
             f"**{livre['titre']}**"
         )
 
+        # =====================
         # Auteur
+        # =====================
+
         st.caption(
             str(livre["auteur"])
         )
 
-        # Image
+        # =====================
+        # Couverture homogène
+        # =====================
+
         image = livre["image de couverture"]
 
         if pd.notna(image) and str(image).strip():
 
-            st.image(
-                image,
-                use_container_width=True
+            st.markdown(
+                f"""
+                <div style="
+                    width: 100%;
+                    height: 300px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    overflow: hidden;
+                ">
+                    <img
+                        src="{image}"
+                        style="
+                            max-width: 100%;
+                            max-height: 300px;
+                            width: auto;
+                            height: auto;
+                            object-fit: contain;
+                        "
+                    >
+                </div>
+                """,
+                unsafe_allow_html=True
             )
 
         else:
 
-            st.empty()
+            st.markdown(
+                """
+                <div style="
+                    width: 100%;
+                    height: 300px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                ">
+                    Pas de couverture
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
 
-        # Date de fin
-        st.caption(
-            f"📅 {livre['date_fin'].strftime('%d/%m/%Y')}"
-        )
+        # =====================
+        # Date + note
+        # =====================
 
-        # Note
+        date = livre["date_fin"].strftime("%d/%m/%Y")
+
         if pd.notna(livre["note"]):
 
-            st.caption(
-                f"⭐ {livre['note']}/5"
-            )
+            note = f"{livre['note']:.1f}/5"
 
         else:
 
-            st.caption("⭐ —")
+            note = "—"
 
+        st.markdown(
+            f"{date} ⭐ {note}"
+        )
 
 # =====================
 # Livres terminés par mois
@@ -236,5 +278,10 @@ tags_frequents = (
 
 st.dataframe(
     tags_frequents.rename("Nombre de livres"),
+    use_container_width=True
+)
+
+st.dataframe(
+    livres,
     use_container_width=True
 )
