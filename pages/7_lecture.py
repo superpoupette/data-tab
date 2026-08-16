@@ -30,23 +30,34 @@ livres["date_fin"] = pd.to_datetime(
     errors="coerce"
 )
 
+livres["nombre de pages"] = pd.to_numeric(
+    livres["nombre de pages"],
+    errors="coerce"
+)
+
+livres["note"] = pd.to_numeric(
+    livres["note"],
+    errors="coerce"
+)
+
 livres_lus = livres[
     livres["statut"].astype(str).str.strip().str.lower() == "lu"
 ].copy()
 
 
-# =====================
-# KPI
-# =====================
-
 annee_actuelle = 2026
+
 
 livres_lus_cette_annee = livres_lus[
     livres_lus["date_fin"].dt.year == annee_actuelle
 ]
 
 
-col1, col2 = st.columns(2)
+# =====================
+# KPI
+# =====================
+
+col1, col2, col3, col4 = st.columns(4)
 
 
 with col1:
@@ -59,9 +70,31 @@ with col1:
 
 with col2:
 
+    pages_lues = livres_lus["nombre de pages"].sum()
+
+    st.metric(
+        "Pages lues",
+        f"{pages_lues:,.0f}".replace(",", " ")
+    )
+
+
+with col3:
+
     st.metric(
         f"Livres lus en {annee_actuelle}",
         len(livres_lus_cette_annee)
+    )
+
+
+with col4:
+
+    pages_lues_cette_annee = (
+        livres_lus_cette_annee["nombre de pages"].sum()
+    )
+
+    st.metric(
+        f"Pages lues en {annee_actuelle}",
+        f"{pages_lues_cette_annee:,.0f}".replace(",", " ")
     )
 
 
@@ -94,25 +127,45 @@ for col, (_, livre) in zip(
 
     with col:
 
+        # Titre
+        st.markdown(
+            f"**{livre['titre']}**"
+        )
+
+        # Auteur
+        st.caption(
+            str(livre["auteur"])
+        )
+
+        # Image
         image = livre["image de couverture"]
 
         if pd.notna(image) and str(image).strip():
+
             st.image(
                 image,
                 use_container_width=True
             )
 
-        st.markdown(
-            f"**{livre['titre']}**"
+        else:
+
+            st.empty()
+
+        # Date de fin
+        st.caption(
+            f"📅 {livre['date_fin'].strftime('%d/%m/%Y')}"
         )
 
-        st.caption(
-            str(livre["auteur"])
-        )
+        # Note
+        if pd.notna(livre["note"]):
 
-        st.caption(
-            livre["date_fin"].strftime("%d/%m/%Y")
-        )
+            st.caption(
+                f"⭐ {livre['note']}/5"
+            )
+
+        else:
+
+            st.caption("⭐ —")
 
 
 # =====================
@@ -141,8 +194,47 @@ livres_par_mois = (
 )
 
 
-st.bar_chart(
+st.line_chart(
     livres_par_mois,
     x_label="Mois",
     y_label="Livres terminés"
+)
+
+
+# =====================
+# Tags les plus fréquents
+# =====================
+
+st.subheader("Tags les plus fréquents")
+
+
+tags = (
+    livres_lus["genres/tags"]
+    .dropna()
+    .astype(str)
+)
+
+
+tags_liste = []
+
+for valeur in tags:
+
+    for tag in valeur.split(","):
+
+        tag = tag.strip()
+
+        if tag:
+            tags_liste.append(tag)
+
+
+tags_frequents = (
+    pd.Series(tags_liste)
+    .value_counts()
+    .head(10)
+)
+
+
+st.dataframe(
+    tags_frequents.rename("Nombre de livres"),
+    use_container_width=True
 )
