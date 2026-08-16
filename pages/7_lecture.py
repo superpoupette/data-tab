@@ -67,7 +67,11 @@ st.dataframe(
 # =====================
 
 livres_a_lire = livres[
-    livres["statut"].astype(str).str.strip().str.lower() == "à lire"
+    livres["statut"]
+    .astype(str)
+    .str.strip()
+    .str.lower()
+    .isin(["à lire", "pense-bête"])
 ]
 
 livres_abandonnes = livres[
