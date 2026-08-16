@@ -53,6 +53,8 @@ livres_lus_cette_annee = livres_lus[
     livres_lus["date_fin"].dt.year == annee_actuelle
 ]
 
+st.write("Valeurs de statut :")
+st.write(livres["statut"].dropna().unique())
 
 # =====================
 # KPI
