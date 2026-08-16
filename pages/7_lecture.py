@@ -48,6 +48,9 @@ livres_lus = livres[
 
 annee_actuelle = 2026
 
+livres_lus_cette_annee = livres_lus[
+    livres_lus["date_fin"].dt.year == annee_actuelle
+]
 
 # =====================
 # KPI
