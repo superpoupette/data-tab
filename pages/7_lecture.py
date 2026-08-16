@@ -27,7 +27,8 @@ livres = load_babelio().copy()
 
 livres["date_fin"] = pd.to_datetime(
     livres["date de fin de lecture"],
-    errors="coerce"
+    errors="coerce",
+    dayfirst=True
 )
 
 livres["nombre de pages"] = pd.to_numeric(
@@ -161,7 +162,7 @@ for col, (_, livre) in zip(
                 f"""
                 <div style="
                     width: 100%;
-                    height: 240px;
+                    height: 260px;
                     overflow: hidden;
                     border-radius: 8px;
                 ">
