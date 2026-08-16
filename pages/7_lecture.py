@@ -53,8 +53,14 @@ livres_lus_cette_annee = livres_lus[
     livres_lus["date_fin"].dt.year == annee_actuelle
 ]
 
-st.write("Valeurs de statut :")
-st.write(livres["statut"].dropna().unique())
+st.write("Répartition des statuts :")
+st.dataframe(
+    livres["statut"]
+    .value_counts(dropna=False)
+    .rename_axis("Statut")
+    .reset_index(name="Nombre de livres"),
+    use_container_width=True
+)
 
 # =====================
 # KPI
