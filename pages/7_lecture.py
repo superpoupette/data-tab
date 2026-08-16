@@ -131,19 +131,26 @@ for col, (_, livre) in zip(
         # =====================
 
         st.markdown(
-            f"**{livre['titre']}**"
+            f"""
+            <div style="
+                text-align: center;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                font-weight: 600;
+                margin-bottom: 8px;
+                height: 28px;
+                line-height: 28px;
+            ">
+                {livre['titre']}
+            </div>
+            """,
+            unsafe_allow_html=True
         )
 
-        # =====================
-        # Auteur
-        # =====================
-
-        st.caption(
-            str(livre["auteur"])
-        )
 
         # =====================
-        # Couverture homogène
+        # Couverture
         # =====================
 
         image = livre["image de couverture"]
@@ -155,19 +162,17 @@ for col, (_, livre) in zip(
                 <div style="
                     width: 100%;
                     height: 300px;
-                    display: flex;
-                    align-items: center;
-                    justify-content: center;
                     overflow: hidden;
+                    border-radius: 8px;
                 ">
                     <img
                         src="{image}"
                         style="
-                            max-width: 100%;
-                            max-height: 300px;
-                            width: auto;
-                            height: auto;
-                            object-fit: contain;
+                            width: 100%;
+                            height: 100%;
+                            object-fit: cover;
+                            object-position: center;
+                            border-radius: 8px;
                         "
                     >
                 </div>
@@ -185,6 +190,7 @@ for col, (_, livre) in zip(
                     display: flex;
                     align-items: center;
                     justify-content: center;
+                    border-radius: 8px;
                 ">
                     Pas de couverture
                 </div>
@@ -192,22 +198,23 @@ for col, (_, livre) in zip(
                 unsafe_allow_html=True
             )
 
+
         # =====================
-        # Date + note
+        # Date de fin
         # =====================
-
-        date = livre["date_fin"].strftime("%d/%m/%Y")
-
-        if pd.notna(livre["note"]):
-
-            note = f"{livre['note']:.1f}/5"
-
-        else:
-
-            note = "—"
 
         st.markdown(
-            f"{date} ⭐ {note}"
+            f"""
+            <div style="
+                text-align: center;
+                color: #333333;
+                font-weight: 600;
+                margin-top: 8px;
+            ">
+                {livre['date_fin'].strftime('%d/%m/%Y')}
+            </div>
+            """,
+            unsafe_allow_html=True
         )
 
 # =====================
