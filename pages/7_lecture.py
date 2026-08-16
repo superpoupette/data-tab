@@ -98,6 +98,8 @@ with col4:
         f"{pages_lues_cette_annee:,.0f}".replace(",", " ")
     )
 
+st.write("")
+st.write("")
 # =====================
 # Derniers livres terminés
 # =====================
@@ -218,6 +220,8 @@ for col, (_, livre) in zip(
             unsafe_allow_html=True
         )
 
+st.write("")
+st.write("")
 # =====================
 # Livres terminés par mois
 # =====================
@@ -249,45 +253,8 @@ st.line_chart(
     x_label="Mois",
     y_label="Livres terminés"
 )
-
-
-# =====================
-# Tags les plus fréquents
-# =====================
-
-st.subheader("Tags les plus fréquents")
-
-
-tags = (
-    livres_lus["genres/tags"]
-    .dropna()
-    .astype(str)
-)
-
-
-tags_liste = []
-
-for valeur in tags:
-
-    for tag in valeur.split(","):
-
-        tag = tag.strip()
-
-        if tag:
-            tags_liste.append(tag)
-
-
-tags_frequents = (
-    pd.Series(tags_liste)
-    .value_counts()
-    .head(10)
-)
-
-
-st.dataframe(
-    tags_frequents.rename("Nombre de livres"),
-    use_container_width=True
-)
+st.write("")
+st.write("")
 
 st.dataframe(
     livres,
