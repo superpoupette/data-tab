@@ -275,6 +275,9 @@ for col, (_, album) in zip(cols, derniers.iterrows()):
             f"{note_affichee}"
         )
 
+if st.button("Voir tous les albums"):
+    st.switch_page("albums.py")
+
 # ==========================
 # Statistiques bibliothèque
 # ==========================
