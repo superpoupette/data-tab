@@ -12,13 +12,39 @@ st.title("💿 Tous mes albums")
 
 df_albums = charger_musique()
 
+# ==========================
 # Nettoyage
+# ==========================
+
 df_albums["Date"] = pd.to_datetime(
     df_albums["Date"],
     errors="coerce"
 )
 
-# Nombre de colonnes dans la grille
+df_albums["Note"] = (
+    df_albums["Note"]
+    .astype(str)
+    .str.replace(",", ".", regex=False)
+)
+
+df_albums["Note"] = pd.to_numeric(
+    df_albums["Note"],
+    errors="coerce"
+)
+
+# ==========================
+# Tri : plus récent → plus ancien
+# ==========================
+
+df_albums = df_albums.sort_values(
+    "Date",
+    ascending=False
+)
+
+# ==========================
+# Grille
+# ==========================
+
 NB_COLONNES = 6
 
 for i in range(0, len(df_albums), NB_COLONNES):
@@ -38,9 +64,11 @@ for i in range(0, len(df_albums), NB_COLONNES):
                 )
 
             st.markdown(
-                f"**{album['spotify_album']}**"
+                f"**{album['spotify_album']}**  \n"
+                f"{album['spotify_artiste']}"
             )
 
-            st.caption(
-                album["spotify_artiste"]
-            )
+            if pd.notna(album["Note"]):
+                st.caption(f"⭐ {int(album['Note'])}/10")
+            else:
+                st.caption("⭐ Sans note")
