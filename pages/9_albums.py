@@ -42,7 +42,7 @@ df_albums = df_albums.sort_values(
 )
 
 # ==========================
-# Grille
+# Grille des albums
 # ==========================
 
 NB_COLONNES = 6
@@ -57,18 +57,36 @@ for i in range(0, len(df_albums), NB_COLONNES):
 
         with col:
 
+            # Pochette
             if pd.notna(album["cover_url"]) and album["cover_url"]:
+
                 st.image(
                     album["cover_url"],
                     use_container_width=True
                 )
 
-            st.markdown(
-                f"**{album['spotify_album']}**  \n"
-                f"{album['spotify_artiste']}"
-            )
-
+            # Note
             if pd.notna(album["Note"]):
-                st.caption(f"⭐ {int(album['Note'])}/10")
+                note_affichee = f"⭐ {int(album['Note'])}/10"
             else:
-                st.caption("⭐ Sans note")
+                note_affichee = "⭐ Sans note"
+
+            # Informations album
+            st.markdown(
+                f"""
+                <div style="line-height: 1.2;">
+                    <div style="font-weight: 600;">
+                        {album['spotify_album']}
+                    </div>
+
+                    <div style="color: #9aa0a6;">
+                        {album['spotify_artiste']}
+                    </div>
+
+                    <div style="color: #9aa0a6;">
+                        {note_affichee}
+                    </div>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
