@@ -1,12 +1,13 @@
 {
   "ExpandedNodes": [
     "",
+    "\\hide",
     "\\pages",
     "\\scripts",
     "\\scripts\\danse",
     "\\scripts\\musique",
     "\\scripts\\watchlist"
   ],
-  "SelectedNode": "\\pages\\7_lecture.py",
+  "SelectedNode": "\\pages\\9_albums.py",
   "PreviewInSolutionExplorer": false
 }

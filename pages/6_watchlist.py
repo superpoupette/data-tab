@@ -356,7 +356,35 @@ with col_rating:
         use_container_width=True
     )
 
+# =====================
+# CAMEMBERT PAYS D'ORIGINE
+# =====================
 
+st.subheader("Pays d'origine des films")
+
+countries = (
+    movies[movies["status"] == "watched"]["country"]
+    .dropna()
+    .str.split(", ")
+    .explode()
+    .value_counts()
+)
+
+countries_df = countries.reset_index()
+countries_df.columns = ["country", "count"]
+
+fig_country = px.pie(
+    countries_df,
+    names="country",
+    values="count"
+)
+
+fig_country.update_layout(
+    height=450,
+    margin=dict(l=0, r=0, t=30, b=0)
+)
+
+st.plotly_chart(fig_country, use_container_width=True)
 
 st.write("")
 st.write("")
