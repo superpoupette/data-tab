@@ -367,14 +367,35 @@ countries = (
     .dropna()
     .str.split(", ")
     .explode()
-    .value_counts()
+    .str.strip()
 )
 
+countries = countries.value_counts()
+
+# Regrouper les pays < 1 % dans "Autres"
 countries_df = countries.reset_index()
 countries_df.columns = ["country", "count"]
 
+total = countries_df["count"].sum()
+countries_df["pct"] = countries_df["count"] / total * 100
+
+main = countries_df[countries_df["pct"] >= 1].copy()
+others = countries_df[countries_df["pct"] < 1]["count"].sum()
+
+if others > 0:
+    main = pd.concat(
+        [
+            main,
+            pd.DataFrame([{
+                "country": "Autres",
+                "count": others
+            }])
+        ],
+        ignore_index=True
+    )
+
 fig_country = px.pie(
-    countries_df,
+    main,
     names="country",
     values="count"
 )
