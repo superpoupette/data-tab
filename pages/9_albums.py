@@ -20,6 +20,7 @@ df_albums["Date"] = pd.to_datetime(
     df_albums["Date"],
     errors="coerce"
 )
+df_albums["Annee_ecoute"] = df_albums["Date"].dt.year
 
 df_albums["Note"] = (
     df_albums["Note"]
@@ -51,7 +52,7 @@ df_albums["Genre (large)"] = (
 # Filtres et tri
 # ==========================
 
-col1, col2, col3, col4 = st.columns(4)
+col1, col2, col3, col4, col5 = st.columns(5)
 
 with col1:
 
@@ -103,6 +104,20 @@ with col4:
         ["Tous"] + styles_disponibles
     )
 
+with col5:
+
+    annees = sorted(
+        df_albums["Annee_ecoute"]
+        .dropna()
+        .astype(int)
+        .unique(),
+        reverse=True
+    )
+
+    annee_selectionnee = st.selectbox(
+        "Année d'écoute",
+        ["Toutes"] + annees
+    )
 
 # ==========================
 # Application des filtres
@@ -175,19 +190,13 @@ for i in range(0, len(df_filtre), NB_COLONNES):
                 )
 
             # Nom de l'album
-            st.markdown(
-                f"**{album['spotify_album']}**"
-            )
-
-            # Artiste + note
             if pd.notna(album["Note"]):
-                note_affichee = (
-                    f"⭐ {int(album['Note'])}/10"
-                )
+                note_affichee = f"⭐ {int(album['Note'])}/10"
             else:
                 note_affichee = "⭐ Sans note"
 
-            st.caption(
-                f"{album['spotify_artiste']} · "
-                f"{note_affichee}"
+            st.markdown(
+                f"""**{album['spotify_album']}**  
+            <small>{album['spotify_artiste']} · {note_affichee}</small>""",
+                unsafe_allow_html=True,
             )
