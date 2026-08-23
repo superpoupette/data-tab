@@ -290,8 +290,7 @@ notes = df_albums.dropna(subset=["Note"]).copy()
 notes["Note"] = notes["Note"].astype(float)
 
 # ==========================
-# Ligne 1
-# Notes | Genres
+# Ligne 1 : Notes | Genres
 # ==========================
 
 col1, col2 = st.columns(2)
@@ -304,7 +303,6 @@ with col1:
         .sort_index()
         .reset_index()
     )
-
     repartition_notes.columns = ["Note", "Nombre"]
 
     fig_notes = px.bar(
@@ -321,7 +319,7 @@ with col1:
         xaxis=dict(dtick=1, range=[-0.5, 10.5])
     )
 
-    st.plotly_chart(fig_notes, use_container_width=True)
+    st.plotly_chart(fig_notes, width="stretch")
 
 with col2:
 
@@ -332,7 +330,6 @@ with col2:
         .value_counts()
         .reset_index()
     )
-
     genres.columns = ["Genre", "Nombre"]
 
     fig_genres = px.pie(
@@ -343,28 +340,26 @@ with col2:
         title="Répartition des genres"
     )
 
-    st.plotly_chart(fig_genres, use_container_width=True)
-
+    st.plotly_chart(fig_genres, width="stretch")
 
 # ==========================
-# Ligne 2
-# Dates de sortie | Pays
+# Ligne 2 : Dates de sortie | Pays
 # ==========================
 
 col3, col4 = st.columns(2)
 
 with col3:
 
-    # Remplace "Date de sortie" par le nom réel de ta colonne si besoin
-    df_albums["Date de sortie"] = pd.to_datetime(
-        df_albums["Date de sortie"],
+    sorties = df_albums.copy()
+    sorties["spotify_date_sortie"] = pd.to_datetime(
+        sorties["spotify_date_sortie"],
         errors="coerce"
     )
 
     sorties = (
-        df_albums
-        .dropna(subset=["Date de sortie"])
-        .assign(Annee=lambda x: x["Date de sortie"].dt.year)
+        sorties
+        .dropna(subset=["spotify_date_sortie"])
+        .assign(Annee=lambda x: x["spotify_date_sortie"].dt.year)
         .groupby("Annee")
         .size()
         .reset_index(name="Nombre")
@@ -375,7 +370,7 @@ with col3:
         x="Annee",
         y="Nombre",
         markers=True,
-        title="Répartition des dates de sortie"
+        title="Répartition des dates de sortie des albums"
     )
 
     fig_sorties.update_layout(
@@ -383,7 +378,7 @@ with col3:
         yaxis_title="Nombre d'albums"
     )
 
-    st.plotly_chart(fig_sorties, use_container_width=True)
+    st.plotly_chart(fig_sorties, width="stretch")
 
 with col4:
 
@@ -394,7 +389,6 @@ with col4:
         .value_counts()
         .reset_index()
     )
-
     pays.columns = ["Pays", "Nombre"]
 
     fig_pays = px.pie(
@@ -405,4 +399,4 @@ with col4:
         title="Répartition des pays"
     )
 
-    st.plotly_chart(fig_pays, use_container_width=True)
+    st.plotly_chart(fig_pays, width="stretch")
