@@ -283,18 +283,47 @@ if st.button("Voir tous les albums"):
 # ==========================
 
 st.divider()
+st.header("📚 Statistiques de ma bibliothèque")
 
-st.header("Statistiques de ma bibliothèque")
+# Nettoyage des notes
+notes = df_albums.dropna(subset=["Note"]).copy()
+notes["Note"] = notes["Note"].astype(float)
 
+# ==========================
+# Ligne 1
+# Notes | Genres
+# ==========================
 
 col1, col2 = st.columns(2)
 
-
-# ==========================
-# Répartition des genres
-# ==========================
-
 with col1:
+
+    repartition_notes = (
+        notes["Note"]
+        .value_counts()
+        .sort_index()
+        .reset_index()
+    )
+
+    repartition_notes.columns = ["Note", "Nombre"]
+
+    fig_notes = px.bar(
+        repartition_notes,
+        x="Note",
+        y="Nombre",
+        text="Nombre",
+        title="Répartition des notes"
+    )
+
+    fig_notes.update_layout(
+        xaxis_title="Note /10",
+        yaxis_title="Nombre d'albums",
+        xaxis=dict(dtick=1, range=[-0.5, 10.5])
+    )
+
+    st.plotly_chart(fig_notes, use_container_width=True)
+
+with col2:
 
     genres = (
         df_albums["Genre (large)"]
@@ -304,30 +333,59 @@ with col1:
         .reset_index()
     )
 
-    genres.columns = [
-        "Genre",
-        "Nombre"
-    ]
+    genres.columns = ["Genre", "Nombre"]
 
     fig_genres = px.pie(
         genres,
         names="Genre",
         values="Nombre",
-        title="Répartition des genres",
-        hole=0.3
+        hole=0.35,
+        title="Répartition des genres"
     )
 
-    st.plotly_chart(
-        fig_genres,
-        use_container_width=True
-    )
+    st.plotly_chart(fig_genres, use_container_width=True)
 
 
 # ==========================
-# Répartition des pays
+# Ligne 2
+# Dates de sortie | Pays
 # ==========================
 
-with col2:
+col3, col4 = st.columns(2)
+
+with col3:
+
+    # Remplace "Date de sortie" par le nom réel de ta colonne si besoin
+    df_albums["Date de sortie"] = pd.to_datetime(
+        df_albums["Date de sortie"],
+        errors="coerce"
+    )
+
+    sorties = (
+        df_albums
+        .dropna(subset=["Date de sortie"])
+        .assign(Annee=lambda x: x["Date de sortie"].dt.year)
+        .groupby("Annee")
+        .size()
+        .reset_index(name="Nombre")
+    )
+
+    fig_sorties = px.line(
+        sorties,
+        x="Annee",
+        y="Nombre",
+        markers=True,
+        title="Répartition des dates de sortie"
+    )
+
+    fig_sorties.update_layout(
+        xaxis_title="Année de sortie",
+        yaxis_title="Nombre d'albums"
+    )
+
+    st.plotly_chart(fig_sorties, use_container_width=True)
+
+with col4:
 
     pays = (
         df_albums["Pays"]
@@ -337,73 +395,14 @@ with col2:
         .reset_index()
     )
 
-    pays.columns = [
-        "Pays",
-        "Nombre"
-    ]
+    pays.columns = ["Pays", "Nombre"]
 
     fig_pays = px.pie(
         pays,
         names="Pays",
         values="Nombre",
-        title="Répartition des pays",
-        hole=0.3
+        hole=0.35,
+        title="Répartition des pays"
     )
 
-    st.plotly_chart(
-        fig_pays,
-        use_container_width=True
-    )
-
-
-# ==========================
-# Répartition des notes
-# ==========================
-
-notes = (
-    df_albums
-    .dropna(subset=["Note"])
-    .copy()
-)
-
-
-notes["Note"] = notes["Note"].astype(float)
-
-
-repartition_notes = (
-    notes["Note"]
-    .value_counts()
-    .sort_index()
-    .reset_index()
-)
-
-
-repartition_notes.columns = [
-    "Note",
-    "Nombre"
-]
-
-
-fig_notes = px.bar(
-    repartition_notes,
-    x="Note",
-    y="Nombre",
-    text="Nombre",
-    title="Répartition des notes",
-)
-
-
-fig_notes.update_layout(
-    xaxis_title="Note / 10",
-    yaxis_title="Nombre d'albums",
-    xaxis=dict(
-        dtick=1,
-        range=[-0.5, 10.5]
-    )
-)
-
-
-st.plotly_chart(
-    fig_notes,
-    use_container_width=True
-)
+    st.plotly_chart(fig_pays, use_container_width=True)
