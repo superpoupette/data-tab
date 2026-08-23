@@ -135,6 +135,11 @@ if style_selectionne != "Tous":
         df_filtre["Genre (large)"] == style_selectionne
     ]
 
+if annee_selectionnee != "Toutes":
+    df_filtre = df_filtre[
+        df_filtre["Annee_ecoute"] == int(annee_selectionnee)
+    ]
+
 
 # ==========================
 # Application du tri
