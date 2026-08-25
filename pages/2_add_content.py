@@ -683,9 +683,12 @@ if "album_infos" in st.session_state:
                     "Rock",
                     "Rap",
                     "Kpop",
+                    "Jpop",
+                    "RnB",
+                    "Indie",
                     "Electro/techno",
-                    "Autre",
-                    "Variété"
+                    "Variété",
+                    "Autre"                    
                 ]
             )
 
