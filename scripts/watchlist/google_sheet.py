@@ -1,4 +1,4 @@
-import pandas as pd
+ï»¿import pandas as pd
 import gspread
 import streamlit as st
 
@@ -77,7 +77,7 @@ def load_google_sheet(sheet_name):
 
 
 # =====================================================
-# Sauvegarde complète
+# Sauvegarde complÃ¨te
 # =====================================================
 
 def save_google_sheet(df, sheet_name):
@@ -133,7 +133,7 @@ def add_movie_google_sheet(movie, watched_at, rating):
 
 
 # =====================================================
-# Séries
+# SÃ©ries
 # =====================================================
 
 def add_series_google_sheet(series):
