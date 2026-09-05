@@ -52,20 +52,19 @@ df_albums["Genre (large)"] = (
 # Filtres et tri
 # ==========================
 
-col1, col2, col3, col4, col5 = st.columns(5)
+col1, col2, col3, col4, col5, col6 = st.columns([1, 1, 1, 1, 1, 1.8])
 
 with col1:
-
     critere_tri = st.selectbox(
         "Trier par",
         [
             "Date",
-            "Note"
+            "Note",
+            "Artiste"
         ]
     )
 
 with col2:
-
     ordre_tri = st.selectbox(
         "Ordre",
         [
@@ -75,13 +74,8 @@ with col2:
     )
 
 with col3:
-
     pays_disponibles = sorted(
-        [
-            pays
-            for pays in df_albums["Pays"].unique()
-            if pays
-        ]
+        [p for p in df_albums["Pays"].unique() if p]
     )
 
     pays_selectionne = st.selectbox(
@@ -90,13 +84,8 @@ with col3:
     )
 
 with col4:
-
     styles_disponibles = sorted(
-        [
-            style
-            for style in df_albums["Genre (large)"].unique()
-            if style
-        ]
+        [s for s in df_albums["Genre (large)"].unique() if s]
     )
 
     style_selectionne = st.selectbox(
@@ -105,7 +94,6 @@ with col4:
     )
 
 with col5:
-
     annees = sorted(
         df_albums["Annee_ecoute"]
         .dropna()
@@ -117,6 +105,12 @@ with col5:
     annee_selectionnee = st.selectbox(
         "Année d'écoute",
         ["Toutes"] + annees
+    )
+
+with col6:
+    recherche = st.text_input(
+        "Rechercher",
+        placeholder="Album ou artiste..."
     )
 
 # ==========================
@@ -140,18 +134,40 @@ if annee_selectionnee != "Toutes":
         df_filtre["Annee_ecoute"] == int(annee_selectionnee)
     ]
 
-
 # ==========================
-# Application du tri
+# Application des filtres
 # ==========================
 
-ascending = ordre_tri == "Croissant"
+df_filtre = df_albums.copy()
 
-df_filtre = df_filtre.sort_values(
-    critere_tri,
-    ascending=ascending,
-    na_position="last"
-)
+if pays_selectionne != "Tous":
+    df_filtre = df_filtre[
+        df_filtre["Pays"] == pays_selectionne
+    ]
+
+if style_selectionne != "Tous":
+    df_filtre = df_filtre[
+        df_filtre["Genre (large)"] == style_selectionne
+    ]
+
+if annee_selectionnee != "Toutes":
+    df_filtre = df_filtre[
+        df_filtre["Annee_ecoute"] == int(annee_selectionnee)
+    ]
+
+# Recherche dans le titre OU l'artiste
+if recherche:
+    masque = (
+        df_filtre["spotify_album"]
+        .fillna("")
+        .str.contains(recherche, case=False, na=False)
+        |
+        df_filtre["spotify_artiste"]
+        .fillna("")
+        .str.contains(recherche, case=False, na=False)
+    )
+
+    df_filtre = df_filtre[masque]
 
 
 # ==========================
