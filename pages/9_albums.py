@@ -134,27 +134,6 @@ if annee_selectionnee != "Toutes":
         df_filtre["Annee_ecoute"] == int(annee_selectionnee)
     ]
 
-# ==========================
-# Application des filtres
-# ==========================
-
-df_filtre = df_albums.copy()
-
-if pays_selectionne != "Tous":
-    df_filtre = df_filtre[
-        df_filtre["Pays"] == pays_selectionne
-    ]
-
-if style_selectionne != "Tous":
-    df_filtre = df_filtre[
-        df_filtre["Genre (large)"] == style_selectionne
-    ]
-
-if annee_selectionnee != "Toutes":
-    df_filtre = df_filtre[
-        df_filtre["Annee_ecoute"] == int(annee_selectionnee)
-    ]
-
 # Recherche dans le titre OU l'artiste
 if recherche:
     masque = (
@@ -169,6 +148,33 @@ if recherche:
 
     df_filtre = df_filtre[masque]
 
+# ==========================
+# Application du tri
+# ==========================
+
+ascending = ordre_tri == "Croissant"
+
+if critere_tri == "Date":
+    df_filtre = df_filtre.sort_values(
+        by="Date",
+        ascending=ascending,
+        na_position="last"
+    )
+
+elif critere_tri == "Note":
+    df_filtre = df_filtre.sort_values(
+        by="Note",
+        ascending=ascending,
+        na_position="last"
+    )
+
+elif critere_tri == "Artiste":
+    df_filtre = df_filtre.sort_values(
+        by="spotify_artiste",
+        ascending=ascending,
+        na_position="last",
+        key=lambda s: s.str.lower()
+    )
 
 # ==========================
 # Nombre d'albums
