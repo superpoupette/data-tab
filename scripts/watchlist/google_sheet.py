@@ -4,40 +4,31 @@ import streamlit as st
 
 from google.oauth2.service_account import Credentials
 
-
 SHEET_ID = "1r-cWFbD68vRs3FNTeI3w11Dq--ZeucvMvRKbrq9k24A"
 
 
-def get_google_sheet():
+# =====================================================
+# Connexion Google Sheets (mise en cache)
+# =====================================================
 
+@st.cache_resource
+def get_google_sheet():
     credentials = Credentials.from_service_account_info(
         st.secrets["gcp_service_account"],
-        scopes=[
-            "https://www.googleapis.com/auth/spreadsheets"
-        ]
+        scopes=["https://www.googleapis.com/auth/spreadsheets"]
     )
 
-    client = gspread.authorize(
-        credentials
-    )
-
-    return client.open_by_key(
-        SHEET_ID
-    )
+    client = gspread.authorize(credentials)
+    return client.open_by_key(SHEET_ID)
 
 
 def get_worksheet(sheet_name):
-
     spreadsheet = get_google_sheet()
 
     try:
-
-        sheet = spreadsheet.worksheet(
-            sheet_name
-        )
+        sheet = spreadsheet.worksheet(sheet_name)
 
     except gspread.exceptions.WorksheetNotFound:
-
         sheet = spreadsheet.add_worksheet(
             title=sheet_name,
             rows="1000",
@@ -47,16 +38,16 @@ def get_worksheet(sheet_name):
     return sheet
 
 
+# =====================================================
+# Utilitaires
+# =====================================================
 
 def convert_value(value):
-
     if pd.isna(value):
         return ""
 
     if isinstance(value, pd.Timestamp):
-        return value.strftime(
-            "%Y-%m-%d"
-        )
+        return value.strftime("%Y-%m-%d")
 
     if hasattr(value, "item"):
         return value.item()
@@ -64,89 +55,57 @@ def convert_value(value):
     return value
 
 
+# =====================================================
+# Lecture (mise en cache)
+# =====================================================
 
-def save_google_sheet(
-    df,
-    sheet_name
-):
-
-    sheet = get_worksheet(
-        sheet_name
-    )
-
-    df = df.copy()
-
-
-    values = [
-        df.columns.tolist()
-    ] + [
-        [
-            convert_value(v)
-            for v in row
-        ]
-        for row in df.itertuples(
-            index=False,
-            name=None
-        )
-    ]
-
-
-    sheet.clear()
-
-    sheet.update(
-        range_name="A1",
-        values=values
-    )
-
-
-
+@st.cache_data(ttl=60)
 def load_google_sheet(sheet_name):
-
     sheet = get_worksheet(sheet_name)
-
     values = sheet.get_all_values()
 
     if len(values) < 2:
         return pd.DataFrame()
 
-    df = pd.DataFrame(
-        values[1:],
-        columns=values[0]
-    )
+    df = pd.DataFrame(values[1:], columns=values[0])
 
-    for col in [
-        "episodes",
-        "progress",
-        "rating",
-        "tmdb_rating"
-    ]:
+    for col in ["episodes", "progress", "rating", "tmdb_rating"]:
         if col in df.columns:
-            df[col] = pd.to_numeric(
-                df[col],
-                errors="coerce"
-            )
+            df[col] = pd.to_numeric(df[col], errors="coerce")
 
     return df
 
-def add_movie_google_sheet(
-    movie,
-    watched_at,
-    rating
-):
 
-    credentials = Credentials.from_service_account_info(
-        st.secrets["gcp_service_account"],
-        scopes=[
-            "https://www.googleapis.com/auth/spreadsheets"
-        ]
+# =====================================================
+# Sauvegarde complète
+# =====================================================
+
+def save_google_sheet(df, sheet_name):
+    sheet = get_worksheet(sheet_name)
+
+    df = df.copy()
+
+    values = [df.columns.tolist()] + [
+        [convert_value(v) for v in row]
+        for row in df.itertuples(index=False, name=None)
+    ]
+
+    sheet.clear()
+    sheet.update(
+        range_name="A1",
+        values=values
     )
 
-    client = gspread.authorize(credentials)
+    # Invalide le cache de lecture
+    load_google_sheet.clear()
 
-    sheet = (
-        client.open_by_key(SHEET_ID)
-        .worksheet("movies")
-    )
+
+# =====================================================
+# Films
+# =====================================================
+
+def add_movie_google_sheet(movie, watched_at, rating):
+    sheet = get_worksheet("movies")
 
     row = [
         str(movie.get("tvdb_id", "")),
@@ -170,80 +129,55 @@ def add_movie_google_sheet(
         value_input_option="USER_ENTERED"
     )
 
+    load_google_sheet.clear()
+
+
+# =====================================================
+# Séries
+# =====================================================
 
 def add_series_google_sheet(series):
-
-    sheet = (
-        get_google_sheet()
-        .worksheet("series")
-    )
+    sheet = get_worksheet("series")
 
     row = [
-
         series.get("tvdb_id", ""),
-
         series.get("title", ""),
-
         series.get("year", ""),
-
         series.get("status", ""),
-
         series.get("type", ""),
-
         series.get("episodes", ""),
-
         series.get("progress", ""),
-
         series.get("rating", ""),
-
         series.get("first_seen", ""),
-
         series.get("last_episode", ""),
-
         series.get("last_watch", ""),
-
         series.get("style", ""),
-
         series.get("country", ""),
-
         series.get("overview", ""),
-
         series.get("poster_path", ""),
-
         series.get("tmdb_rating", "")
-
     ]
-
 
     sheet.append_row(
         row,
         value_input_option="USER_ENTERED"
     )
 
+    load_google_sheet.clear()
 
 
 def update_series_google_sheet(series_df):
+    sheet = get_worksheet("series")
 
-    sheet = get_worksheet(
-        "series"
-    )
-
-    values = [
-        series_df.columns.tolist()
-    ] + [
-        [
-            convert_value(v)
-            for v in row
-        ]
-        for row in series_df.itertuples(
-            index=False,
-            name=None
-        )
+    values = [series_df.columns.tolist()] + [
+        [convert_value(v) for v in row]
+        for row in series_df.itertuples(index=False, name=None)
     ]
 
     sheet.clear()
-
     sheet.update(
         range_name="A1",
         values=values
     )
+
+    load_google_sheet.clear()
