@@ -245,7 +245,7 @@ else:
                     if succes_obtenu is True:
                         if date_debut and date_fin:
                             texte_date = (
-                                f"Déverrouillé de {date_debut} à {date_fin}"
+                                f"Réalisé du {date_debut} à {date_fin}"
                             )
                         elif date_fin:
                             texte_date = f"Déverrouillé le {date_fin}"
@@ -255,7 +255,7 @@ else:
                             texte_date = "Déverrouillé"
 
                     else:
-                        texte_date = f"Créé en {date_creation}" if date_creation else "Date inconnue"
+                        texte_date = f"Créé le {date_creation}" if date_creation else "Date inconnue"
 
                     texte_date = html.escape(str(texte_date))
 
