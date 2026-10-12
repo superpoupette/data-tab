@@ -1,5 +1,4 @@
-﻿```python
-import json
+﻿import json
 import html
 from pathlib import Path
 
