@@ -88,11 +88,19 @@ if not isinstance(elements, list):
 st.markdown(
     """
     <style>
-    .succes-carte {
+    /* Fond de chaque carte */
+    div[data-testid="stVerticalBlockBorderWrapper"]:has(
+        div.succes-marqueur
+    ) {
         background-color: #262626;
+        border: none;
         border-radius: 14px;
         padding: 14px;
-        height: 100%;
+    }
+
+    /* Le marqueur ne prend aucune place */
+    div.succes-marqueur {
+        display: none;
     }
 
     .succes-titre {
@@ -114,7 +122,6 @@ st.markdown(
         margin-top: 18px;
         padding: 8px 0 4px 0;
     }
-
     </style>
     """,
     unsafe_allow_html=True,
@@ -138,73 +145,72 @@ else:
 
             with colonne:
 
-                # Fond personnalisé sans contour
-                st.markdown(
-                    '<div class="succes-carte">',
-                    unsafe_allow_html=True,
-                )
-
-                # Titre
-                nom = element.get("nom", "Sans titre")
-
-                st.markdown(
-                    f'<div class="succes-titre">'
-                    f'{nom}</div>',
-                    unsafe_allow_html=True,
-                )
-
-                # Image spécifique ou image par défaut
-                nom_image = element.get("image")
-                categorie = element.get("categorie", "").lower()
-
-                chemin_image = None
-
-                if nom_image:
-                    image_candidate = DOSSIER_IMAGES / nom_image
-
-                    try:
-                        image_candidate.resolve().relative_to(
-                            DOSSIER_IMAGES.resolve()
-                        )
-
-                        if image_candidate.is_file():
-                            chemin_image = image_candidate
-
-                    except ValueError:
-                        pass
-
-                if chemin_image is None:
-                    image_defaut = IMAGES_DEFAUT.get(categorie)
-
-                    if image_defaut:
-                        image_candidate = (
-                            DOSSIER_IMAGES / image_defaut
-                        )
-
-                        if image_candidate.is_file():
-                            chemin_image = image_candidate
-
-                if chemin_image is not None:
-                    st.image(
-                        str(chemin_image),
-                        use_container_width=True,
+                # Le conteneur englobe tous les éléments
+                with st.container():
+                    st.markdown(
+                        '<div class="succes-marqueur"></div>',
+                        unsafe_allow_html=True,
                     )
-                else:
-                    st.info("Image indisponible")
 
-                # Date avec un espace en dessous de l'image
-                date_creation = element.get(
-                    "date_creation"
-                ) or "Date inconnue"
+                    # Titre
+                    nom = element.get("nom", "Sans titre")
 
-                st.markdown(
-                    f'<div class="succes-date">'
-                    f'{date_creation}</div>',
-                    unsafe_allow_html=True,
-                )
+                    st.markdown(
+                        f'<div class="succes-titre">'
+                        f'{nom}</div>',
+                        unsafe_allow_html=True,
+                    )
 
-                st.markdown(
-                    '</div>',
-                    unsafe_allow_html=True,
-                )
+                    # Recherche de l'image
+                    nom_image = element.get("image")
+                    categorie = element.get("categorie", "").lower()
+
+                    chemin_image = None
+
+                    if nom_image:
+                        image_candidate = DOSSIER_IMAGES / nom_image
+
+                        try:
+                            image_candidate.resolve().relative_to(
+                                DOSSIER_IMAGES.resolve()
+                            )
+
+                            if image_candidate.is_file():
+                                chemin_image = image_candidate
+
+                        except ValueError:
+                            pass
+
+                    # Image par défaut si nécessaire
+                    if chemin_image is None:
+                        image_defaut = IMAGES_DEFAUT.get(categorie)
+
+                        if image_defaut:
+                            image_candidate = (
+                                DOSSIER_IMAGES / image_defaut
+                            )
+
+                            if image_candidate.is_file():
+                                chemin_image = image_candidate
+
+                    # Affichage de l'image
+                    if chemin_image is not None:
+                        st.image(
+                            str(chemin_image),
+                            use_container_width=True,
+                        )
+                    else:
+                        st.info("Image indisponible")
+
+                    # Date avec marge intérieure
+                    date_creation = (
+                        element.get("date_creation")
+                        or "Date inconnue"
+                    )
+
+                    st.markdown(
+                        f'<div class="succes-date">'
+                        f'{date_creation}</div>',
+                        unsafe_allow_html=True,
+                    )
 
