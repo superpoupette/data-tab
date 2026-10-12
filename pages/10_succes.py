@@ -88,29 +88,33 @@ if not isinstance(elements, list):
 st.markdown(
     """
     <style>
+    .succes-carte {
+        background-color: #262626;
+        border-radius: 14px;
+        padding: 14px;
+        height: 100%;
+    }
+
     .succes-titre {
-        font-size: 17px;
+        font-size: 16px;
         font-weight: 600;
         text-align: center;
         min-height: 55px;
         display: flex;
         align-items: center;
         justify-content: center;
-        margin-bottom: 12px;
         overflow-wrap: anywhere;
+        margin-bottom: 12px;
     }
 
     .succes-date {
-        font-size: 14px;
-        color: var(--text-color);
-        opacity: 0.7;
+        font-size: 13px;
+        color: #b0b0b0;
         text-align: center;
-        margin-top: 12px;
+        margin-top: 18px;
+        padding: 8px 0 4px 0;
     }
 
-    div[data-testid="stVerticalBlockBorderWrapper"] {
-        border-radius: 12px;
-    }
     </style>
     """,
     unsafe_allow_html=True,
@@ -118,97 +122,89 @@ st.markdown(
 
 
 # --------------------------------------------------
-# Affichage des succès
+# Affichage des succès : 6 colonnes par ligne
 # --------------------------------------------------
 
 if not elements:
     st.info("Aucun succès à afficher.")
 
 else:
-    # Une ligne de 4 éléments à la fois
-    for debut in range(0, len(elements), 4):
+    for debut in range(0, len(elements), 6):
 
-        elements_ligne = elements[debut:debut + 4]
-        colonnes = st.columns(4, gap="medium")
+        elements_ligne = elements[debut:debut + 6]
+        colonnes = st.columns(6, gap="medium")
 
         for colonne, element in zip(colonnes, elements_ligne):
 
             with colonne:
-                with st.container(border=True):
 
-                    # --------------------------------
-                    # 1. Titre en haut
-                    # --------------------------------
+                # Fond personnalisé sans contour
+                st.markdown(
+                    '<div class="succes-carte">',
+                    unsafe_allow_html=True,
+                )
 
-                    nom = element.get("nom", "Sans titre")
+                # Titre
+                nom = element.get("nom", "Sans titre")
 
-                    st.markdown(
-                        f'<div class="succes-titre">'
-                        f'{nom}</div>',
-                        unsafe_allow_html=True,
-                    )
+                st.markdown(
+                    f'<div class="succes-titre">'
+                    f'{nom}</div>',
+                    unsafe_allow_html=True,
+                )
 
-                    # --------------------------------
-                    # 2. Image au milieu
-                    # --------------------------------
+                # Image spécifique ou image par défaut
+                nom_image = element.get("image")
+                categorie = element.get("categorie", "").lower()
 
-                    nom_image = element.get("image")
-                    categorie = element.get("categorie", "").lower()
+                chemin_image = None
 
-                    chemin_image = None
+                if nom_image:
+                    image_candidate = DOSSIER_IMAGES / nom_image
 
-                    # Recherche de l'image spécifique
-                    if nom_image:
-                        image_candidate = DOSSIER_IMAGES / nom_image
-
-                        # Évite de sortir du dossier d'images
-                        try:
-                            image_candidate.resolve().relative_to(
-                                DOSSIER_IMAGES.resolve()
-                            )
-
-                            if image_candidate.is_file():
-                                chemin_image = image_candidate
-
-                        except ValueError:
-                            pass
-
-                    # Si l'image spécifique n'existe pas,
-                    # recherche de l'image par défaut
-                    if chemin_image is None:
-                        image_defaut = IMAGES_DEFAUT.get(categorie)
-
-                        if image_defaut:
-                            image_candidate = (
-                                DOSSIER_IMAGES / image_defaut
-                            )
-
-                            if image_candidate.is_file():
-                                chemin_image = image_candidate
-
-                    # Affichage de l'image
-                    if chemin_image is not None:
-                        st.image(
-                            str(chemin_image),
-                            use_container_width=True,
+                    try:
+                        image_candidate.resolve().relative_to(
+                            DOSSIER_IMAGES.resolve()
                         )
-                    else:
-                        st.info("Image indisponible")
 
-                    # --------------------------------
-                    # 3. Date en bas
-                    # --------------------------------
+                        if image_candidate.is_file():
+                            chemin_image = image_candidate
 
-                    date_creation = element.get(
-                        "date_creation",
-                        "Date inconnue",
+                    except ValueError:
+                        pass
+
+                if chemin_image is None:
+                    image_defaut = IMAGES_DEFAUT.get(categorie)
+
+                    if image_defaut:
+                        image_candidate = (
+                            DOSSIER_IMAGES / image_defaut
+                        )
+
+                        if image_candidate.is_file():
+                            chemin_image = image_candidate
+
+                if chemin_image is not None:
+                    st.image(
+                        str(chemin_image),
+                        use_container_width=True,
                     )
+                else:
+                    st.info("Image indisponible")
 
-                    if date_creation is None:
-                        date_creation = "Date inconnue"
+                # Date avec un espace en dessous de l'image
+                date_creation = element.get(
+                    "date_creation"
+                ) or "Date inconnue"
 
-                    st.markdown(
-                        f'<div class="succes-date">'
-                        f'{date_creation}</div>',
-                        unsafe_allow_html=True,
-                    )
+                st.markdown(
+                    f'<div class="succes-date">'
+                    f'{date_creation}</div>',
+                    unsafe_allow_html=True,
+                )
+
+                st.markdown(
+                    '</div>',
+                    unsafe_allow_html=True,
+                )
+
