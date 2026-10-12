@@ -70,6 +70,7 @@ if not isinstance(elements, list):
     )
     st.stop()
 
+
 # --------------------------------------------------
 # Compteur d'étoiles acquises
 # --------------------------------------------------
@@ -77,7 +78,8 @@ if not isinstance(elements, list):
 total_etoiles = sum(
     int(element.get("etoiles", 0) or 0)
     for element in elements
-    if element.get("succes") is True
+    if isinstance(element, dict)
+    and element.get("succes") is True
 )
 
 st.markdown(
@@ -92,54 +94,120 @@ st.markdown(
 st.markdown(
     """
     <style>
-    /* Fond de chaque carte */
+    /* ------------------------------------------
+       Cartes : hauteur fixe et fond sombre
+       ------------------------------------------ */
+
     div[class*="st-key-succes_"] {
         background-color: #262626 !important;
         border: none !important;
         border-radius: 14px !important;
-        padding: 14px 14px 22px 14px !important;
+
+        height: 340px !important;
+        min-height: 340px !important;
+        max-height: 340px !important;
+
+        padding: 14px !important;
         margin-bottom: 12px;
         box-sizing: border-box;
-    }
-
-    /* Supprime les éventuels contours des éléments internes */
-    div[class*="st-key-succes_"] [data-testid="stImage"] {
-        border-radius: 8px;
         overflow: hidden;
     }
 
-    /* Titre */
+    /* Évite les espacements imprévus à l'intérieur */
+    div[class*="st-key-succes_"] [data-testid="stVerticalBlock"] {
+        gap: 0.5rem;
+    }
+
+    /* ------------------------------------------
+       Titre : 2 lignes maximum
+       ------------------------------------------ */
+
     .succes-titre {
         font-size: 16px;
         font-weight: 600;
         text-align: center;
-        min-height: 55px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
+        line-height: 24px;
+
+        height: 48px;
+        min-height: 48px;
+        max-height: 48px;
+
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+
+        overflow: hidden;
         overflow-wrap: anywhere;
         word-break: break-word;
-        margin-bottom: 12px;
+
+        margin: 0 0 8px 0;
     }
 
-    /* Date */
+    /* ------------------------------------------
+       Image : zone uniforme
+       ------------------------------------------ */
+
+    div[class*="st-key-succes_"] [data-testid="stImage"] {
+        height: 180px;
+        min-height: 180px;
+        max-height: 180px;
+        width: 100%;
+        overflow: hidden;
+        border-radius: 8px;
+        margin: 0;
+    }
+
+    div[class*="st-key-succes_"] [data-testid="stImage"] img {
+        width: 100%;
+        height: 180px;
+        object-fit: contain;
+    }
+
+    /* ------------------------------------------
+       Date : 2 lignes maximum
+       ------------------------------------------ */
+
     .succes-date {
         font-size: 13px;
         color: #b0b0b0;
         text-align: center;
-        margin-top: 18px;
-        padding: 8px 0 4px 0;
+        line-height: 16px;
+
+        height: 40px;
+        min-height: 40px;
+        max-height: 40px;
+
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+
+        overflow: hidden;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+
+        margin-top: 8px;
+        padding: 4px 0;
+        box-sizing: border-box;
     }
 
-    /* Message si aucune image n'est disponible */
+    /* ------------------------------------------
+       Image indisponible
+       ------------------------------------------ */
+
     .succes-image-absente {
-        min-height: 120px;
+        height: 180px;
+        min-height: 180px;
+        max-height: 180px;
+
         display: flex;
         align-items: center;
         justify-content: center;
+
         text-align: center;
         color: #b0b0b0;
         font-size: 13px;
+
+        overflow: hidden;
     }
     </style>
     """,
@@ -166,7 +234,11 @@ else:
 
             with colonne:
 
-                # Le fond est appliqué à ce conteneur
+                # Ignore les entrées JSON incorrectes
+                if not isinstance(element, dict):
+                    st.warning("Élément de succès invalide.")
+                    continue
+
                 numero_carte = debut + index
 
                 with st.container(key=f"succes_{numero_carte}"):
@@ -189,6 +261,7 @@ else:
                     # ------------------------------------------
 
                     nom_image = element.get("image")
+
                     categorie = str(
                         element.get("categorie") or ""
                     ).strip().lower()
@@ -245,7 +318,6 @@ else:
                             unsafe_allow_html=True,
                         )
 
-
                     # ------------------------------------------
                     # Texte sous l'image selon l'état du succès
                     # ------------------------------------------
@@ -257,24 +329,35 @@ else:
                     date_fin = element.get("date_fin_validation")
 
                     if succes_obtenu is True:
+
                         if date_debut and date_fin:
                             texte_date = (
-                                f"Déverrouillé du {date_debut} à {date_fin}"
+                                f"Déverrouillé du {date_debut} "
+                                f"au {date_fin}"
                             )
+
                         elif date_fin:
                             texte_date = f"Déverrouillé le {date_fin}"
+
                         elif date_debut:
-                            texte_date = f"Déverrouillé depuis le {date_debut}"
+                            texte_date = (
+                                f"Déverrouillé depuis le {date_debut}"
+                            )
+
                         else:
                             texte_date = "Déverrouillé"
 
                     else:
-                        texte_date = f"Créé le {date_creation}" if date_creation else "Date inconnue"
+                        texte_date = (
+                            f"Créé le {date_creation}"
+                            if date_creation
+                            else "Date inconnue"
+                        )
 
                     texte_date = html.escape(str(texte_date))
 
                     st.markdown(
-                        f'<div class="succes-date">{texte_date}</div>',
+                        f'<div class="succes-date">'
+                        f'{texte_date}</div>',
                         unsafe_allow_html=True,
                     )
-
