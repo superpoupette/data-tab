@@ -245,7 +245,7 @@ else:
                     if succes_obtenu is True:
                         if date_debut and date_fin:
                             texte_date = (
-                                f"Réalisé du {date_debut} à {date_fin}"
+                                f"Déverrouillé du {date_debut} à {date_fin}"
                             )
                         elif date_fin:
                             texte_date = f"Déverrouillé le {date_fin}"
