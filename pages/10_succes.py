@@ -231,16 +231,36 @@ else:
                             unsafe_allow_html=True,
                         )
 
+
                     # ------------------------------------------
-                    # Date de création
+                    # Texte sous l'image selon l'état du succès
                     # ------------------------------------------
 
-                    date_creation = html.escape(
-                        str(element.get("date_creation") or "Date inconnue")
-                    )
+                    succes_obtenu = element.get("succes", False)
+
+                    date_creation = element.get("date_creation")
+                    date_debut = element.get("date_debut_validation")
+                    date_fin = element.get("date_fin_validation")
+
+                    if succes_obtenu is True:
+                        if date_debut and date_fin:
+                            texte_date = (
+                                f"Déverrouillé de {date_debut} à {date_fin}"
+                            )
+                        elif date_fin:
+                            texte_date = f"Déverrouillé le {date_fin}"
+                        elif date_debut:
+                            texte_date = f"Déverrouillé depuis le {date_debut}"
+                        else:
+                            texte_date = "Déverrouillé"
+
+                    else:
+                        texte_date = f"Créé en {date_creation}" if date_creation else "Date inconnue"
+
+                    texte_date = html.escape(str(texte_date))
 
                     st.markdown(
-                        f'<div class="succes-date">'
-                        f'{date_creation}</div>',
+                        f'<div class="succes-date">{texte_date}</div>',
                         unsafe_allow_html=True,
                     )
+
