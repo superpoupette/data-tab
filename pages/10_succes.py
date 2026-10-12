@@ -244,4 +244,3 @@ else:
                         f'{date_creation}</div>',
                         unsafe_allow_html=True,
                     )
-```
