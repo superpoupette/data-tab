@@ -70,6 +70,20 @@ if not isinstance(elements, list):
     )
     st.stop()
 
+# --------------------------------------------------
+# Compteur d'étoiles acquises
+# --------------------------------------------------
+
+total_etoiles = sum(
+    int(element.get("etoiles", 0) or 0)
+    for element in elements
+    if element.get("succes") is True
+)
+
+st.markdown(
+    f"### ⭐ Nombre d'étoiles acquises : {total_etoiles}"
+)
+
 
 # --------------------------------------------------
 # Style des cartes
