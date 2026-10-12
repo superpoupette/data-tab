@@ -1,5 +1,6 @@
-﻿
+﻿```python
 import json
+import html
 from pathlib import Path
 
 import streamlit as st
@@ -22,8 +23,6 @@ st.title("Mes succès")
 # Chemins des fichiers
 # --------------------------------------------------
 
-# Le fichier actuel est dans pages/
-# Le dossier parent correspond à la racine du projet.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 FICHIER_JSON = BASE_DIR / "succes.json"
@@ -48,8 +47,7 @@ IMAGES_DEFAUT = {
 
 if not FICHIER_JSON.is_file():
     st.error(
-        f"Le fichier succes.json est introuvable : "
-        f"{FICHIER_JSON}"
+        f"Le fichier succes.json est introuvable : {FICHIER_JSON}"
     )
     st.stop()
 
@@ -58,21 +56,14 @@ try:
         elements = json.load(fichier)
 
 except json.JSONDecodeError as erreur:
-    st.error(
-        f"Le fichier succes.json contient une erreur JSON : "
-        f"{erreur}"
-    )
+    st.error(f"Erreur dans le fichier succes.json : {erreur}")
     st.stop()
 
 except OSError as erreur:
-    st.error(
-        f"Impossible de lire le fichier succes.json : "
-        f"{erreur}"
-    )
+    st.error(f"Impossible de lire succes.json : {erreur}")
     st.stop()
 
 
-# Vérification du contenu
 if not isinstance(elements, list):
     st.error(
         "Le fichier succes.json doit contenir "
@@ -89,20 +80,22 @@ st.markdown(
     """
     <style>
     /* Fond de chaque carte */
-    div[data-testid="stVerticalBlockBorderWrapper"]:has(
-        div.succes-marqueur
-    ) {
-        background-color: #262626;
-        border: none;
-        border-radius: 14px;
-        padding: 14px;
+    div[class*="st-key-succes_"] {
+        background-color: #262626 !important;
+        border: none !important;
+        border-radius: 14px !important;
+        padding: 14px 14px 22px 14px !important;
+        margin-bottom: 12px;
+        box-sizing: border-box;
     }
 
-    /* Le marqueur ne prend aucune place */
-    div.succes-marqueur {
-        display: none;
+    /* Supprime les éventuels contours des éléments internes */
+    div[class*="st-key-succes_"] [data-testid="stImage"] {
+        border-radius: 8px;
+        overflow: hidden;
     }
 
+    /* Titre */
     .succes-titre {
         font-size: 16px;
         font-weight: 600;
@@ -112,15 +105,28 @@ st.markdown(
         align-items: center;
         justify-content: center;
         overflow-wrap: anywhere;
+        word-break: break-word;
         margin-bottom: 12px;
     }
 
+    /* Date */
     .succes-date {
         font-size: 13px;
         color: #b0b0b0;
         text-align: center;
         margin-top: 18px;
         padding: 8px 0 4px 0;
+    }
+
+    /* Message si aucune image n'est disponible */
+    .succes-image-absente {
+        min-height: 120px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        color: #b0b0b0;
+        font-size: 13px;
     }
     </style>
     """,
@@ -141,34 +147,47 @@ else:
         elements_ligne = elements[debut:debut + 6]
         colonnes = st.columns(6, gap="medium")
 
-        for colonne, element in zip(colonnes, elements_ligne):
+        for index, (colonne, element) in enumerate(
+            zip(colonnes, elements_ligne)
+        ):
 
             with colonne:
 
-                # Le conteneur englobe tous les éléments
-                with st.container():
-                    st.markdown(
-                        '<div class="succes-marqueur"></div>',
-                        unsafe_allow_html=True,
-                    )
+                # Le fond est appliqué à ce conteneur
+                numero_carte = debut + index
 
+                with st.container(key=f"succes_{numero_carte}"):
+
+                    # ------------------------------------------
                     # Titre
-                    nom = element.get("nom", "Sans titre")
+                    # ------------------------------------------
+
+                    nom = html.escape(
+                        str(element.get("nom") or "Sans titre")
+                    )
 
                     st.markdown(
-                        f'<div class="succes-titre">'
-                        f'{nom}</div>',
+                        f'<div class="succes-titre">{nom}</div>',
                         unsafe_allow_html=True,
                     )
 
+                    # ------------------------------------------
                     # Recherche de l'image
+                    # ------------------------------------------
+
                     nom_image = element.get("image")
-                    categorie = element.get("categorie", "").lower()
+                    categorie = str(
+                        element.get("categorie") or ""
+                    ).strip().lower()
 
                     chemin_image = None
 
-                    if nom_image:
-                        image_candidate = DOSSIER_IMAGES / nom_image
+                    # Image spécifique
+                    if isinstance(nom_image, str) and nom_image.strip():
+
+                        image_candidate = (
+                            DOSSIER_IMAGES / nom_image.strip()
+                        )
 
                         try:
                             image_candidate.resolve().relative_to(
@@ -178,11 +197,12 @@ else:
                             if image_candidate.is_file():
                                 chemin_image = image_candidate
 
-                        except ValueError:
+                        except (ValueError, OSError):
                             pass
 
-                    # Image par défaut si nécessaire
+                    # Image par défaut selon la catégorie
                     if chemin_image is None:
+
                         image_defaut = IMAGES_DEFAUT.get(categorie)
 
                         if image_defaut:
@@ -193,19 +213,31 @@ else:
                             if image_candidate.is_file():
                                 chemin_image = image_candidate
 
+                    # ------------------------------------------
                     # Affichage de l'image
+                    # ------------------------------------------
+
                     if chemin_image is not None:
                         st.image(
                             str(chemin_image),
                             use_container_width=True,
                         )
                     else:
-                        st.info("Image indisponible")
+                        st.markdown(
+                            """
+                            <div class="succes-image-absente">
+                                Image indisponible
+                            </div>
+                            """,
+                            unsafe_allow_html=True,
+                        )
 
-                    # Date avec marge intérieure
-                    date_creation = (
-                        element.get("date_creation")
-                        or "Date inconnue"
+                    # ------------------------------------------
+                    # Date de création
+                    # ------------------------------------------
+
+                    date_creation = html.escape(
+                        str(element.get("date_creation") or "Date inconnue")
                     )
 
                     st.markdown(
@@ -213,4 +245,4 @@ else:
                         f'{date_creation}</div>',
                         unsafe_allow_html=True,
                     )
-
+```
