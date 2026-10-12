@@ -7,7 +7,7 @@
 	"date_fin_validation":"27/09/2026",
 	"image":"sport_100kpas.png",
 	"succes":true,
-	"difficulte":2
+	"etoiles":2
 
 },
 {
@@ -18,7 +18,8 @@
 	"date_debut_validation":"01/10/2026",
 	"date_fin_validation":null,
 	"image":"dessin_inktober2026.png",
-	"succes":false
+	"succes":false,
+	"etoiles":1
 
 },
 {
@@ -29,7 +30,8 @@
 	"date_debut_validation":"01/08/2026",
 	"date_fin_validation":"29/08/2026",
 	"image":"dessin_charlie2026.png",
-	"succes":true
+	"succes":true,
+	"etoiles":2
 
 },
 {
@@ -51,7 +53,8 @@
 	"date_debut_validation":null,
 	"date_fin_validation":null,
 	"image":"creatif_roman.png",
-	"succes":false
+	"succes":false,
+	"etoiles":3
 
 },
 {
