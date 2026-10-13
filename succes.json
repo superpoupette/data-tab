@@ -27,7 +27,7 @@
 	"date_debut_validation":"01/01/2026",
 	"date_fin_validation":null,
 	"image":"sport_1000pompes.png",
-	"succes":false
+	"succes":false,
 	"etoiles":2
 
 },
@@ -38,7 +38,7 @@
 	"date_debut_validation":null,
 	"date_fin_validation":null,
 	"image":"sport_poirier.png",
-	"succes":false
+	"succes":false,
 	"etoiles":3
 
 },
@@ -49,7 +49,7 @@
 	"date_debut_validation":null,
 	"date_fin_validation":"22/05/2022",
 	"image":"sport_10km.png",
-	"succes":false
+	"succes":false,
 	"etoiles":2
 
 },
@@ -60,7 +60,7 @@
 	"date_debut_validation":null,
 	"date_fin_validation":"07/06/2026",
 	"image":"sport_10km1h10.png",
-	"succes":false
+	"succes":false,
 	"etoiles":2
 
 },
@@ -71,7 +71,7 @@
 	"date_debut_validation":null,
 	"date_fin_validation":"06/02/2025",
 	"image":"sport_escalade.png",
-	"succes":false
+	"succes":false,
 	"etoiles":2
 
 },
