@@ -1,6 +1,7 @@
 ﻿import json
 import html
 from pathlib import Path
+from datetime import date, datetime
 
 import streamlit as st
 
@@ -86,7 +87,64 @@ st.markdown(
     f"### ⭐ Nombre d'étoiles acquises : {total_etoiles}"
 )
 
+# --------------------------------------------------
+# Choix de l'ordre d'affichage
+# --------------------------------------------------
 
+ordre_tri = st.radio(
+    "Trier les succès par :",
+    options=[
+        "Date de création",
+        "Date de fin de validation",
+    ],
+    horizontal=True,
+)
+
+def convertir_date(valeur):
+    """Convertit une date JSON en date comparable."""
+    if not valeur:
+        return None
+
+    try:
+        return datetime.fromisoformat(
+            str(valeur).replace("Z", "+00:00")
+        )
+    except (ValueError, TypeError):
+        try:
+            return datetime.combine(
+                date.fromisoformat(str(valeur)),
+                datetime.min.time(),
+            )
+        except (ValueError, TypeError):
+            return None
+
+
+if ordre_tri == "Date de création":
+    elements = sorted(
+        elements,
+        key=lambda element: (
+            convertir_date(element.get("date_creation"))
+            if isinstance(element, dict)
+            else None
+        ) or datetime.min,
+        reverse=True,
+    )
+
+else:
+    elements = sorted(
+        elements,
+        key=lambda element: (
+            isinstance(element, dict)
+            and element.get("succes") is True
+            and convertir_date(element.get("date_fin_validation"))
+            is not None,
+            (
+                convertir_date(element.get("date_fin_validation"))
+                or datetime.min
+            ) if isinstance(element, dict) else datetime.min,
+        ),
+        reverse=True,
+    )
 # --------------------------------------------------
 # Style des cartes
 # --------------------------------------------------
