@@ -102,24 +102,20 @@ ordre_tri = st.radio(
 
 
 def convertir_date(valeur):
-    """Convertit une date en clé de tri, en acceptant les dates ISO."""
+    """Convertit une date au format JJ/MM/AAAA en datetime."""
     if not valeur:
         return None
 
     try:
-        # Prend en charge YYYY-MM-DD et les dates avec heure.
-        resultat = datetime.fromisoformat(
-            str(valeur).strip().replace("Z", "+00:00")
-        )
-
-        # Uniformise les dates avec ou sans fuseau horaire.
-        if resultat.tzinfo is not None:
-            resultat = resultat.replace(tzinfo=None)
-
-        return resultat
-
+        return datetime.strptime(str(valeur).strip(), "%d/%m/%Y")
     except (ValueError, TypeError):
-        return None
+        try:
+            return datetime.fromisoformat(
+                str(valeur).strip().replace("Z", "+00:00")
+            )
+        except (ValueError, TypeError):
+            return None
+
 
 
 if ordre_tri == "Date de création":
@@ -157,6 +153,7 @@ else:
         if not isinstance(element, dict)
         or convertir_date(element.get("date_fin_validation")) is None
     ]
+
 st.write("Tri sélectionné :", ordre_tri)
 
 for element in elements:
