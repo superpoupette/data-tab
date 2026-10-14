@@ -71,11 +71,14 @@ if not isinstance(elements, list):
     )
     st.stop()
 
-
+```python
 # --------------------------------------------------
-# Compteur d'étoiles acquises
+# Compteur d'étoiles et choix de l'ordre d'affichage
 # --------------------------------------------------
 
+col_etoiles, col_tri = st.columns([1, 2], vertical_alignment="center")
+
+# À gauche : nombre d'étoiles uniquement
 total_etoiles = sum(
     int(element.get("etoiles", 0) or 0)
     for element in elements
@@ -83,22 +86,21 @@ total_etoiles = sum(
     and element.get("succes") is True
 )
 
-st.markdown(
-    f"### ⭐ Nombre d'étoiles acquises : {total_etoiles}"
-)
+with col_etoiles:
+    st.markdown(
+        f"### ⭐ {total_etoiles}"
+    )
 
-# --------------------------------------------------
-# Choix de l'ordre d'affichage
-# --------------------------------------------------
-
-ordre_tri = st.radio(
-    "Trier les succès par :",
-    options=[
-        "Date de création",
-        "Date de fin de validation",
-    ],
-    horizontal=True,
-)
+# À droite : liste déroulante pour le tri
+with col_tri:
+    ordre_tri = st.selectbox(
+        "Trier les succès par :",
+        options=[
+            "Date de création",
+            "Date de fin de validation",
+        ],
+        label_visibility="collapsed",
+    )
 
 
 def convertir_date(valeur):
@@ -117,7 +119,6 @@ def convertir_date(valeur):
             return None
 
 
-
 if ordre_tri == "Date de création":
     elements = sorted(
         elements,
@@ -130,9 +131,6 @@ if ordre_tri == "Date de création":
     )
 
 else:
-    # Les éléments avec une date de fin passent en premier.
-    # La date_fin_validation la plus récente apparaît en haut.
-    # Les éléments sans date de fin restent tout en bas.
     elements = sorted(
         elements,
         key=lambda element: (
@@ -143,7 +141,7 @@ else:
         reverse=True,
     )
 
-    # Déplace explicitement en bas les éléments sans date de fin.
+    # Les éléments sans date de fin restent tout en bas.
     elements = [
         element for element in elements
         if isinstance(element, dict)
@@ -153,6 +151,7 @@ else:
         if not isinstance(element, dict)
         or convertir_date(element.get("date_fin_validation")) is None
     ]
+```
 
 
 # --------------------------------------------------
