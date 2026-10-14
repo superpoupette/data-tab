@@ -100,23 +100,26 @@ ordre_tri = st.radio(
     horizontal=True,
 )
 
+```python
 def convertir_date(valeur):
-    """Convertit une date JSON en date comparable."""
+    """Convertit une date en clé de tri, en acceptant les dates ISO."""
     if not valeur:
         return None
 
     try:
-        return datetime.fromisoformat(
-            str(valeur).replace("Z", "+00:00")
+        # Prend en charge YYYY-MM-DD et les dates avec heure.
+        resultat = datetime.fromisoformat(
+            str(valeur).strip().replace("Z", "+00:00")
         )
+
+        # Uniformise les dates avec ou sans fuseau horaire.
+        if resultat.tzinfo is not None:
+            resultat = resultat.replace(tzinfo=None)
+
+        return resultat
+
     except (ValueError, TypeError):
-        try:
-            return datetime.combine(
-                date.fromisoformat(str(valeur)),
-                datetime.min.time(),
-            )
-        except (ValueError, TypeError):
-            return None
+        return None
 
 
 if ordre_tri == "Date de création":
@@ -131,20 +134,30 @@ if ordre_tri == "Date de création":
     )
 
 else:
+    # Les éléments avec une date de fin passent en premier.
+    # La date_fin_validation la plus récente apparaît en haut.
+    # Les éléments sans date de fin restent tout en bas.
     elements = sorted(
         elements,
         key=lambda element: (
-            isinstance(element, dict)
-            and element.get("succes") is True
-            and convertir_date(element.get("date_fin_validation"))
-            is not None,
-            (
-                convertir_date(element.get("date_fin_validation"))
-                or datetime.min
-            ) if isinstance(element, dict) else datetime.min,
-        ),
+            convertir_date(element.get("date_fin_validation"))
+            if isinstance(element, dict)
+            else None
+        ) or datetime.min,
         reverse=True,
     )
+
+    # Déplace explicitement en bas les éléments sans date de fin.
+    elements = [
+        element for element in elements
+        if isinstance(element, dict)
+        and convertir_date(element.get("date_fin_validation")) is not None
+    ] + [
+        element for element in elements
+        if not isinstance(element, dict)
+        or convertir_date(element.get("date_fin_validation")) is None
+    ]
+```
 # --------------------------------------------------
 # Style des cartes
 # --------------------------------------------------
