@@ -157,7 +157,21 @@ else:
         if not isinstance(element, dict)
         or convertir_date(element.get("date_fin_validation")) is None
     ]
+st.write("Tri sélectionné :", ordre_tri)
 
+for element in elements:
+    if isinstance(element, dict):
+        st.write({
+            "nom": element.get("nom"),
+            "date_creation": element.get("date_creation"),
+            "date_fin_validation": element.get("date_fin_validation"),
+            "date_creation_convertie": convertir_date(
+                element.get("date_creation")
+            ),
+            "date_fin_convertie": convertir_date(
+                element.get("date_fin_validation")
+            ),
+        })
 # --------------------------------------------------
 # Style des cartes
 # --------------------------------------------------
