@@ -164,7 +164,7 @@ st.markdown(
        ------------------------------------------ */
 
     div[class*="st-key-succes_"] {
-        background-color: #172536 !important;
+        background-color: #202129 !important;
         border: none !important;
         border-radius: 14px !important;
 
