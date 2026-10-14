@@ -168,7 +168,7 @@
 	"categorie":"danse",
 	"date_creation":"01/01/2024",
 	"date_debut_validation":null,
-	"date_fin_validation":null,
+	"date_fin_validation":"18/12/2024",
 	"image":"danse_50chores.png",
 	"succes":true,
 	"etoiles":1
@@ -179,7 +179,7 @@
 	"categorie":"danse",
 	"date_creation":"01/01/2025",
 	"date_debut_validation":null,
-	"date_fin_validation":null,
+	"date_fin_validation":"09/07/2025",
 	"image":"danse_100chores.png",
 	"succes":true,
 	"etoiles":2
