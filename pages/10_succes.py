@@ -100,7 +100,7 @@ ordre_tri = st.radio(
     horizontal=True,
 )
 
-```python
+
 def convertir_date(valeur):
     """Convertit une date en clé de tri, en acceptant les dates ISO."""
     if not valeur:
@@ -157,7 +157,7 @@ else:
         if not isinstance(element, dict)
         or convertir_date(element.get("date_fin_validation")) is None
     ]
-```
+
 # --------------------------------------------------
 # Style des cartes
 # --------------------------------------------------
