@@ -11,8 +11,7 @@ import streamlit as st
 # --------------------------------------------------
 
 st.set_page_config(
-    page_title="Mes succès",
-    page_icon="🏆",
+    page_title="Succès",
     layout="wide",
 )
 
@@ -71,7 +70,7 @@ if not isinstance(elements, list):
     )
     st.stop()
 
-```python
+
 # --------------------------------------------------
 # Compteur d'étoiles et choix de l'ordre d'affichage
 # --------------------------------------------------
@@ -151,7 +150,6 @@ else:
         if not isinstance(element, dict)
         or convertir_date(element.get("date_fin_validation")) is None
     ]
-```
 
 
 # --------------------------------------------------
