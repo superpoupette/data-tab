@@ -96,7 +96,7 @@ with col_tri:
         "Trier les succès par :",
         options=[
             "Date de création",
-            "Date de fin de validation",
+            "Date de validation",
         ],
         label_visibility="collapsed",
     )
