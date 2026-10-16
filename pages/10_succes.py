@@ -4,6 +4,11 @@ import streamlit as st
 from datetime import date, datetime
 import html
 
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+DOSSIER_IMAGES = BASE_DIR / "images" / "succes"
+
 from google.oauth2.service_account import Credentials
 
 
