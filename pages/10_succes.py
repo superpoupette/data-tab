@@ -1,32 +1,90 @@
 
-import html
-from pathlib import Path
-from datetime import date, datetime
-
+```python
+import gspread
 import pandas as pd
 import streamlit as st
 
+from google.oauth2.service_account import Credentials
+
 
 # --------------------------------------------------
-# Configuration de la page
+# Configuration Google Sheets
 # --------------------------------------------------
 
-st.set_page_config(
-    page_title="Succès",
-    layout="wide",
+SHEET_ID = "1rec6RNx7eViF3XxYovrVdGmsu22PXP0GoLDNVc0JNJg"
+
+
+def get_sheet():
+
+    credentials = Credentials.from_service_account_info(
+        st.secrets["gcp_service_account"],
+        scopes=[
+            "https://www.googleapis.com/auth/spreadsheets"
+        ]
+    )
+
+    client = gspread.authorize(credentials)
+
+    return client.open_by_key(SHEET_ID).sheet1
+
+
+def load_succes_google_sheet():
+
+    sheet = get_sheet()
+
+    data = sheet.get_all_records()
+
+    return pd.DataFrame(data)
+
+
+# --------------------------------------------------
+# Chargement des succès
+# --------------------------------------------------
+
+COLONNES_ATTENDUES = [
+    "nom",
+    "categorie",
+    "date_creation",
+    "date_debut_validation",
+    "date_fin_validation",
+    "image",
+    "compteur",
+    "succes",
+    "etoiles",
+    "details",
+]
+
+try:
+    tableau = load_succes_google_sheet()
+
+except Exception as erreur:
+    st.error(
+        f"Impossible de charger les succès depuis Google Sheets : {erreur}"
+    )
+    st.stop()
+
+
+# Vérification des colonnes
+colonnes_manquantes = [
+    colonne
+    for colonne in COLONNES_ATTENDUES
+    if colonne not in tableau.columns
+]
+
+if colonnes_manquantes:
+    st.error(
+        "Colonnes manquantes dans Google Sheets : "
+        + ", ".join(colonnes_manquantes)
+    )
+    st.stop()
+
+
+# Conserve les colonnes attendues et leur ordre
+elements = (
+    tableau[COLONNES_ATTENDUES]
+    .to_dict(orient="records")
 )
-
-st.title("Mes succès")
-
-
-# --------------------------------------------------
-# Chemins des fichiers
-# --------------------------------------------------
-
-BASE_DIR = Path(__file__).resolve().parent.parent
-
-FICHIER_EXCEL = BASE_DIR / "objectifs.xlsx"
-DOSSIER_IMAGES = BASE_DIR / "images" / "succes"
+```
 
 
 # --------------------------------------------------
