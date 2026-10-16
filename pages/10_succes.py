@@ -1,5 +1,3 @@
-
-```python
 import gspread
 import pandas as pd
 import streamlit as st
@@ -84,7 +82,6 @@ elements = (
     tableau[COLONNES_ATTENDUES]
     .to_dict(orient="records")
 )
-```
 
 
 # --------------------------------------------------
