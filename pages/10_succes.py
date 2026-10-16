@@ -208,52 +208,88 @@ for element in elements:
         )
 
 
+
 # --------------------------------------------------
-# Compteur d'étoiles et choix du tri
+# Compteur d'étoiles, tri et filtre par année
 # --------------------------------------------------
 
-col_etoiles, col_tri = st.columns(
-    [1, 2],
-    vertical_alignment="center",
-)
-
-# À gauche : nombre d'étoiles acquises
 def convertir_etoiles(valeur):
     """Convertit le nombre d'étoiles en entier sans erreur."""
-
     if valeur is None:
         return 0
 
     try:
         if pd.isna(valeur):
             return 0
-
         return int(float(valeur))
-
     except (ValueError, TypeError, OverflowError):
         return 0
 
 
+# Conserver la liste complète pour calculer les années disponibles
+elements_complets = elements.copy()
+
+# Total des étoiles acquises, indépendamment du filtre
 total_etoiles = sum(
     convertir_etoiles(element.get("etoiles"))
-    for element in elements
+    for element in elements_complets
     if element.get("succes") is True
+)
+
+# Années disponibles à partir des dates de création
+annees = sorted({
+    date_creation.year
+    for element in elements_complets
+    if (
+        date_creation := convertir_date(element.get("date_creation"))
+    ) is not None
+}, reverse=True)
+
+# Trois commandes sur la même ligne
+col_etoiles, col_tri, col_annee = st.columns(
+    [1, 2, 1],
+    vertical_alignment="center",
 )
 
 with col_etoiles:
     st.markdown(f"### ⭐ {total_etoiles}")
 
-
-# À droite : choix du tri
 with col_tri:
     ordre_tri = st.selectbox(
-        "Trier les succès par :",
+        "Trier par :",
         options=[
             "Date de création",
             "Date de validation",
+            "Catégorie",
         ],
         label_visibility="collapsed",
     )
+
+with col_annee:
+    annee_selectionnee = st.selectbox(
+        "Année :",
+        options=["Toutes les années"] + annees,
+        label_visibility="collapsed",
+    )
+
+
+# --------------------------------------------------
+# Filtre par année de création
+# --------------------------------------------------
+
+elements_filtres = elements_complets.copy()
+
+if annee_selectionnee != "Toutes les années":
+    elements_filtres = [
+        element
+        for element in elements_filtres
+        if (
+            (date_creation := convertir_date(
+                element.get("date_creation")
+            )) is not None
+            and date_creation.year == annee_selectionnee
+        )
+    ]
 
 
 # --------------------------------------------------
@@ -263,30 +299,36 @@ with col_tri:
 if ordre_tri == "Date de création":
 
     elements = sorted(
-        elements,
+        elements_filtres,
         key=lambda element: (
             convertir_date(element.get("date_creation")) is not None,
-            convertir_date(element.get("date_creation"))
-            or datetime.min,
+            convertir_date(element.get("date_creation")) or datetime.min,
         ),
         reverse=True,
     )
 
-else:
-
-    # Les succès ayant une date de fin sont affichés en premier,
-    # du plus récent au plus ancien.
-    # Les éléments sans date de fin restent tout en bas.
+elif ordre_tri == "Date de validation":
 
     elements = sorted(
-        elements,
+        elements_filtres,
         key=lambda element: (
+            element.get("succes") is True,
             convertir_date(element.get("date_fin_validation")) is not None,
-            convertir_date(element.get("date_fin_validation"))
-            or datetime.min,
+            convertir_date(element.get("date_fin_validation")) or datetime.min,
         ),
         reverse=True,
     )
+
+else:  # Catégorie : ordre alphabétique
+
+    elements = sorted(
+        elements_filtres,
+        key=lambda element: (
+            str(element.get("categorie") or "Sans catégorie").strip().casefold(),
+            str(element.get("nom") or "").casefold(),
+        ),
+    )
+
 
 
 # --------------------------------------------------
@@ -409,154 +451,202 @@ st.markdown(
 
 
 # --------------------------------------------------
-# Affichage des succès : 6 colonnes par ligne
+# Groupes d'affichage
+# --------------------------------------------------
+
+groupes = []
+
+if ordre_tri == "Catégorie":
+
+    categorie_actuelle = None
+    groupe_actuel = []
+
+    for element in elements:
+        categorie = str(
+            element.get("categorie") or "Sans catégorie"
+        ).strip() or "Sans catégorie"
+
+        if categorie != categorie_actuelle:
+            if groupe_actuel:
+                groupes.append((categorie_actuelle, groupe_actuel))
+
+            categorie_actuelle = categorie
+            groupe_actuel = []
+
+        groupe_actuel.append(element)
+
+    if groupe_actuel:
+        groupes.append((categorie_actuelle, groupe_actuel))
+
+elif ordre_tri == "Date de validation":
+
+    valides = [
+        element for element in elements
+        if element.get("succes") is True
+    ]
+
+    non_valides = [
+        element for element in elements
+        if element.get("succes") is not True
+    ]
+
+    if valides:
+        groupes.append(("Succès validés", valides))
+
+    if non_valides:
+        groupes.append(("Succès non validés", non_valides))
+
+else:
+    groupes.append((None, elements))
+
+
+# --------------------------------------------------
+# Affichage des succès : 6 colonnes maximum par ligne
 # --------------------------------------------------
 
 if not elements:
-    st.info("Aucun succès à afficher.")
+    st.info("Aucun succès à afficher pour cette année.")
 
 else:
-    for debut in range(0, len(elements), 6):
+    for titre_groupe, elements_groupe in groupes:
 
-        elements_ligne = elements[debut:debut + 6]
-        colonnes = st.columns(6, gap="medium")
+        # Titre de groupe pour les tris par catégorie et validation
+        if titre_groupe is not None:
+            st.markdown(f"#### {html.escape(titre_groupe)}")
 
-        for index, (colonne, element) in enumerate(
-            zip(colonnes, elements_ligne)
-        ):
+        # Chaque groupe démarre sur une nouvelle ligne
+        for debut in range(0, len(elements_groupe), 6):
 
-            with colonne:
+            elements_ligne = elements_groupe[debut:debut + 6]
+            colonnes = st.columns(6, gap="medium")
 
-                if not isinstance(element, dict):
-                    st.warning("Élément de succès invalide.")
-                    continue
+            for index, (colonne, element) in enumerate(
+                zip(colonnes, elements_ligne)
+            ):
 
-                numero_carte = debut + index
+                with colonne:
 
-                with st.container(key=f"succes_{numero_carte}"):
+                    if not isinstance(element, dict):
+                        st.warning("Élément de succès invalide.")
+                        continue
 
-                    # ------------------------------------------
-                    # Titre
-                    # ------------------------------------------
+                    numero_carte = f"{titre_groupe}_{debut + index}"
 
-                    nom = html.escape(
-                        str(element.get("nom") or "Sans titre")
-                    )
+                    with st.container(key=f"succes_{numero_carte}"):
 
-                    st.markdown(
-                        f'<div class="succes-titre">{nom}</div>',
-                        unsafe_allow_html=True,
-                    )
+                        # ----------------------------------
+                        # Titre
+                        # ----------------------------------
 
-                    # ------------------------------------------
-                    # Recherche de l'image
-                    # ------------------------------------------
-
-                    nom_image = element.get("image")
-
-                    categorie = str(
-                        element.get("categorie") or ""
-                    ).strip().lower()
-
-                    chemin_image = None
-
-                    # Image spécifique
-                    if isinstance(nom_image, str) and nom_image.strip():
-
-                        image_candidate = (
-                            DOSSIER_IMAGES / nom_image.strip()
+                        nom = html.escape(
+                            str(element.get("nom") or "Sans titre")
                         )
 
-                        try:
-                            image_candidate.resolve().relative_to(
-                                DOSSIER_IMAGES.resolve()
-                            )
-
-                            if image_candidate.is_file():
-                                chemin_image = image_candidate
-
-                        except (ValueError, OSError):
-                            pass
-
-                    # Image par défaut selon la catégorie
-                    if chemin_image is None:
-
-                        image_defaut = IMAGES_DEFAUT.get(categorie)
-
-                        if image_defaut:
-                            image_candidate = (
-                                DOSSIER_IMAGES / image_defaut
-                            )
-
-                            if image_candidate.is_file():
-                                chemin_image = image_candidate
-
-                    # ------------------------------------------
-                    # Affichage de l'image
-                    # ------------------------------------------
-
-                    if chemin_image is not None:
-                        st.image(
-                            str(chemin_image),
-                            use_container_width=True,
-                        )
-
-                    else:
                         st.markdown(
-                            """
-                            <div class="succes-image-absente">
-                                Image indisponible
-                            </div>
-                            """,
+                            f'<div class="succes-titre">{nom}</div>',
                             unsafe_allow_html=True,
                         )
 
-                    # ------------------------------------------
-                    # Texte sous l'image selon l'état du succès
-                    # ------------------------------------------
+                        # ----------------------------------
+                        # Recherche de l'image
+                        # ----------------------------------
 
-                    succes_obtenu = element.get("succes", False)
+                        nom_image = element.get("image")
 
-                    date_creation = afficher_date(
-                        element.get("date_creation")
-                    )
-                    date_debut = afficher_date(
-                        element.get("date_debut_validation")
-                    )
-                    date_fin = afficher_date(
-                        element.get("date_fin_validation")
-                    )
+                        categorie = str(
+                            element.get("categorie") or ""
+                        ).strip().lower()
 
-                    if succes_obtenu is True:
+                        chemin_image = None
 
-                        if date_debut and date_fin:
-                            texte_date = (
-                                f"Déverrouillé du {date_debut} "
-                                f"au {date_fin}"
+                        if isinstance(nom_image, str) and nom_image.strip():
+                            image_candidate = (
+                                DOSSIER_IMAGES / nom_image.strip()
                             )
 
-                        elif date_fin:
-                            texte_date = f"Déverrouillé le {date_fin}"
+                            try:
+                                image_candidate.resolve().relative_to(
+                                    DOSSIER_IMAGES.resolve()
+                                )
 
-                        elif date_debut:
-                            texte_date = (
-                                f"Déverrouillé depuis le {date_debut}"
+                                if image_candidate.is_file():
+                                    chemin_image = image_candidate
+
+                            except (ValueError, OSError):
+                                pass
+
+                        if chemin_image is None:
+                            image_defaut = IMAGES_DEFAUT.get(categorie)
+
+                            if image_defaut:
+                                image_candidate = (
+                                    DOSSIER_IMAGES / image_defaut
+                                )
+
+                                if image_candidate.is_file():
+                                    chemin_image = image_candidate
+
+                        # ----------------------------------
+                        # Affichage de l'image
+                        # ----------------------------------
+
+                        if chemin_image is not None:
+                            st.image(
+                                str(chemin_image),
+                                use_container_width=True,
                             )
-
                         else:
-                            texte_date = "Déverrouillé"
+                            st.markdown(
+                                """
+                                <div class="succes-image-absente">
+                                    Image indisponible
+                                </div>
+                                """,
+                                unsafe_allow_html=True,
+                            )
 
-                    else:
-                        texte_date = (
-                            f"Créé le {date_creation}"
-                            if date_creation
-                            else "Date inconnue"
+                        # ----------------------------------
+                        # Date et état du succès
+                        # ----------------------------------
+
+                        succes_obtenu = element.get("succes", False)
+
+                        date_creation = afficher_date(
+                            element.get("date_creation")
+                        )
+                        date_debut = afficher_date(
+                            element.get("date_debut_validation")
+                        )
+                        date_fin = afficher_date(
+                            element.get("date_fin_validation")
                         )
 
-                    texte_date = html.escape(str(texte_date))
+                        if succes_obtenu is True:
+                            if date_debut and date_fin:
+                                texte_date = (
+                                    f"Déverrouillé du {date_debut} "
+                                    f"au {date_fin}"
+                                )
+                            elif date_fin:
+                                texte_date = f"Déverrouillé le {date_fin}"
+                            elif date_debut:
+                                texte_date = (
+                                    f"Déverrouillé depuis le {date_debut}"
+                                )
+                            else:
+                                texte_date = "Déverrouillé"
+                        else:
+                            texte_date = (
+                                f"Créé le {date_creation}"
+                                if date_creation
+                                else "Date inconnue"
+                            )
 
-                    st.markdown(
-                        f'<div class="succes-date">'
-                        f'{texte_date}</div>',
-                        unsafe_allow_html=True,
-                    )
+                        texte_date = html.escape(str(texte_date))
+
+                        st.markdown(
+                            f'<div class="succes-date">'
+                            f'{texte_date}</div>',
+                            unsafe_allow_html=True,
+                        )
+
