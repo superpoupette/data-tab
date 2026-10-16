@@ -100,6 +100,7 @@ IMAGES_DEFAUT = {
     "dessin": "dessin.png",
     "danse": "danse.png",
     "creatif": "creatif.png",
+    "divers": "divers.png",
 }
 
 
