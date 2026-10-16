@@ -1,8 +1,9 @@
-﻿import json
+
 import html
 from pathlib import Path
 from datetime import date, datetime
 
+import pandas as pd
 import streamlit as st
 
 
@@ -24,7 +25,7 @@ st.title("Mes succès")
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-FICHIER_JSON = BASE_DIR / "succes.json"
+FICHIER_EXCEL = BASE_DIR / "objectifs.xlsx"
 DOSSIER_IMAGES = BASE_DIR / "images" / "succes"
 
 
@@ -41,56 +42,199 @@ IMAGES_DEFAUT = {
 
 
 # --------------------------------------------------
-# Chargement des données JSON
+# Chargement des données Excel
 # --------------------------------------------------
 
-if not FICHIER_JSON.is_file():
+if not FICHIER_EXCEL.is_file():
     st.error(
-        f"Le fichier succes.json est introuvable : {FICHIER_JSON}"
+        f"Le fichier objectifs.xlsx est introuvable : {FICHIER_EXCEL}"
     )
     st.stop()
 
 try:
-    with open(FICHIER_JSON, "r", encoding="utf-8") as fichier:
-        elements = json.load(fichier)
+    tableau = pd.read_excel(
+        FICHIER_EXCEL,
+        engine="openpyxl",
+        dtype=object,
+    )
 
-except json.JSONDecodeError as erreur:
-    st.error(f"Erreur dans le fichier succes.json : {erreur}")
+except (OSError, ValueError, ImportError) as erreur:
+    st.error(f"Impossible de lire objectifs.xlsx : {erreur}")
     st.stop()
 
-except OSError as erreur:
-    st.error(f"Impossible de lire succes.json : {erreur}")
-    st.stop()
 
+# En-têtes attendus dans le fichier Excel
+COLONNES_ATTENDUES = [
+    "nom",
+    "categorie",
+    "date_creation",
+    "date_debut_validation",
+    "date_fin_validation",
+    "image",
+    "compteur",
+    "succes",
+    "etoiles",
+    "details",
+]
 
-if not isinstance(elements, list):
+# Vérification des colonnes
+colonnes_manquantes = [
+    colonne
+    for colonne in COLONNES_ATTENDUES
+    if colonne not in tableau.columns
+]
+
+if colonnes_manquantes:
     st.error(
-        "Le fichier succes.json doit contenir "
-        "une liste d'éléments entre crochets []."
+        "Colonnes manquantes dans objectifs.xlsx : "
+        + ", ".join(colonnes_manquantes)
     )
     st.stop()
 
+# Conserve uniquement les colonnes attendues et leur ordre
+elements = tableau[COLONNES_ATTENDUES].to_dict(orient="records")
+
 
 # --------------------------------------------------
-# Compteur d'étoiles et choix de l'ordre d'affichage
+# Conversion des dates
 # --------------------------------------------------
 
-col_etoiles, col_tri = st.columns([1, 2], vertical_alignment="center")
+def convertir_date(valeur):
+    """Convertit les dates Excel ou les chaînes en datetime."""
 
-# À gauche : nombre d'étoiles uniquement
+    if valeur is None:
+        return None
+
+    try:
+        if pd.isna(valeur):
+            return None
+    except (TypeError, ValueError):
+        return None
+
+    # Excel peut fournir directement un objet datetime
+    if isinstance(valeur, datetime):
+        return valeur.replace(tzinfo=None)
+
+    if isinstance(valeur, date):
+        return datetime.combine(valeur, datetime.min.time())
+
+    valeur = str(valeur).strip()
+
+    if not valeur:
+        return None
+
+    # Formats courants
+    formats_dates = [
+        "%d/%m/%Y",
+        "%d-%m-%Y",
+        "%Y-%m-%d",
+        "%d/%m/%Y %H:%M",
+        "%d-%m-%Y %H:%M",
+        "%Y-%m-%d %H:%M:%S",
+        "%d/%m/%Y %H:%M:%S",
+    ]
+
+    for format_date in formats_dates:
+        try:
+            return datetime.strptime(valeur, format_date)
+        except ValueError:
+            continue
+
+    # Dernière tentative : format ISO avec heure ou fuseau
+    try:
+        resultat = datetime.fromisoformat(
+            valeur.replace("Z", "+00:00")
+        )
+
+        if resultat.tzinfo is not None:
+            resultat = resultat.replace(tzinfo=None)
+
+        return resultat
+
+    except (ValueError, TypeError):
+        return None
+
+
+def afficher_date(valeur):
+    """Affiche une date au format JJ/MM/AAAA."""
+
+    date_convertie = convertir_date(valeur)
+
+    if date_convertie is not None:
+        return date_convertie.strftime("%d/%m/%Y")
+
+    if valeur is None:
+        return ""
+
+    try:
+        if pd.isna(valeur):
+            return ""
+    except (TypeError, ValueError):
+        pass
+
+    return str(valeur).strip()
+
+
+# --------------------------------------------------
+# Normalisation des données Excel
+# --------------------------------------------------
+
+for element in elements:
+
+    # Normalisation de la valeur de succès
+    valeur_succes = element.get("succes")
+
+    if isinstance(valeur_succes, str):
+        element["succes"] = (
+            valeur_succes.strip().lower()
+            in ("true", "vrai", "1", "oui", "yes")
+        )
+    elif valeur_succes is None or pd.isna(valeur_succes):
+        element["succes"] = False
+    else:
+        element["succes"] = valeur_succes is True or (
+            isinstance(valeur_succes, (int, float))
+            and valeur_succes == 1
+        )
+
+
+# --------------------------------------------------
+# Compteur d'étoiles et choix du tri
+# --------------------------------------------------
+
+col_etoiles, col_tri = st.columns(
+    [1, 2],
+    vertical_alignment="center",
+)
+
+# À gauche : nombre d'étoiles acquises
+def convertir_etoiles(valeur):
+    """Convertit le nombre d'étoiles en entier sans erreur."""
+
+    if valeur is None:
+        return 0
+
+    try:
+        if pd.isna(valeur):
+            return 0
+
+        return int(float(valeur))
+
+    except (ValueError, TypeError, OverflowError):
+        return 0
+
+
 total_etoiles = sum(
-    int(element.get("etoiles", 0) or 0)
+    convertir_etoiles(element.get("etoiles"))
     for element in elements
-    if isinstance(element, dict)
-    and element.get("succes") is True
+    if element.get("succes") is True
 )
 
 with col_etoiles:
-    st.markdown(
-        f"### ⭐ {total_etoiles}"
-    )
+    st.markdown(f"### ⭐ {total_etoiles}")
 
-# À droite : liste déroulante pour le tri
+
+# À droite : choix du tri
 with col_tri:
     ordre_tri = st.selectbox(
         "Trier les succès par :",
@@ -102,54 +246,37 @@ with col_tri:
     )
 
 
-def convertir_date(valeur):
-    """Convertit une date au format JJ/MM/AAAA en datetime."""
-    if not valeur:
-        return None
-
-    try:
-        return datetime.strptime(str(valeur).strip(), "%d/%m/%Y")
-    except (ValueError, TypeError):
-        try:
-            return datetime.fromisoformat(
-                str(valeur).strip().replace("Z", "+00:00")
-            )
-        except (ValueError, TypeError):
-            return None
-
+# --------------------------------------------------
+# Tri des succès
+# --------------------------------------------------
 
 if ordre_tri == "Date de création":
+
     elements = sorted(
         elements,
         key=lambda element: (
+            convertir_date(element.get("date_creation")) is not None,
             convertir_date(element.get("date_creation"))
-            if isinstance(element, dict)
-            else None
-        ) or datetime.min,
+            or datetime.min,
+        ),
         reverse=True,
     )
 
 else:
+
+    # Les succès ayant une date de fin sont affichés en premier,
+    # du plus récent au plus ancien.
+    # Les éléments sans date de fin restent tout en bas.
+
     elements = sorted(
         elements,
         key=lambda element: (
+            convertir_date(element.get("date_fin_validation")) is not None,
             convertir_date(element.get("date_fin_validation"))
-            if isinstance(element, dict)
-            else None
-        ) or datetime.min,
+            or datetime.min,
+        ),
         reverse=True,
     )
-
-    # Les éléments sans date de fin restent tout en bas.
-    elements = [
-        element for element in elements
-        if isinstance(element, dict)
-        and convertir_date(element.get("date_fin_validation")) is not None
-    ] + [
-        element for element in elements
-        if not isinstance(element, dict)
-        or convertir_date(element.get("date_fin_validation")) is None
-    ]
 
 
 # --------------------------------------------------
@@ -159,9 +286,7 @@ else:
 st.markdown(
     """
     <style>
-    /* ------------------------------------------
-       Cartes : hauteur fixe et fond sombre
-       ------------------------------------------ */
+    /* Cartes : hauteur fixe et fond sombre */
 
     div[class*="st-key-succes_"] {
         background-color: #202129 !important;
@@ -178,14 +303,13 @@ st.markdown(
         overflow: hidden;
     }
 
-    /* Évite les espacements imprévus à l'intérieur */
+    /* Espacements à l'intérieur des cartes */
+
     div[class*="st-key-succes_"] [data-testid="stVerticalBlock"] {
         gap: 0.5rem;
     }
 
-    /* ------------------------------------------
-       Titre : 2 lignes maximum
-       ------------------------------------------ */
+    /* Titre : 2 lignes maximum */
 
     .succes-titre {
         font-size: 16px;
@@ -208,9 +332,7 @@ st.markdown(
         margin: 0 0 8px 0;
     }
 
-    /* ------------------------------------------
-       Image : zone uniforme
-       ------------------------------------------ */
+    /* Image : zone uniforme */
 
     div[class*="st-key-succes_"] [data-testid="stImage"] {
         height: 180px;
@@ -228,9 +350,7 @@ st.markdown(
         object-fit: contain;
     }
 
-    /* ------------------------------------------
-       Date : 2 lignes maximum
-       ------------------------------------------ */
+    /* Date : 2 lignes maximum */
 
     .succes-date {
         font-size: 13px;
@@ -255,9 +375,7 @@ st.markdown(
         box-sizing: border-box;
     }
 
-    /* ------------------------------------------
-       Image indisponible
-       ------------------------------------------ */
+    /* Image indisponible */
 
     .succes-image-absente {
         height: 180px;
@@ -299,7 +417,6 @@ else:
 
             with colonne:
 
-                # Ignore les entrées JSON incorrectes
                 if not isinstance(element, dict):
                     st.warning("Élément de succès invalide.")
                     continue
@@ -373,6 +490,7 @@ else:
                             str(chemin_image),
                             use_container_width=True,
                         )
+
                     else:
                         st.markdown(
                             """
@@ -389,9 +507,15 @@ else:
 
                     succes_obtenu = element.get("succes", False)
 
-                    date_creation = element.get("date_creation")
-                    date_debut = element.get("date_debut_validation")
-                    date_fin = element.get("date_fin_validation")
+                    date_creation = afficher_date(
+                        element.get("date_creation")
+                    )
+                    date_debut = afficher_date(
+                        element.get("date_debut_validation")
+                    )
+                    date_fin = afficher_date(
+                        element.get("date_fin_validation")
+                    )
 
                     if succes_obtenu is True:
 
