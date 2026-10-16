@@ -1,6 +1,7 @@
 import gspread
 import pandas as pd
 import streamlit as st
+from datetime import date, datetime
 
 from google.oauth2.service_account import Credentials
 
@@ -94,60 +95,6 @@ IMAGES_DEFAUT = {
     "danse": "danse.png",
     "creatif": "creatif.png",
 }
-
-
-# --------------------------------------------------
-# Chargement des données Excel
-# --------------------------------------------------
-
-if not FICHIER_EXCEL.is_file():
-    st.error(
-        f"Le fichier objectifs.xlsx est introuvable : {FICHIER_EXCEL}"
-    )
-    st.stop()
-
-try:
-    tableau = pd.read_excel(
-        FICHIER_EXCEL,
-        engine="openpyxl",
-        dtype=object,
-    )
-
-except (OSError, ValueError, ImportError) as erreur:
-    st.error(f"Impossible de lire objectifs.xlsx : {erreur}")
-    st.stop()
-
-
-# En-têtes attendus dans le fichier Excel
-COLONNES_ATTENDUES = [
-    "nom",
-    "categorie",
-    "date_creation",
-    "date_debut_validation",
-    "date_fin_validation",
-    "image",
-    "compteur",
-    "succes",
-    "etoiles",
-    "details",
-]
-
-# Vérification des colonnes
-colonnes_manquantes = [
-    colonne
-    for colonne in COLONNES_ATTENDUES
-    if colonne not in tableau.columns
-]
-
-if colonnes_manquantes:
-    st.error(
-        "Colonnes manquantes dans objectifs.xlsx : "
-        + ", ".join(colonnes_manquantes)
-    )
-    st.stop()
-
-# Conserve uniquement les colonnes attendues et leur ordre
-elements = tableau[COLONNES_ATTENDUES].to_dict(orient="records")
 
 
 # --------------------------------------------------
