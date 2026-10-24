@@ -105,6 +105,19 @@ IMAGES_DEFAUT = {
     "culture": "culture.png",
 }
 
+# --------------------------------------------------
+# Noms des catégories pour l'affichage
+# --------------------------------------------------
+
+NOMS_CATEGORIES = {
+    "sport": "Sport",
+    "dessin": "Dessin",
+    "danse": "Danse",
+    "creatif": "Créatif",
+    "divers": "Divers",
+    "bienetre": "Bien être",
+    "culture": "Culture",
+}
 
 # --------------------------------------------------
 # Conversion des dates
@@ -513,7 +526,15 @@ else:
 
         # Titre de groupe pour les tris par catégorie et validation
         if titre_groupe is not None:
-            st.markdown(f"#### {html.escape(titre_groupe)}")
+
+            nom_categorie = NOMS_CATEGORIES.get(
+                titre_groupe.strip().lower(),
+                titre_groupe
+            )
+
+            st.markdown(
+                f"#### {html.escape(nom_categorie)}"
+            )
 
         # Chaque groupe démarre sur une nouvelle ligne
         for debut in range(0, len(elements_groupe), 6):
