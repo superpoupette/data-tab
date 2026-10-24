@@ -102,6 +102,7 @@ IMAGES_DEFAUT = {
     "creatif": "creatif.png",
     "divers": "divers.png",
     "bienetre": "bienetre.png",
+    "culture": "culture.png",
 }
 
 
