@@ -17,10 +17,14 @@ danse_recap["date_debut"] = pd.to_datetime(
     errors="coerce"
 )
 
-danse_recap["date_fin"] = pd.to_datetime(
-    danse_recap["date_fin"],
-    errors="coerce"
-)
+for col in ["date_fin", "date_fin_2", "date_fin_3"]:
+    if col not in danse_recap.columns:
+        danse_recap[col] = pd.NaT
+
+    danse_recap[col] = pd.to_datetime(
+        danse_recap[col],
+        errors="coerce"
+    )
 
 
 # Valeurs numériques
@@ -209,6 +213,7 @@ with col2:
 
 
 
+
 # =========================
 # Evolution des chorégraphies terminées
 # =========================
@@ -217,27 +222,27 @@ st.subheader(
     "Chorégraphies terminées par mois"
 )
 
-
-evolution = (
-    danse_recap
-    .dropna(
-        subset=[
-            "date_fin"
-        ]
-    )
-    .assign(
-        mois=lambda x:
-            x["date_fin"]
-            .dt.to_period("M")
-            .astype(str)
-    )
-    .groupby("mois")
-    .size()
-    .reset_index(
-        name="nombre"
-    )
+# Rassembler toutes les dates des trois colonnes
+dates_fin = pd.concat(
+    [
+        danse_recap["date_fin"],
+        danse_recap["date_fin_2"],
+        danse_recap["date_fin_3"]
+    ],
+    ignore_index=True
 )
 
+# Compter les dates de fin par mois
+evolution = (
+    dates_fin
+    .dropna()
+    .dt.to_period("M")
+    .astype(str)
+    .value_counts()
+    .sort_index()
+    .rename_axis("mois")
+    .reset_index(name="nombre")
+)
 
 fig_mois = px.line(
     evolution,
@@ -245,13 +250,10 @@ fig_mois = px.line(
     y="nombre",
     markers=True,
     labels={
-        "mois":
-            "Mois",
-        "nombre":
-            "Chorégraphies terminées"
+        "mois": "Mois",
+        "nombre": "Chorégraphies terminées"
     }
 )
-
 
 st.plotly_chart(
     fig_mois,
