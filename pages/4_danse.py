@@ -73,7 +73,7 @@ with col1:
 with col2:
 
     nb_chorees = (
-        danse_recap["duree_apprentissage"] > 0
+        danse_recap["statut"].str.lower().str.strip() == "termine"
     ).sum()
 
     st.metric(
