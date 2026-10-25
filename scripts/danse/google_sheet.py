@@ -1,4 +1,4 @@
-import gspread
+ï»¿import gspread
 import pandas as pd
 import streamlit as st
 from datetime import date
@@ -111,11 +111,11 @@ def add_practice_time(
 ):
     sheet = get_sheet()
 
-    # Récupération des en-têtes et des données
+    # RÃ©cupÃ©ration des en-tÃªtes et des donnÃ©es
     headers = sheet.row_values(1)
     records = sheet.get_all_records()
 
-    # Associer chaque nom de colonne à son numéro
+    # Associer chaque nom de colonne Ã  son numÃ©ro
     colonnes = {
         nom: index + 1
         for index, nom in enumerate(headers)
@@ -128,7 +128,7 @@ def add_practice_time(
             and row["titre"] == titre
         ):
 
-            # Récupération des valeurs actuelles
+            # RÃ©cupÃ©ration des valeurs actuelles
             ancienne_duree = float(
                 row.get("duree_apprentissage", 0) or 0
             )
@@ -151,7 +151,7 @@ def add_practice_time(
                 "%Y-%m-%d"
             )
 
-            # Détermination de la colonne de date
+            # DÃ©termination de la colonne de date
             refaite = str(
                 row.get("refaite", "")
             ).strip()
@@ -168,7 +168,7 @@ def add_practice_time(
             else:
                 colonne_date = None
 
-            # Mise à jour de la date si la valeur est reconnue
+            # Mise Ã  jour de la date si la valeur est reconnue
             if colonne_date is not None:
 
                 if colonne_date in colonnes:
@@ -186,21 +186,21 @@ def add_practice_time(
                     )
                     return False
 
-            # Mise à jour du temps total d'apprentissage
+            # Mise Ã  jour du temps total d'apprentissage
             sheet.update_cell(
                 index,
                 colonnes["duree_apprentissage"],
                 nouvelle_duree
             )
 
-            # Mise à jour du nombre de séances
+            # Mise Ã  jour du nombre de sÃ©ances
             sheet.update_cell(
                 index,
                 colonnes["nombre_seance"],
                 nouveau_nb
             )
 
-            # Mise à jour de la durée moyenne par séance
+            # Mise Ã  jour de la durÃ©e moyenne par sÃ©ance
             sheet.update_cell(
                 index,
                 colonnes["duree_seance"],
