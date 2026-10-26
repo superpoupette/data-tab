@@ -40,10 +40,8 @@ for col in [
     ).fillna(0)
 
 
-
 st.title("💃 Dashboard Danse")
 
-```python
 # =========================
 # Indicateurs principaux
 # =========================
@@ -109,8 +107,6 @@ with col3:
             "🆕 Dernière chorégraphie apprise",
             "Aucune"
         )
-```
-
 
 
 # =========================
