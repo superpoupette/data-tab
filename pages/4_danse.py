@@ -2,6 +2,14 @@
 import pandas as pd
 import plotly.express as px
 
+
+st.set_page_config(
+    page_title="Danse",
+    page_icon="💃",
+    layout="wide"
+)
+
+
 from scripts.danse.google_sheet import load_danse_google_sheet
 
 
@@ -415,41 +423,3 @@ with col_droite:
         st.info("Aucune date de fin disponible.")
 
 st.divider()
-
-# =========================
-# Top chorégraphies
-# =========================
-
-st.subheader(
-    "Top 10 chorégraphies par temps d'apprentissage"
-)
-
-
-top_chorees = (
-    danse_recap
-    .sort_values(
-        "duree_apprentissage",
-        ascending=False
-    )
-    .head(10)
-)
-
-
-fig_top = px.bar(
-    top_chorees,
-    y="titre",
-    x="duree_apprentissage",
-    orientation="h",
-    labels={
-        "titre":
-            "Chorégraphie",
-        "duree_apprentissage":
-            "Temps (min)"
-    }
-)
-
-
-st.plotly_chart(
-    fig_top,
-    use_container_width=True
-)
