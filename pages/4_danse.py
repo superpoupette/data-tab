@@ -121,7 +121,7 @@ with col3:
         )
 
 
-
+st.divider()
 # =========================
 # Graphiques principaux
 # =========================
