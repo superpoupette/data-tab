@@ -262,56 +262,159 @@ with col1:
 
 
 
+st.divider()
 
+# =========================
+# Evolution de l'apprentissage et des chorégraphies terminées
+# =========================
+
+col_gauche, col_droite = st.columns(2)
+
+# =========================
+# Graphique de gauche : Temps d'apprentissage par mois
+# =========================
+
+with col_gauche:
+
+    st.subheader("Temps d'apprentissage par mois")
+
+    temps_par_mois = {}
+
+    for _, choree in danse_recap.iterrows():
+
+        debut = choree["date_debut"]
+        duree = choree["duree_apprentissage"]
+
+        # Récupérer les dates de fin disponibles
+        fins = choree[
+            ["date_fin", "date_fin_2", "date_fin_3"]
+        ].dropna()
+
+        if pd.isna(debut) or fins.empty or duree <= 0:
+            continue
+
+        # Date de fin la plus récente
+        fin = fins.max()
+
+        # Travailler sur des jours calendaires
+        debut = pd.Timestamp(debut).normalize()
+        fin = pd.Timestamp(fin).normalize()
+
+        if fin < debut:
+            continue
+
+        # Répartir la durée uniformément sur chaque jour,
+        # dates de début et de fin incluses
+        jours = pd.date_range(
+            start=debut,
+            end=fin,
+            freq="D"
+        )
+
+        duree_par_jour = duree / len(jours)
+
+        for jour in jours:
+            mois = jour.to_period("M").strftime("%Y-%m")
+
+            temps_par_mois[mois] = (
+                temps_par_mois.get(mois, 0)
+                + duree_par_jour
+            )
+
+    evolution_temps = pd.DataFrame(
+        [
+            {"mois": mois, "temps_minutes": minutes}
+            for mois, minutes in sorted(temps_par_mois.items())
+        ]
+    )
+
+    if not evolution_temps.empty:
+
+        # Conversion des minutes en heures
+        evolution_temps["temps_heures"] = (
+            evolution_temps["temps_minutes"] / 60
+        )
+
+        fig_temps = px.line(
+            evolution_temps,
+            x="mois",
+            y="temps_heures",
+            markers=True,
+            labels={
+                "mois": "Mois",
+                "temps_heures": "Temps d'apprentissage (heures)"
+            }
+        )
+
+        fig_temps.update_traces(
+            hovertemplate=(
+                "%{x}<br>"
+                "Temps : %{y:.2f} h"
+                "<extra></extra>"
+            )
+        )
+
+        st.plotly_chart(
+            fig_temps,
+            use_container_width=True
+        )
+
+    else:
+        st.info("Aucune donnée disponible pour ce graphique.")
 
 
 # =========================
-# Evolution des chorégraphies terminées
+# Graphique de droite : Chorégraphies terminées par mois
 # =========================
 
-st.subheader(
-    "Chorégraphies terminées par mois"
-)
+with col_droite:
 
-# Rassembler toutes les dates des trois colonnes
-dates_fin = pd.concat(
-    [
-        danse_recap["date_fin"],
-        danse_recap["date_fin_2"],
-        danse_recap["date_fin_3"]
-    ],
-    ignore_index=True
-)
+    st.subheader("Chorégraphies terminées par mois")
 
-# Compter les dates de fin par mois
-evolution = (
-    dates_fin
-    .dropna()
-    .dt.to_period("M")
-    .astype(str)
-    .value_counts()
-    .sort_index()
-    .rename_axis("mois")
-    .reset_index(name="nombre")
-)
+    # Rassembler toutes les dates de fin
+    dates_fin = pd.concat(
+        [
+            danse_recap["date_fin"],
+            danse_recap["date_fin_2"],
+            danse_recap["date_fin_3"]
+        ],
+        ignore_index=True
+    )
 
-fig_mois = px.line(
-    evolution,
-    x="mois",
-    y="nombre",
-    markers=True,
-    labels={
-        "mois": "Mois",
-        "nombre": "Chorégraphies terminées"
-    }
-)
+    # Compter les dates de fin par mois
+    evolution = (
+        dates_fin
+        .dropna()
+        .dt.to_period("M")
+        .astype(str)
+        .value_counts()
+        .sort_index()
+        .rename_axis("mois")
+        .reset_index(name="nombre")
+    )
 
-st.plotly_chart(
-    fig_mois,
-    use_container_width=True
-)
+    if not evolution.empty:
 
+        fig_mois = px.line(
+            evolution,
+            x="mois",
+            y="nombre",
+            markers=True,
+            labels={
+                "mois": "Mois",
+                "nombre": "Chorégraphies terminées"
+            }
+        )
 
+        st.plotly_chart(
+            fig_mois,
+            use_container_width=True
+        )
+
+    else:
+        st.info("Aucune date de fin disponible.")
+
+st.divider()
 
 # =========================
 # Top chorégraphies
