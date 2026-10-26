@@ -59,7 +59,7 @@ with col1:
     minutes = int(temps_total_min % 60)
 
     st.metric(
-        "⏱️ Temps d'apprentissage global",
+        "Temps d'apprentissage global",
         f"{heures}h{minutes:02d}"
     )
 
@@ -78,7 +78,7 @@ with col2:
     )
 
     st.metric(
-        "💃 Chorégraphies apprises",
+        "Nombre de chorégraphies apprises",
         int(nb_chorees)
     )
 
@@ -96,17 +96,30 @@ with col3:
     ] if dates_fin.notna().any() else None
 
     if derniere_choree is not None:
-        titre_derniere_choree = derniere_choree["titre"]
+        infos = [
+            derniere_choree["titre"],
+            derniere_choree["artiste"],
+            derniere_choree["choregraphe"]
+        ]
+
+        infos = [
+            str(info).strip()
+            for info in infos
+            if pd.notna(info) and str(info).strip()
+        ]
+
+        titre_derniere_choree = " - ".join(infos)
 
         st.metric(
-            "🆕 Dernière chorégraphie apprise",
+            "Dernière chorégraphie apprise",
             titre_derniere_choree
         )
     else:
         st.metric(
-            "🆕 Dernière chorégraphie apprise",
+            "Dernière chorégraphie apprise",
             "Aucune"
         )
+
 
 
 # =========================
