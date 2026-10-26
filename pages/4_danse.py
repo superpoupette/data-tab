@@ -177,46 +177,73 @@ with col1:
 
 with col2:
 
-    st.subheader(
-        "Top 10 artistes"
+    st.subheader("Top chorégraphies")
+
+    classement = st.radio(
+        "Classement",
+        ["Plus de temps", "Moins de temps"],
+        horizontal=True,
+        key="classement_chorees"
     )
 
+    # Garder les chorégraphies avec un temps positif
+    chorees = danse_recap[
+        danse_recap["duree_apprentissage"] > 0
+    ].copy()
 
-    artistes = (
-        danse_recap[
-            danse_recap["duree_apprentissage"] > 0
-        ]
-        .groupby("artiste")
-        .size()
-        .reset_index(
-            name="nombre_chorees"
-        )
-        .sort_values(
-            "nombre_chorees",
-            ascending=False
-        )
-        .head(10)
-    )
+    # Trier selon le temps d'apprentissage
+    chorees = chorees.sort_values(
+        "duree_apprentissage",
+        ascending=(classement == "Moins de temps")
+    ).head(10)
 
+    if chorees.empty:
+        st.info("Aucune chorégraphie avec un temps d'apprentissage renseigné.")
+    else:
+        for place, (_, choree) in enumerate(
+            chorees.iterrows(), start=1
+        ):
 
-    fig_artistes = px.bar(
-        artistes,
-        x="nombre_chorees",
-        y="artiste",
-        orientation="h",
-        labels={
-            "nombre_chorees":
-                "Nombre de chorégraphies",
-            "artiste":
-                "Artiste"
-        }
-    )
+            artiste = (
+                str(choree["artiste"]).strip()
+                if pd.notna(choree["artiste"])
+                else ""
+            )
 
+            titre = (
+                str(choree["titre"]).strip()
+                if pd.notna(choree["titre"])
+                else ""
+            )
 
-    st.plotly_chart(
-        fig_artistes,
-        use_container_width=True
-    )
+            choregraphe = (
+                str(choree["choregraphe"]).strip()
+                if pd.notna(choree["choregraphe"])
+                else ""
+            )
+
+            # Construire le nom
+            nom = f"{artiste} - {titre}" if artiste else titre
+
+            if choregraphe:
+                nom += f" ({choregraphe})"
+
+            # Convertir les minutes en heures et minutes
+            temps = int(choree["duree_apprentissage"])
+            heures = temps // 60
+            minutes = temps % 60
+
+            if heures > 0 and minutes > 0:
+                temps_formate = f"{heures}h{minutes:02d}"
+            elif heures > 0:
+                temps_formate = f"{heures}h"
+            else:
+                temps_formate = f"{minutes}min"
+
+            st.write(
+                f"{place}. {nom} : {temps_formate}"
+            )
+
 
 
 
