@@ -177,32 +177,48 @@ with col1:
 
 with col2:
 
-    st.subheader("Top chorégraphies")
+    # Titre et liste déroulante sur la même ligne
+    col_titre, col_tri = st.columns([2, 1])
 
-    classement = st.radio(
-        "Classement",
-        ["Plus de temps", "Moins de temps"],
-        horizontal=True,
-        key="classement_chorees"
-    )
+    with col_titre:
+        st.subheader("Top chorégraphies")
+
+    with col_tri:
+        classement = st.selectbox(
+            "Classement",
+            ["Plus de temps", "Moins de temps"],
+            key="classement_chorees",
+            label_visibility="collapsed"
+        )
 
     # Garder les chorégraphies avec un temps positif
     chorees = danse_recap[
         danse_recap["duree_apprentissage"] > 0
     ].copy()
 
-    # Trier selon le temps d'apprentissage
+    # Classement global : du plus long au plus court
     chorees = chorees.sort_values(
         "duree_apprentissage",
-        ascending=(classement == "Moins de temps")
-    ).head(10)
+        ascending=False
+    ).reset_index(drop=True)
 
-    if chorees.empty:
-        st.info("Aucune chorégraphie avec un temps d'apprentissage renseigné.")
+    # Garder les rangs du classement global
+    chorees["place"] = chorees.index + 1
+
+    if classement == "Plus de temps":
+        affichage = chorees.head(10)
     else:
-        for place, (_, choree) in enumerate(
-            chorees.iterrows(), start=1
-        ):
+        # Les 10 chorégraphies les plus rapides,
+        # affichées de la plus longue à la plus courte
+        affichage = chorees.tail(10)
+
+    if affichage.empty:
+        st.info(
+            "Aucune chorégraphie avec un temps "
+            "d'apprentissage renseigné."
+        )
+    else:
+        for _, choree in affichage.iterrows():
 
             artiste = (
                 str(choree["artiste"]).strip()
@@ -228,7 +244,7 @@ with col2:
             if choregraphe:
                 nom += f" ({choregraphe})"
 
-            # Convertir les minutes en heures et minutes
+            # Durée en heures et minutes
             temps = int(choree["duree_apprentissage"])
             heures = temps // 60
             minutes = temps % 60
@@ -241,8 +257,9 @@ with col2:
                 temps_formate = f"{minutes}min"
 
             st.write(
-                f"{place}. {nom} : {temps_formate}"
+                f"{choree['place']}. {nom} : {temps_formate}"
             )
+
 
 
 
