@@ -242,7 +242,7 @@ with col1:
             nom = f"{artiste} - {titre}" if artiste else titre
 
             if choregraphe:
-                nom += f" ({choregraphe})"
+                nom += f" {choregraphe}"
 
             # Durée en heures et minutes
             temps = int(choree["duree_apprentissage"])
