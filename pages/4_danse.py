@@ -135,7 +135,7 @@ col1, col2 = st.columns(2)
 # Styles
 # -------------------------
 
-with col1:
+with col2:
 
     st.subheader(
         "Répartition des styles"
@@ -175,7 +175,7 @@ with col1:
 # Artistes
 # -------------------------
 
-with col2:
+with col1:
 
     # Titre et liste déroulante sur la même ligne
     col_titre, col_tri = st.columns([2, 1])
