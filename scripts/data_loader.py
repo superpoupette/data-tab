@@ -45,7 +45,7 @@ OTHER_FILES = {
 HEVY_FILES = {
 
     "workouts": {
-        "id": "16Mvq3QUPBmSQf0S2m6Y-KM6NAOgzZXLf",
+        "id": "1V9p3HwH1zcSsqBxtWpfpbDUMJJlHWPz49t2hDFpnq4o",
         "separator": ","
     },
 
