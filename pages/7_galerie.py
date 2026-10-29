@@ -96,15 +96,15 @@ def charger_donnees():
     if "last_watch" not in series_all.columns:
         series_all["last_watch"] = pd.NaT
 
-    # Harmonisation du format
+    # Harmonisation des dates d'affichage
     movies["date_affichage"] = movies["watched_at"]
-
     series_all["date_affichage"] = series_all["last_watch"]
 
-    # Colonnes communes pour l'affichage
+    # Harmonisation des notes
     movies["note_affichage"] = movies["rating"]
     series_all["note_affichage"] = pd.NA
 
+    # Harmonisation des statuts
     movies["statut_affichage"] = movies["status"]
     series_all["statut_affichage"] = series_all["status"]
 
@@ -115,7 +115,7 @@ def charger_donnees():
         sort=False
     )
 
-    # Noms lisibles des types
+    # Libellés des types
     types = {
         "movie": "Film",
         "series": "Série",
@@ -128,12 +128,12 @@ def charger_donnees():
         .fillna("Autre")
     )
 
-    # Conversion des statuts en libellés
+    # Libellés des statuts
     statuts = {
         "watched": "Vu",
         "to_watch": "À voir",
         "continuing": "En cours",
-        "up_to_date": "Terminé / à jour",
+        "up_to_date": "À jour",
         "stopped": "Stoppé"
     }
 
@@ -150,14 +150,35 @@ df_affiches = charger_donnees()
 
 
 # ==========================
-# FILTRES
+# FILTRES ET TRI
 # ==========================
 
 col1, col2, col3, col4, col5 = st.columns(
-    [1, 1.2, 1.2, 1.3, 2]
+    [1.3, 1.2, 1, 1.2, 2]
 )
 
 with col1:
+
+    critere_tri = st.selectbox(
+        "Trier par",
+        [
+            "Date de visionnage",
+            "Titre",
+            "Note"
+        ]
+    )
+
+with col2:
+
+    ordre_tri = st.selectbox(
+        "Ordre de tri",
+        [
+            "Décroissant",
+            "Croissant"
+        ]
+    )
+
+with col3:
 
     type_selectionne = st.selectbox(
         "Type",
@@ -169,7 +190,7 @@ with col1:
         ]
     )
 
-with col2:
+with col4:
 
     statuts_disponibles = sorted(
         [
@@ -183,35 +204,6 @@ with col2:
         ["Tous"] + statuts_disponibles
     )
 
-with col3:
-
-    styles_disponibles = sorted(
-        {
-            style.strip()
-            for valeur in df_affiches["style"].dropna()
-            for style in str(valeur).split(",")
-            if style.strip()
-        }
-    )
-
-    style_selectionne = st.selectbox(
-        "Style",
-        ["Tous"] + styles_disponibles
-    )
-
-with col4:
-
-    criteres_tri = [
-        "Date de visionnage",
-        "Titre",
-        "Note"
-    ]
-
-    critere_tri = st.selectbox(
-        "Trier par",
-        criteres_tri
-    )
-
 with col5:
 
     recherche = st.text_input(
@@ -221,66 +213,26 @@ with col5:
 
 
 # ==========================
-# FILTRES AVANCÉS
-# ==========================
-
-with st.expander("⚙️ Filtres supplémentaires"):
-
-    col_a, col_b = st.columns(2)
-
-    with col_a:
-
-        ordre_tri = st.selectbox(
-            "Ordre de tri",
-            [
-                "Décroissant",
-                "Croissant"
-            ]
-        )
-
-    with col_b:
-
-        afficher_sans_affiche = st.checkbox(
-            "Afficher uniquement les éléments sans affiche",
-            value=False
-        )
-
-
-# ==========================
 # APPLICATION DES FILTRES
 # ==========================
 
 df_filtre = df_affiches.copy()
 
-# Type
+# Filtre par type
 if type_selectionne != "Tous":
 
     df_filtre = df_filtre[
         df_filtre["type_affichage"] == type_selectionne
     ]
 
-# Statut
+# Filtre par statut
 if statut_selectionne != "Tous":
 
     df_filtre = df_filtre[
         df_filtre["statut_libelle"] == statut_selectionne
     ]
 
-# Style
-if style_selectionne != "Tous":
-
-    df_filtre = df_filtre[
-        df_filtre["style"]
-        .str.split(",")
-        .apply(
-            lambda styles: any(
-                s.strip() == style_selectionne
-                for s in styles
-            )
-        )
-    ]
-
-# Recherche
+# Recherche par titre
 if recherche.strip():
 
     masque = df_filtre["title"].str.contains(
@@ -292,17 +244,9 @@ if recherche.strip():
 
     df_filtre = df_filtre[masque]
 
-# Affiches manquantes
-if afficher_sans_affiche:
-
-    df_filtre = df_filtre[
-        df_filtre["poster_path"].eq("")
-        | df_filtre["poster_path"].isna()
-    ]
-
 
 # ==========================
-# TRI
+# APPLICATION DU TRI
 # ==========================
 
 ascending = ordre_tri == "Croissant"
@@ -334,7 +278,7 @@ elif critere_tri == "Note":
 
 
 # ==========================
-# RÉSULTATS
+# NOMBRE DE RÉSULTATS
 # ==========================
 
 st.caption(
@@ -349,7 +293,7 @@ st.divider()
 # GRILLE DES AFFICHES
 # ==========================
 
-NB_COLONNES = 6
+NB_COLONNES = 8
 
 for i in range(0, len(df_filtre), NB_COLONNES):
 
@@ -367,17 +311,25 @@ for i in range(0, len(df_filtre), NB_COLONNES):
         with col:
 
             # --------------------------
-            # AFFICHAGE DE L'AFFICHE
+            # AFFICHE
             # --------------------------
 
-            poster_path = element.get("poster_path", "")
+            poster_path = element.get(
+                "poster_path",
+                ""
+            )
 
-            if pd.notna(poster_path) and str(poster_path).strip():
+            if (
+                pd.notna(poster_path)
+                and str(poster_path).strip()
+            ):
 
                 poster_path = str(poster_path).strip()
 
-                # Accepte un chemin TMDB ou une URL complète
-                if poster_path.startswith("https://") or poster_path.startswith("http://"):
+                # URL complète ou chemin TMDB
+                if poster_path.startswith(
+                    ("https://", "http://")
+                ):
 
                     poster_url = poster_path
 
@@ -411,8 +363,9 @@ for i in range(0, len(df_filtre), NB_COLONNES):
                         background-color:rgba(128,128,128,0.12);
                         border-radius:8px;
                         color:gray;
+                        font-size:13px;
                     ">
-                        🎞️<br>Pas d'affiche
+                        🎞️ Pas d'affiche
                     </div>
                     """,
                     unsafe_allow_html=True
@@ -430,7 +383,7 @@ for i in range(0, len(df_filtre), NB_COLONNES):
                 f"""
                 <div style="
                     text-align:center;
-                    font-size:14px;
+                    font-size:13px;
                     font-weight:600;
                     min-height:42px;
                     padding-top:6px;
@@ -458,9 +411,9 @@ for i in range(0, len(df_filtre), NB_COLONNES):
                 f"""
                 <div style="
                     text-align:center;
-                    font-size:12px;
+                    font-size:11px;
                     color:gray;
-                    min-height:34px;
+                    min-height:32px;
                 ">
                     {type_label}<br>
                     {statut_label}
@@ -478,16 +431,16 @@ for i in range(0, len(df_filtre), NB_COLONNES):
             if pd.notna(note) and str(note).strip():
 
                 try:
-                    note_affichee = f"⭐ {float(note):g}/10"
-                except (ValueError, TypeError):
-                    note_affichee = ""
 
-                if note_affichee:
+                    note_affichee = (
+                        f"⭐ {float(note):g}/10"
+                    )
+
                     st.markdown(
                         f"""
                         <div style="
                             text-align:center;
-                            font-size:13px;
+                            font-size:12px;
                         ">
                             {note_affichee}
                         </div>
@@ -495,11 +448,16 @@ for i in range(0, len(df_filtre), NB_COLONNES):
                         unsafe_allow_html=True
                     )
 
+                except (ValueError, TypeError):
+                    pass
+
             # --------------------------
             # DATE
             # --------------------------
 
-            date_vue = element.get("date_affichage")
+            date_vue = element.get(
+                "date_affichage"
+            )
 
             if pd.notna(date_vue):
 
@@ -511,7 +469,7 @@ for i in range(0, len(df_filtre), NB_COLONNES):
                     f"""
                     <div style="
                         text-align:center;
-                        font-size:12px;
+                        font-size:11px;
                         color:gray;
                         padding-top:4px;
                     ">
