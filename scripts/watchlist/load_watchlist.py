@@ -12,19 +12,19 @@ SHEET_ID = "1r-cWFbD68vRs3FNTeI3w11Dq--ZeucvMvRKbrq9k24A"
 # ==========================
 
 def convertir_nombre(colonne):
-    """
-    Convertit les nombres en acceptant les virgules décimales.
-    Exemples : '3,5' -> 3.5 ; '8' -> 8.0
-    """
-
-    return pd.to_numeric(
+    valeurs = (
         colonne
         .astype("string")
         .str.strip()
-        .str.replace(",", ".", regex=False)
-        .replace("", pd.NA),
-        errors="coerce"
+        .str.replace("\u00a0", "", regex=False)  # Espaces insécables
+        .str.replace(" ", "", regex=False)       # Espaces classiques
+        .replace("", pd.NA)
     )
+
+    # Accepte aussi bien 3,5 que 3.5
+    valeurs = valeurs.str.replace(",", ".", regex=False)
+
+    return pd.to_numeric(valeurs, errors="coerce")
 
 
 def charger_client_google_sheets():
