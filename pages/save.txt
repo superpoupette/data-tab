@@ -1,0 +1,324 @@
+import streamlit as st
+import pandas as pd
+import plotly.express as px
+
+from scripts.gestion_sport import charger_tableau_sport
+from scripts.objectifs import (
+    pompes_2026,
+    pages_dessin,
+    ajouter_page_dessin,
+    retirer_page_dessin,
+    detox,
+    ajouter_detox,
+    retirer_detox
+)
+
+def format_heures(minutes):
+    return f"{round(minutes / 60)}h"
+
+
+def separateur():
+    st.markdown(
+        """
+        <hr style="
+            border: none;
+            border-top: 1px solid #d9d9d9;
+            margin: 20px 0;
+        ">
+        """,
+        unsafe_allow_html=True
+    )
+
+
+st.title("Tableau de bord")
+
+# ==========================
+# Chargement données
+# ==========================
+
+df_sport = charger_tableau_sport()
+
+df_sport["Date"] = pd.to_datetime(
+    df_sport["Date"]
+)
+
+nb_pompes = pompes_2026()
+nb_pages = pages_dessin()
+nb_detox = detox()
+
+# ==========================
+# Objectifs
+# ==========================
+st.header("Objectifs 2026")
+
+
+# Données 2026 uniquement
+df_2026 = df_sport[
+    df_sport["Date"].dt.year == 2026
+].copy()
+
+
+activites = [
+    "Danse",
+    "Muscu",
+    "Stretching",
+    "Course",
+    "Escalade",
+    "Randonnée",
+    "Autre",
+]
+
+
+temps_sport = (
+    df_2026[activites]
+    .sum()
+    .sum()
+)
+
+
+def barre_objectif(progression, couleur):
+
+    return f"""
+    <div style="
+        background-color:#eeeeee;
+        border-radius:10px;
+        height:18px;
+        width:100%;
+        margin-top:0px;
+        margin-bottom:0px;
+    ">
+        <div style="
+            background-color:{couleur};
+            width:{progression*100:.1f}%;
+            height:18px;
+            border-radius:10px;
+        ">
+        </div>
+    </div>
+    """
+
+
+# ==========================
+# Objectif sport
+# ==========================
+
+objectif_sport = 300 * 60
+
+progression_sport = min(
+    temps_sport / objectif_sport,
+    1
+)
+
+
+col1, col2= st.columns([7, 3])
+
+
+with col1:
+
+    st.markdown(
+        barre_objectif(
+            progression_sport,
+            "#7ed6c1"
+        ),
+        unsafe_allow_html=True
+    )
+
+
+with col2:
+
+    st.markdown(
+        f"""
+        <div style="
+            height:18px;
+            display:flex;
+            align-items:center;
+            font-size:16px;
+            font-weight:600;
+        ">
+            {temps_sport/60:.1f} / 300 h de sport
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+st.write("")
+st.write("")
+# ==========================
+# Objectif pompes
+# ==========================
+
+objectif_pompes = 1000
+
+progression_pompes = min(
+    nb_pompes / objectif_pompes,
+    1
+)
+
+
+col1, col2, col3 = st.columns([7, 2, 1])
+
+
+with col1:
+
+    st.markdown(
+        barre_objectif(
+            progression_pompes,
+            "#f7a8c4"
+        ),
+        unsafe_allow_html=True
+    )
+
+
+with col2:
+
+    st.markdown(
+        f"""
+        <div style="
+            height:18px;
+            display:flex;
+            align-items:center;
+            font-size:16px;
+            font-weight:600;
+        ">
+            {nb_pompes} / 1000 pompes
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+st.write("")
+st.write("")
+
+# ==========================
+# Objectif dessin
+# ==========================
+
+objectif_pages = 80
+
+progression_pages = min(
+    nb_pages / objectif_pages,
+    1
+)
+
+col1, col2, col3, col4 = st.columns([7, 2, 0.5, 0.5])
+
+with col1:
+    st.markdown(
+        barre_objectif(
+            progression_pages,
+            "#f6c667"
+        ),
+        unsafe_allow_html=True
+    )
+
+with col2:
+    st.markdown(
+        f"""
+        <div style="
+            height:18px;
+            display:flex;
+            align-items:center;
+            font-size:16px;
+            font-weight:600;
+        ">
+            {nb_pages} / {objectif_pages} pages
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+st.markdown("""
+<style>
+div[data-testid="stButton"] button {
+    background: transparent;
+    border: none;
+    padding: 0;
+    font-size: 40px;
+    font-weight: 600;
+    color: inherit;
+    width: 32px;
+    height: 20px;
+    min-height: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transform: translateY(-2px);
+}
+
+div[data-testid="stButton"] button:hover {
+    background: transparent;
+    border: none;
+}
+</style>
+""", unsafe_allow_html=True)
+
+with col3:
+    if st.button("-", key="dessin_moins"):
+        retirer_page_dessin()
+        st.rerun()
+
+with col4:
+    if st.button("+", key="dessin_plus"):
+        ajouter_page_dessin()
+        st.rerun()
+
+# ==========================
+# Objectif detox
+# ==========================
+
+objectif_detox = 10
+
+progression_detox = min(
+    nb_detox / objectif_detox,
+    1
+)
+
+col1, col2, col3, col4 = st.columns([7, 2, 0.5, 0.5])
+
+
+with col1:
+
+    st.markdown(
+        barre_objectif(
+            progression_detox,
+            "#9b8cff"
+        ),
+        unsafe_allow_html=True
+    )
+
+
+with col2:
+
+    st.markdown(
+        f"""
+        <div style="
+            height:18px;
+            display:flex;
+            align-items:center;
+            font-size:16px;
+            font-weight:600;
+        ">
+            {nb_detox} / {objectif_detox} detox
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+
+with col3:
+
+    if st.button("-", key="detox_moins"):
+        retirer_detox()
+        st.rerun()
+
+
+with col4:
+
+    if st.button("+", key="detox_plus"):
+        ajouter_detox()
+        st.rerun()
+
+st.write("")
+separateur()
+st.write("")
