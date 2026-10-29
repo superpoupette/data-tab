@@ -373,19 +373,20 @@ for i in range(0, len(df_filtre), NB_COLONNES):
             # --------------------------
             # TITRE
             # --------------------------
-
+            
             titre = html.escape(
                 str(element.get("title", "Sans titre"))
             )
-
+            
             st.markdown(
                 f"""
                 <div style="
                     text-align:center;
                     font-size:13px;
                     font-weight:600;
-                    min-height:42px;
-                    padding-top:6px;
+                    line-height:1.2;
+                    margin:2px 0 0 0;
+                    padding:0;
                     overflow-wrap:anywhere;
                 ">
                     {titre}
@@ -393,14 +394,14 @@ for i in range(0, len(df_filtre), NB_COLONNES):
                 """,
                 unsafe_allow_html=True
             )
-
+            
             # --------------------------
             # DATE DE VISIONNAGE + NOTE
             # --------------------------
-
+            
             date_vue = element.get("date_affichage")
             note = element.get("note_affichage")
-
+            
             # Date
             if pd.notna(date_vue):
                 date_affichee = pd.Timestamp(
@@ -408,7 +409,7 @@ for i in range(0, len(df_filtre), NB_COLONNES):
                 ).strftime("%d/%m/%Y")
             else:
                 date_affichee = "Non visionné"
-
+            
             # Note
             if pd.notna(note) and str(note).strip():
                 try:
@@ -417,15 +418,17 @@ for i in range(0, len(df_filtre), NB_COLONNES):
                     note_affichee = ""
             else:
                 note_affichee = ""
-
-            # Affichage sur une seule ligne
+            
+            # Affichage compact
             st.markdown(
                 f"""
                 <div style="
                     text-align:center;
                     font-size:11px;
                     color:gray;
-                    padding-top:4px;
+                    line-height:1.2;
+                    margin:0;
+                    padding:0;
                     overflow-wrap:anywhere;
                 ">
                     {date_affichee}
@@ -435,5 +438,4 @@ for i in range(0, len(df_filtre), NB_COLONNES):
                 unsafe_allow_html=True
             )
 
-            st.write("")
 
