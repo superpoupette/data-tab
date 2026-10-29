@@ -1,713 +1,245 @@
-﻿import streamlit as st
-import pandas as pd
-import plotly.express as px
+from datetime import date
+import streamlit as st
 
-from scripts.gestion_sport import charger_tableau_sport
-from scripts.objectifs import (
-    pompes_2026,
-    pages_dessin,
-    ajouter_page_dessin,
-    retirer_page_dessin,
-    detox,
-    ajouter_detox,
-    retirer_detox
+from scripts.data_entry.dataframe import (
+    create_today_dataframe,
+    add_today_entry,
+    save_to_google_sheet
 )
 
-def format_heures(minutes):
-    return f"{round(minutes / 60)}h"
-
-
-def separateur():
-    st.markdown(
-        """
-        <hr style="
-            border: none;
-            border-top: 1px solid #d9d9d9;
-            margin: 20px 0;
-        ">
-        """,
-        unsafe_allow_html=True
-    )
-
-
-st.title("Tableau de bord")
-
-# ==========================
-# Chargement données
-# ==========================
-
-df_sport = charger_tableau_sport()
-
-df_sport["Date"] = pd.to_datetime(
-    df_sport["Date"]
+from scripts.danse.google_sheet import (
+    add_danse_google_sheet,
+    load_danse_google_sheet,
+    add_practice_time
 )
 
-nb_pompes = pompes_2026()
-nb_pages = pages_dessin()
-nb_detox = detox()
+st.set_page_config(page_title="Today")
 
-# ==========================
-# Objectifs
-# ==========================
-st.header("Objectifs 2026")
+st.title("Données du jour")
 
+st.subheader("Général")
 
-# Données 2026 uniquement
-df_2026 = df_sport[
-    df_sport["Date"].dt.year == 2026
-].copy()
-
-
-activites = [
-    "Danse",
-    "Muscu",
-    "Stretching",
-    "Course",
-    "Escalade",
-    "Randonnée",
-    "Autre",
-]
-
-
-temps_sport = (
-    df_2026[activites]
-    .sum()
-    .sum()
+# Date sélectionnable (aujourd'hui par défaut)
+selected_date = st.date_input(
+    "📅 Date",
+    value=date.today(),
+    format="DD/MM/YYYY"
 )
 
+today = selected_date.strftime("%d/%m/%Y")
 
-def barre_objectif(progression, couleur):
-
-    return f"""
-    <div style="
-        background-color:#eeeeee;
-        border-radius:10px;
-        height:18px;
-        width:100%;
-        margin-top:0px;
-        margin-bottom:0px;
-    ">
-        <div style="
-            background-color:{couleur};
-            width:{progression*100:.1f}%;
-            height:18px;
-            border-radius:10px;
-        ">
-        </div>
-    </div>
-    """
-
-
-# ==========================
-# Objectif sport
-# ==========================
-
-objectif_sport = 300 * 60
-
-progression_sport = min(
-    temps_sport / objectif_sport,
-    1
+best_moment = st.text_input(
+    "Meilleur moment du jour :"
 )
 
-
-col1, col2= st.columns([7, 3])
-
+col1, col2, col3 = st.columns([1, 3, 3])
 
 with col1:
+    st.write("Travail :")
 
-    st.markdown(
-        barre_objectif(
-            progression_sport,
-            "#7ed6c1"
-        ),
-        unsafe_allow_html=True
-    )
-
-
-with col2:
-
-    st.markdown(
-        f"""
-        <div style="
-            height:18px;
-            display:flex;
-            align-items:center;
-            font-size:16px;
-            font-weight:600;
-        ">
-            {temps_sport/60:.1f} / 300 h de sport
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-st.write("")
-st.write("")
-# ==========================
-# Objectif pompes
-# ==========================
-
-objectif_pompes = 1000
-
-progression_pompes = min(
-    nb_pompes / objectif_pompes,
-    1
-)
-
-
-col1, col2, col3 = st.columns([7, 2, 1])
-
-
-with col1:
-
-    st.markdown(
-        barre_objectif(
-            progression_pompes,
-            "#f7a8c4"
-        ),
-        unsafe_allow_html=True
-    )
-
-
-with col2:
-
-    st.markdown(
-        f"""
-        <div style="
-            height:18px;
-            display:flex;
-            align-items:center;
-            font-size:16px;
-            font-weight:600;
-        ">
-            {nb_pompes} / 1000 pompes
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
-
-
-st.write("")
-st.write("")
-
-# ==========================
-# Objectif dessin
-# ==========================
-
-objectif_pages = 80
-
-progression_pages = min(
-    nb_pages / objectif_pages,
-    1
-)
-
-col1, col2, col3, col4 = st.columns([7, 2, 0.5, 0.5])
-
-with col1:
-    st.markdown(
-        barre_objectif(
-            progression_pages,
-            "#f6c667"
-        ),
-        unsafe_allow_html=True
+    people_work = st.checkbox(
+        " ",
+        label_visibility="collapsed"
     )
 
 with col2:
-    st.markdown(
-        f"""
-        <div style="
-            height:18px;
-            display:flex;
-            align-items:center;
-            font-size:16px;
-            font-weight:600;
-        ">
-            {nb_pages} / {objectif_pages} pages
-        </div>
-        """,
-        unsafe_allow_html=True
+    people_seen = st.text_input(
+        "Personnes vues aujourd'hui :",
+        placeholder="Ex : Alice, Marc, Julie"
     )
-
-st.markdown("""
-<style>
-div[data-testid="stButton"] button {
-    background: transparent;
-    border: none;
-    padding: 0;
-    font-size: 40px;
-    font-weight: 600;
-    color: inherit;
-    width: 32px;
-    height: 20px;
-    min-height: 20px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transform: translateY(-2px);
-}
-
-div[data-testid="stButton"] button:hover {
-    background: transparent;
-    border: none;
-}
-</style>
-""", unsafe_allow_html=True)
 
 with col3:
-    if st.button("-", key="dessin_moins"):
-        retirer_page_dessin()
-        st.rerun()
-
-with col4:
-    if st.button("+", key="dessin_plus"):
-        ajouter_page_dessin()
-        st.rerun()
-
-# ==========================
-# Objectif detox
-# ==========================
-
-objectif_detox = 10
-
-progression_detox = min(
-    nb_detox / objectif_detox,
-    1
-)
-
-col1, col2, col3, col4 = st.columns([7, 2, 0.5, 0.5])
-
-
-with col1:
-
-    st.markdown(
-        barre_objectif(
-            progression_detox,
-            "#9b8cff"
-        ),
-        unsafe_allow_html=True
+    sommeil = st.text_input(
+        "Sommeil (heures) :",
+        placeholder="Ex : 7,5"
     )
 
+# Chargement du dataframe existant
+df = create_today_dataframe()
 
-with col2:
+if st.button("💾 Sauvegarder"):
 
-    st.markdown(
-        f"""
-        <div style="
-            height:18px;
-            display:flex;
-            align-items:center;
-            font-size:16px;
-            font-weight:600;
-        ">
-            {nb_detox} / {objectif_detox} detox
-        </div>
-        """,
-        unsafe_allow_html=True
-    )
+    try:
 
+        if sommeil.strip() == "":
+            sommeil_val = None
+        else:
+            sommeil_val = float(
+                sommeil.replace(",", ".")
+            )
 
-with col3:
+        df = add_today_entry(
+            df,
+            today,
+            best_moment,
+            people_seen,
+            int(people_work),
+            sommeil_val
+        )
 
-    if st.button("-", key="detox_moins"):
-        retirer_detox()
-        st.rerun()
+        save_to_google_sheet([
+            today,
+            best_moment,
+            people_seen,
+            int(people_work),
+            sommeil_val
+        ])
 
+        st.success(
+            f"Donnée enregistrée pour le {today} !"
+        )
 
-with col4:
+    except ValueError:
 
-    if st.button("+", key="detox_plus"):
-        ajouter_detox()
-        st.rerun()
-
-st.write("")
-separateur()
-st.write("")
-# ==========================
-# Filtre année
-# ==========================
-st.header("Sport")
-
-annees = sorted(
-    df_sport["Date"]
-    .dt.year
-    .dropna()
-    .unique(),
-    reverse=True
-)
-
-
-annees_selection = st.selectbox(
-    "Année",
-    ["Toutes"] + list(annees)
-)
-
-
-if annees_selection == "Toutes":
-
-    df_filtre = df_sport.copy()
-
-else:
-
-    df_filtre = df_sport[
-        df_sport["Date"].dt.year == annees_selection
-    ]
+        st.error(
+            "⚠️ Format incorrect pour le sommeil. Exemple attendu : 7 ou 7,5"
+        )
 
 
 
-# ==========================
-# Activités
-# ==========================
+st.subheader("Danse")
 
-activites = [
-    "Danse",
-    "Muscu",
-    "Stretching",
-    "Course",
-    "Escalade",
-    "Randonnée",
-    "Autre",
+danses = load_danse_google_sheet()
+
+danses_en_cours = danses[
+    danses["statut"] == "en cours"
 ]
 
+# Valeurs par défaut si aucune danse n'est ajoutée
+Choree1_morceau = ""
+Choree1_duree = 0
 
-totaux = (
-    df_filtre[activites]
-    .sum()
-)
+if len(danses_en_cours) > 0:
 
+    danses_labels = (
+        danses_en_cours["artiste"]
+        + " - "
+        + danses_en_cours["titre"]
+    )
 
-temps_total = totaux.sum()
-
-
-
-# ==========================
-# Première ligne dashboard
-# ==========================
-
-
-
-gauche, droite = st.columns(
-    [1, 1.5]
-)
-
-
-
-# ==========================
-# KPI
-# ==========================
-
-with gauche:
-
-    st.subheader("Synthèse")
-
-
-    col1, col2 = st.columns(2)
+    col1, col2, col3 = st.columns([4, 1, 1])
 
     with col1:
-        st.metric(
-            "Temps total",
-            format_heures(temps_total)
+        choix_danse = st.selectbox(
+            "Chorégraphie travaillée :",
+            danses_labels
         )
-
 
     with col2:
-
-        st.metric(
-            "Danse",
-            format_heures(totaux["Danse"])
+        duree_danse = st.number_input(
+            "Durée (min)",
+            min_value=0,
+            step=5
         )
-
-
-    col3, col4 = st.columns(2)
-
 
     with col3:
+        st.write("")
+        st.write("")
 
-        st.metric(
-            "Course",
-            format_heures(totaux["Course"])
+        ajouter = st.button(
+            "💃 Ajouter",
+            use_container_width=True
         )
 
+    if ajouter:
 
-    with col4:
+        ligne = danses_en_cours[
+            (
+                danses_en_cours["artiste"]
+                + " - "
+                + danses_en_cours["titre"]
+            ) == choix_danse
+        ].iloc[0]
 
-        st.metric(
-            "Muscu",
-            format_heures(totaux["Muscu"])
+        succes = add_practice_time(
+            ligne["artiste"],
+            ligne["titre"],
+            duree_danse
         )
 
+        if succes:
+            st.success(
+                "Temps ajouté à la chorégraphie !"
+            )
 
+            # Valeurs enregistrées avec la journée
+            Choree1_morceau = choix_danse
+            Choree1_duree = duree_danse
 
-# ==========================
-# Camembert
-# ==========================
-
-with droite:
-
-    st.subheader(
-        "Répartition des activités"
-    )
-
-    df_repartition = (
-        totaux
-        .reset_index()
-    )
-
-    df_repartition.columns = [
-        "Activite",
-        "Temps"
-    ]
-
-    df_repartition = df_repartition[
-        df_repartition["Temps"] > 0
-    ]
-
-    df_repartition["Affichage"] = (
-        df_repartition["Temps"]
-        .apply(format_heures)
-    )
-
-    # Couleurs fixes
-    couleurs_activites = {
-        "Course": "#F6C667",      # Jaune doux
-        "Muscu": "#6FA8DC",       # Bleu pastel
-        "Danse": "#F7A8C4",       # Rose pastel
-        "Escalade": "#9B8CFF",    # Violet pastel
-        "Randonnée": "#7ED6C1",   # Vert menthe
-        "Stretching": "#D85C7A",  # Framboise
-        "Autre": "#C7CCD6"        # Gris bleuté pastel
-    }
-
-    fig = px.pie(
-        df_repartition,
-        names="Activite",
-        values="Temps",
-        hole=0.35,
-        color="Activite",
-        color_discrete_map=couleurs_activites
-    )
-
-    fig.update_traces(
-        hovertemplate="%{label}<br>%{customdata}",
-        customdata=df_repartition["Affichage"]
-    )
-
-    st.plotly_chart(
-        fig,
-        use_container_width=True
-    )
-
-
-
-# ==========================
-# Evolution du sport
-# ==========================
-
-st.subheader(
-    "Evolution du temps de sport"
-)
-
-
-df_evolution = df_filtre.copy()
-
-
-df_evolution["Total"] = (
-    df_evolution[activites]
-    .sum(axis=1)
-)
-
-
-# ==========================
-# Couleurs fixes par année
-# ==========================
-
-couleurs_annees = {
-    2021: "#7ED6C1",  # Vert menthe
-    2022: "#6FA8DC",  # Bleu pastel
-    2023: "#9B8CFF",  # Violet pastel
-    2024: "#D85C7A",  # Framboise
-    2025: "#F7A8C4",  # Rose pastel
-    2026: "#F7C8A8"   # Pêche pastel
-}
-
-
-# ==========================
-# Toutes les années = par mois
-# ==========================
-
-if annees_selection == "Toutes":
-
-
-    df_evolution["Année"] = (
-        df_evolution["Date"]
-        .dt.year
-    )
-
-
-    df_evolution["Mois"] = (
-        df_evolution["Date"]
-        .dt.month
-    )
-
-
-    evolution = (
-        df_evolution
-        .groupby(
-            [
-                "Année",
-                "Mois"
-            ],
-            as_index=False
-        )["Total"]
-        .sum()
-    )
-
-
-    mois_noms = [
-        "",
-        "Jan",
-        "Fév",
-        "Mar",
-        "Avr",
-        "Mai",
-        "Juin",
-        "Juil",
-        "Août",
-        "Sep",
-        "Oct",
-        "Nov",
-        "Déc",
-    ]
-
-
-    evolution["Mois_nom"] = (
-        evolution["Mois"]
-        .apply(
-            lambda x: mois_noms[x]
-        )
-    )
-
-
-    fig_evolution = px.line(
-        evolution,
-        x="Mois_nom",
-        y="Total",
-        color="Année",
-        markers=True,
-        color_discrete_map=couleurs_annees,
-        labels={
-            "Mois_nom": "Mois",
-            "Total": "Temps (minutes)",
-            "Année": "Année"
-        }
-    )
-
-
-    fig_evolution.update_layout(
-        xaxis={
-            "categoryorder": "array",
-            "categoryarray": mois_noms[1:]
-        }
-    )
-
-
-# ==========================
-# Une année = par semaine
-# ==========================
+        else:
+            st.error(
+                "Impossible de trouver la chorégraphie."
+            )
 
 else:
-
-
-    df_evolution["Semaine"] = (
-        df_evolution["Date"]
-        .dt.isocalendar()
-        .week
-        .astype(int)
+    st.info(
+        "Aucune chorégraphie en cours."
     )
 
 
-    evolution = (
-        df_evolution
-        .groupby(
-            "Semaine",
-            as_index=False
-        )["Total"]
-        .sum()
-        .sort_values(
-            "Semaine"
-        )
+
+
+st.subheader("Nouvelle chorégraphie")
+
+# Ligne 1
+col1, col2, col3 = st.columns([2, 2, 2])
+
+with col1:
+    new_artiste = st.text_input(
+        "Artiste",
+        key="new_artiste"
     )
 
-
-    fig_evolution = px.line(
-        evolution,
-        x="Semaine",
-        y="Total",
-        markers=True,
-        labels={
-            "Semaine": "Semaine",
-            "Total": "Temps (minutes)"
-        }
+with col2:
+    new_titre = st.text_input(
+        "Titre",
+        key="new_titre"
     )
 
-
-    # Couleur fixe selon l'année sélectionnée
-    fig_evolution.update_traces(
-        line_color=couleurs_annees.get(
-            annees_selection,
-            "#C7CCD6"
-        )
+with col3:
+    new_choregraphe = st.text_input(
+        "Chorégraphe",
+        key="new_choregraphe"
     )
 
+# Ligne 2
+col4, col5 = st.columns([2, 1])
 
-# ==========================
-# Affichage
-# ==========================
+with col4:
+    new_style = st.selectbox(
+        "Style",
+        [
+            "Urban",
+            "Kpop girl",
+            "Kpop boy",
+            "Jazz",
+            "Lyrical",
+            "Street Jazz",
+            "Dancehall",
+            "Waacking/voguing",
+            "Heels"
+        ],
+        key="new_style"
+    )
 
-st.plotly_chart(
-    fig_evolution,
+with col5:
+    new_duree = st.number_input(
+        "Durée (s)",
+        min_value=0,
+        step=10,
+        key="new_duree"
+    )
+
+if st.button(
+    "➕ Ajouter la chorégraphie",
     use_container_width=True
-)
+):
+    add_danse_google_sheet(
+        artiste=new_artiste,
+        titre=new_titre,
+        choregraphe=new_choregraphe,
+        style=new_style,
+        duree=new_duree
+    )
 
-
-
-# ==========================
-# Tableau détaillé
-# ==========================
-
-st.subheader(
-    "Détail quotidien"
-)
-
-
-df_affichage = df_filtre.copy()
-
-
-df_affichage["Total"] = (
-    df_affichage[activites]
-    .sum(axis=1)
-)
-
-
-colonnes = [
-    "Date",
-    "Total",
-    "Danse",
-    "Muscu",
-    "Stretching",
-    "Course",
-    "Escalade",
-    "Randonnée",
-    "Autre",
-]
-
-
-df_affichage = df_affichage[
-    colonnes
-]
-
-
-st.dataframe(
-    df_affichage,
-    use_container_width=True,
-    hide_index=True
-)
+    st.success("Chorégraphie ajoutée !")
