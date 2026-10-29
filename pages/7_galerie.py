@@ -413,7 +413,7 @@ for i in range(0, len(df_filtre), NB_COLONNES):
             # Note
             if pd.notna(note) and str(note).strip():
                 try:
-                    note_affichee = f"⭐ {float(note):g}/10"
+                    note_affichee = f"⭐ {float(note):g}/5"
                 except (ValueError, TypeError):
                     note_affichee = ""
             else:
