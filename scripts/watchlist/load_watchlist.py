@@ -98,9 +98,9 @@ def load_movies_google_sheet():
 
     if "watched_at" in movies.columns:
         movies["watched_at"] = pd.to_datetime(
-            movies["watched_at"],
-            errors="coerce",
-            dayfirst=True
+            movies["watched_at"].astype("string").str.strip().str.lstrip("'"),
+            format="%Y-%m-%d",
+            errors="coerce"
         )
 
     # --------------------------
