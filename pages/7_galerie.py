@@ -370,7 +370,6 @@ for i in range(0, len(df_filtre), NB_COLONNES):
                     """,
                     unsafe_allow_html=True
                 )
-
             # --------------------------
             # TITRE
             # --------------------------
@@ -396,87 +395,45 @@ for i in range(0, len(df_filtre), NB_COLONNES):
             )
 
             # --------------------------
-            # TYPE ET STATUT
+            # DATE DE VISIONNAGE + NOTE
             # --------------------------
 
-            type_label = html.escape(
-                str(element.get("type_affichage", "Autre"))
-            )
+            date_vue = element.get("date_affichage")
+            note = element.get("note_affichage")
 
-            statut_label = html.escape(
-                str(element.get("statut_libelle", ""))
-            )
+            # Date
+            if pd.notna(date_vue):
+                date_affichee = pd.Timestamp(
+                    date_vue
+                ).strftime("%d/%m/%Y")
+            else:
+                date_affichee = "Non visionné"
 
+            # Note
+            if pd.notna(note) and str(note).strip():
+                try:
+                    note_affichee = f"⭐ {float(note):g}/10"
+                except (ValueError, TypeError):
+                    note_affichee = ""
+            else:
+                note_affichee = ""
+
+            # Affichage sur une seule ligne
             st.markdown(
                 f"""
                 <div style="
                     text-align:center;
                     font-size:11px;
                     color:gray;
-                    min-height:32px;
+                    padding-top:4px;
+                    overflow-wrap:anywhere;
                 ">
-                    {type_label}<br>
-                    {statut_label}
+                    {date_affichee}
+                    {" " + note_affichee if note_affichee else ""}
                 </div>
                 """,
                 unsafe_allow_html=True
             )
 
-            # --------------------------
-            # NOTE
-            # --------------------------
-
-            note = element.get("note_affichage")
-
-            if pd.notna(note) and str(note).strip():
-
-                try:
-
-                    note_affichee = (
-                        f"⭐ {float(note):g}/10"
-                    )
-
-                    st.markdown(
-                        f"""
-                        <div style="
-                            text-align:center;
-                            font-size:12px;
-                        ">
-                            {note_affichee}
-                        </div>
-                        """,
-                        unsafe_allow_html=True
-                    )
-
-                except (ValueError, TypeError):
-                    pass
-
-            # --------------------------
-            # DATE
-            # --------------------------
-
-            date_vue = element.get(
-                "date_affichage"
-            )
-
-            if pd.notna(date_vue):
-
-                date_affichee = pd.Timestamp(
-                    date_vue
-                ).strftime("%d/%m/%Y")
-
-                st.markdown(
-                    f"""
-                    <div style="
-                        text-align:center;
-                        font-size:11px;
-                        color:gray;
-                        padding-top:4px;
-                    ">
-                        {date_affichee}
-                    </div>
-                    """,
-                    unsafe_allow_html=True
-                )
-
             st.write("")
+
