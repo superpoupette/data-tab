@@ -29,8 +29,12 @@ def separateur():
         unsafe_allow_html=True
     )
 
+st.set_page_config(
+    page_title="Sport",
+    page_icon="🏅",
+    layout="wide"
+)
 
-st.title("Tableau de bord")
 
 # ==========================
 # Chargement données
