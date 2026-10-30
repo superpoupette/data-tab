@@ -67,7 +67,7 @@ df_albums["Genre (large)"] = (
 st.markdown(
     """
     <style>
-    /* Filtres sur une seule ligne sur ordinateur */
+    /* Ordinateur : les 6 filtres sur une ligne */
     @media (min-width: 901px) {
         div[data-testid="stHorizontalBlock"]:has(
             [data-testid="stSelectbox"],
@@ -77,15 +77,15 @@ st.markdown(
         }
     }
 
-    /* Deux colonnes sur téléphone */
+    /* Téléphone : 2 lignes de 3 filtres */
     @media (max-width: 600px) {
         div[data-testid="stHorizontalBlock"]:has(
             [data-testid="stSelectbox"],
             [data-testid="stTextInput"]
         ) {
             display: grid !important;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 10px !important;
+            grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+            gap: 8px !important;
         }
 
         div[data-testid="stHorizontalBlock"]:has(
