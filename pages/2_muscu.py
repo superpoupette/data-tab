@@ -2,8 +2,12 @@
 import altair as alt
 from scripts.data_loader import load_hevy
 
-
-st.title("🏋️ Entraînement")
+st.set_page_config(
+    page_title="Muscu",
+    page_icon="💪",
+    layout="wide"
+)
+st.title("Musculation")
 
 workouts, sessions = load_hevy()
 
