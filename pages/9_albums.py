@@ -1,3 +1,4 @@
+
 import streamlit as st
 import pandas as pd
 import streamlit.components.v1 as components
@@ -227,21 +228,6 @@ for _, album in df_filtre.iterrows():
     """)
 
 # ==========================
-# Thème et couleurs Streamlit
-# ==========================
-
-theme = st.get_option("theme.base")
-
-if theme == "dark":
-    couleur_titre = "#FFFFFF"
-    couleur_infos = "#E0E0E0"
-    couleur_fond = "#0E1117"
-else:
-    couleur_titre = "#000000"
-    couleur_infos = "#555555"
-    couleur_fond = "#FFFFFF"
-
-# ==========================
 # Construction HTML
 # ==========================
 
@@ -261,7 +247,6 @@ html = f"""
         margin: 0;
         padding: 0;
         font-family: sans-serif;
-        color: {couleur_titre};
         background: transparent;
     }}
 
@@ -274,7 +259,6 @@ html = f"""
 
     .album {{
         min-width: 0;
-        color: {couleur_titre};
     }}
 
     .album img,
@@ -287,8 +271,7 @@ html = f"""
     }}
 
     .image-vide {{
-        background: {couleur_fond};
-        opacity: 0.15;
+        background: transparent;
     }}
 
     .titre {{
@@ -297,16 +280,13 @@ html = f"""
         font-weight: 600;
         line-height: 1.35;
         overflow-wrap: anywhere;
-        color: {couleur_titre};
     }}
 
     .infos {{
         margin-top: 3px;
         font-size: 11px;
         line-height: 1.4;
-        opacity: 0.75;
         overflow-wrap: anywhere;
-        color: {couleur_infos};
     }}
 
     /* Tablettes */
