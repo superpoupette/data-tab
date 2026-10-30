@@ -1,6 +1,7 @@
 
 import streamlit as st
 import pandas as pd
+import html
 import streamlit.components.v1 as components
 from html import escape
 from scripts.musique.google_sheet import charger_musique
@@ -181,51 +182,99 @@ elif critere_tri == "Artiste":
 st.caption(f"{len(df_filtre)} album(s)")
 
 # ==========================
-# Grille responsive des albums
+# GRILLE DES ALBUMS
 # ==========================
 
-cartes = []
+NB_COLONNES = 6
 
-for _, album in df_filtre.iterrows():
+for i in range(0, len(df_filtre), NB_COLONNES):
 
-    # Pochette
-    cover_url = (
-        str(album["cover_url"])
-        if pd.notna(album["cover_url"])
-        else ""
-    )
+    elements_ligne = df_filtre.iloc[i:i + NB_COLONNES]
 
-    # Nom de l'album et artiste
-    nom_album = escape(str(album["spotify_album"]))
-    artiste = escape(str(album["spotify_artiste"]))
+    colonnes = st.columns(NB_COLONNES)
 
-    # Note
-    if pd.notna(album["Note"]):
-        note_affichee = f"⭐ {int(album['Note'])}/10"
-    else:
-        note_affichee = "⭐ Sans note"
+    for col, (_, album) in zip(colonnes, elements_ligne.iterrows()):
 
-    # Carte
-    if cover_url:
-        image_html = f"""
-            <img
-                src="{escape(cover_url, quote=True)}"
-                alt="{nom_album}"
-                loading="lazy"
-            >
-        """
-    else:
-        image_html = """
-            <div class="image-vide"></div>
-        """
+        with col:
 
-    cartes.append(f"""
-        <div class="album">
-            {image_html}
-            <div class="titre">{nom_album}</div>
-            <div class="infos">{artiste} · {note_affichee}</div>
-        </div>
-    """)
+            # Pochette
+            cover_url = album.get("cover_url", "")
+
+            if pd.notna(cover_url) and str(cover_url).strip():
+
+                st.image(
+                    str(cover_url).strip(),
+                    use_container_width=True
+                )
+
+            else:
+
+                st.markdown(
+                    """
+                    <div style="
+                        width:100%;
+                        aspect-ratio:1/1;
+                        display:flex;
+                        align-items:center;
+                        justify-content:center;
+                        text-align:center;
+                        background-color:rgba(128,128,128,0.12);
+                        border-radius:5px;
+                        color:gray;
+                        font-size:12px;
+                    ">
+                        💿 Pas de pochette
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
+
+            # Titre
+            titre = html.escape(
+                str(album.get("spotify_album", "Sans titre"))
+            )
+
+            st.markdown(
+                f"""
+                <div style="
+                    text-align:center;
+                    font-size:13px;
+                    font-weight:600;
+                    line-height:1.2;
+                    overflow-wrap:anywhere;
+                ">
+                    {titre}
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
+
+            # Artiste et note
+            artiste = html.escape(
+                str(album.get("spotify_artiste", ""))
+            )
+
+            note = album.get("Note")
+
+            if pd.notna(note):
+                note_affichee = f"⭐ {int(note)}/10"
+            else:
+                note_affichee = ""
+
+            st.markdown(
+                f"""
+                <div style="
+                    text-align:center;
+                    font-size:11px;
+                    color:gray;
+                    line-height:1.2;
+                    overflow-wrap:anywhere;
+                ">
+                    {artiste} {" · " + note_affichee if note_affichee else ""}
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
 
 # ==========================
 # Construction HTML
@@ -336,8 +385,3 @@ nb_lignes = (len(df_filtre) + 2) // 3
 
 hauteur = max(100, nb_lignes * 220)
 
-components.html(
-    html,
-    height=hauteur,
-    scrolling=False
-)
