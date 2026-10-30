@@ -1,10 +1,13 @@
 
 import streamlit as st
 import pandas as pd
-import html
 import streamlit.components.v1 as components
 from html import escape
 from scripts.musique.google_sheet import charger_musique
+
+# ==========================
+# CONFIGURATION
+# ==========================
 
 st.set_page_config(
     page_title="Tous mes albums",
@@ -13,10 +16,10 @@ st.set_page_config(
 
 st.title("💿 Tous mes albums")
 
-df_albums = charger_musique()
+df_albums = charger_musique().copy()
 
 # ==========================
-# Nettoyage
+# NETTOYAGE
 # ==========================
 
 df_albums["Date"] = pd.to_datetime(
@@ -53,7 +56,7 @@ df_albums["Genre (large)"] = (
 )
 
 # ==========================
-# Filtres et tri
+# FILTRES ET TRI
 # ==========================
 
 col1, col2, col3, col4, col5, col6 = st.columns(
@@ -113,7 +116,7 @@ with col6:
     )
 
 # ==========================
-# Application des filtres
+# APPLICATION DES FILTRES
 # ==========================
 
 df_filtre = df_albums.copy()
@@ -134,21 +137,23 @@ if annee_selectionnee != "Toutes":
     ]
 
 # Recherche album ou artiste
-if recherche:
+if recherche.strip():
     masque = (
         df_filtre["spotify_album"]
         .fillna("")
-        .str.contains(recherche, case=False, na=False)
+        .astype(str)
+        .str.contains(recherche.strip(), case=False, na=False, regex=False)
         |
         df_filtre["spotify_artiste"]
         .fillna("")
-        .str.contains(recherche, case=False, na=False)
+        .astype(str)
+        .str.contains(recherche.strip(), case=False, na=False, regex=False)
     )
 
     df_filtre = df_filtre[masque]
 
 # ==========================
-# Application du tri
+# APPLICATION DU TRI
 # ==========================
 
 ascending = ordre_tri == "Croissant"
@@ -176,212 +181,207 @@ elif critere_tri == "Artiste":
     )
 
 # ==========================
-# Nombre d'albums
+# NOMBRE D'ALBUMS
 # ==========================
 
 st.caption(f"{len(df_filtre)} album(s)")
 
 # ==========================
-# GRILLE DES ALBUMS
+# COULEURS DU THÈME STREAMLIT
 # ==========================
 
-NB_COLONNES = 6
-
-for i in range(0, len(df_filtre), NB_COLONNES):
-
-    elements_ligne = df_filtre.iloc[i:i + NB_COLONNES]
-
-    colonnes = st.columns(NB_COLONNES)
-
-    for col, (_, album) in zip(colonnes, elements_ligne.iterrows()):
-
-        with col:
-
-            # Pochette
-            cover_url = album.get("cover_url", "")
-
-            if pd.notna(cover_url) and str(cover_url).strip():
-
-                st.image(
-                    str(cover_url).strip(),
-                    use_container_width=True
-                )
-
-            else:
-
-                st.markdown(
-                    """
-                    <div style="
-                        width:100%;
-                        aspect-ratio:1/1;
-                        display:flex;
-                        align-items:center;
-                        justify-content:center;
-                        text-align:center;
-                        background-color:rgba(128,128,128,0.12);
-                        border-radius:5px;
-                        color:gray;
-                        font-size:12px;
-                    ">
-                        💿 Pas de pochette
-                    </div>
-                    """,
-                    unsafe_allow_html=True
-                )
-
-            # Titre
-            titre = html.escape(
-                str(album.get("spotify_album", "Sans titre"))
-            )
-
-            st.markdown(
-                f"""
-                <div style="
-                    text-align:center;
-                    font-size:13px;
-                    font-weight:600;
-                    line-height:1.2;
-                    overflow-wrap:anywhere;
-                ">
-                    {titre}
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
-
-            # Artiste et note
-            artiste = html.escape(
-                str(album.get("spotify_artiste", ""))
-            )
-
-            note = album.get("Note")
-
-            if pd.notna(note):
-                note_affichee = f"⭐ {int(note)}/10"
-            else:
-                note_affichee = ""
-
-            st.markdown(
-                f"""
-                <div style="
-                    text-align:center;
-                    font-size:11px;
-                    color:gray;
-                    line-height:1.2;
-                    overflow-wrap:anywhere;
-                ">
-                    {artiste} {" · " + note_affichee if note_affichee else ""}
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
+couleur_texte = st.get_option("theme.textColor") or "#31333F"
+couleur_secondaire = (
+    st.get_option("theme.secondaryBackgroundColor") or "#F0F2F6"
+)
 
 # ==========================
-# Construction HTML
+# CONSTRUCTION DES CARTES
 # ==========================
 
-html = f"""
+cartes = []
+
+for _, album in df_filtre.iterrows():
+
+    cover_url = album.get("cover_url", "")
+
+    titre = escape(
+        str(album.get("spotify_album", "Sans titre"))
+    )
+
+    artiste = escape(
+        str(album.get("spotify_artiste", ""))
+    )
+
+    note = album.get("Note")
+
+    if pd.notna(note):
+        note_affichee = f"⭐ {int(note)}/10"
+    else:
+        note_affichee = ""
+
+    # Pochette
+    if pd.notna(cover_url) and str(cover_url).strip():
+
+        image_html = f"""
+            <img
+                src="{escape(str(cover_url).strip(), quote=True)}"
+                alt="{titre}"
+            >
+        """
+
+    else:
+
+        image_html = """
+            <div class="image-vide">
+                💿 Pas de pochette
+            </div>
+        """
+
+    # Carte complète
+    cartes.append(f"""
+        <div class="album">
+
+            {image_html}
+
+            <div class="titre">
+                {titre}
+            </div>
+
+            <div class="infos">
+                {artiste}
+                {" · " + note_affichee if note_affichee else ""}
+            </div>
+
+        </div>
+    """)
+
+# ==========================
+# CONSTRUCTION HTML
+# ==========================
+
+html_page = f"""
 <!DOCTYPE html>
 <html>
 <head>
+
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
 
-    * {{
-        box-sizing: border-box;
-    }}
+* {{
+    box-sizing: border-box;
+}}
 
-    html, body {{
-        margin: 0;
-        padding: 0;
-        font-family: sans-serif;
-        background: transparent;
-    }}
+html, body {{
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+    background: transparent;
+    color: {couleur_texte};
+}}
+
+.grille {{
+    display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 20px 12px;
+    width: 100%;
+}}
+
+.album {{
+    min-width: 0;
+}}
+
+.album img,
+.image-vide {{
+    display: block;
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
+    border-radius: 5px;
+}}
+
+.image-vide {{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background: {couleur_secondaire};
+    color: {couleur_texte};
+    font-size: 12px;
+}}
+
+.titre {{
+    margin-top: 7px;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+    color: {couleur_texte};
+}}
+
+.infos {{
+    margin-top: 3px;
+    font-size: 11px;
+    line-height: 1.4;
+    overflow-wrap: anywhere;
+    color: {couleur_texte};
+    opacity: 0.7;
+}}
+
+/* Tablettes */
+
+@media (max-width: 900px) {{
 
     .grille {{
-        display: grid;
-        grid-template-columns: repeat(6, minmax(0, 1fr));
-        gap: 20px 12px;
-        width: 100%;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
     }}
 
-    .album {{
-        min-width: 0;
-    }}
+}}
 
-    .album img,
-    .image-vide {{
-        display: block;
-        width: 100%;
-        aspect-ratio: 1 / 1;
-        object-fit: cover;
-        border-radius: 5px;
-    }}
+/* Téléphones */
 
-    .image-vide {{
-        background: transparent;
+@media (max-width: 600px) {{
+
+    .grille {{
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px 8px;
     }}
 
     .titre {{
-        margin-top: 7px;
-        font-size: 13px;
-        font-weight: 600;
-        line-height: 1.35;
-        overflow-wrap: anywhere;
+        font-size: 12px;
     }}
 
     .infos {{
-        margin-top: 3px;
-        font-size: 11px;
-        line-height: 1.4;
-        overflow-wrap: anywhere;
+        font-size: 10px;
     }}
 
-    /* Tablettes */
-
-    @media (max-width: 900px) {{
-        .grille {{
-            grid-template-columns: repeat(4, minmax(0, 1fr));
-        }}
-    }}
-
-    /* Téléphones */
-
-    @media (max-width: 600px) {{
-        .grille {{
-            grid-template-columns: repeat(3, minmax(0, 1fr));
-            gap: 16px 8px;
-        }}
-
-        .titre {{
-            font-size: 12px;
-        }}
-
-        .infos {{
-            font-size: 10px;
-        }}
-    }}
+}}
 
 </style>
 </head>
 
 <body>
 
-    <div class="grille">
-        {''.join(cartes)}
-    </div>
+<div class="grille">
+    {''.join(cartes)}
+</div>
 
 </body>
 </html>
 """
 
 # ==========================
-# Affichage
+# AFFICHAGE
 # ==========================
 
-# Hauteur estimée : 3 colonnes sur téléphone
+# Hauteur estimée pour 3 colonnes sur téléphone
 nb_lignes = (len(df_filtre) + 2) // 3
 
 hauteur = max(100, nb_lignes * 220)
 
+components.html(
+    html_page,
+    height=hauteur,
+    scrolling=False
+)
