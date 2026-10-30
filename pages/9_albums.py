@@ -1,8 +1,8 @@
 
 import streamlit as st
 import pandas as pd
-import streamlit.components.v1 as components
 from html import escape
+
 from scripts.musique.google_sheet import charger_musique
 
 # ==========================
@@ -15,6 +15,62 @@ st.set_page_config(
 )
 
 st.title("💿 Tous mes albums")
+
+# ==========================
+# CSS : GRILLE RESPONSIVE
+# ==========================
+
+st.markdown(
+    """
+    <style>
+
+    /* Grille des albums */
+
+    div[data-testid="stHorizontalBlock"]:has(
+        div[data-testid="column"] .album-card
+    ) {
+        display: grid !important;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        gap: 20px 12px;
+    }
+
+    div[data-testid="stHorizontalBlock"]:has(
+        div[data-testid="column"] .album-card
+    ) > div[data-testid="column"] {
+        width: 100% !important;
+        min-width: 0 !important;
+        flex: unset !important;
+    }
+
+    /* Tablettes */
+
+    @media (max-width: 900px) {
+        div[data-testid="stHorizontalBlock"]:has(
+            div[data-testid="column"] .album-card
+        ) {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+        }
+    }
+
+    /* Téléphones */
+
+    @media (max-width: 600px) {
+        div[data-testid="stHorizontalBlock"]:has(
+            div[data-testid="column"] .album-card
+        ) {
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 16px 8px;
+        }
+    }
+
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+# ==========================
+# CHARGEMENT DES DONNÉES
+# ==========================
 
 df_albums = charger_musique().copy()
 
@@ -41,6 +97,7 @@ df_albums["Note"] = pd.to_numeric(
 )
 
 # Nettoyage pays / styles
+
 df_albums["Pays"] = (
     df_albums["Pays"]
     .fillna("")
@@ -64,18 +121,21 @@ col1, col2, col3, col4, col5, col6 = st.columns(
 )
 
 with col1:
+
     critere_tri = st.selectbox(
         "Trier par",
         ["Date", "Note", "Artiste"]
     )
 
 with col2:
+
     ordre_tri = st.selectbox(
         "Ordre",
         ["Décroissant", "Croissant"]
     )
 
 with col3:
+
     pays_disponibles = sorted(
         [p for p in df_albums["Pays"].unique() if p]
     )
@@ -86,6 +146,7 @@ with col3:
     )
 
 with col4:
+
     styles_disponibles = sorted(
         [s for s in df_albums["Genre (large)"].unique() if s]
     )
@@ -96,6 +157,7 @@ with col4:
     )
 
 with col5:
+
     annees = sorted(
         df_albums["Annee_ecoute"]
         .dropna()
@@ -110,6 +172,7 @@ with col5:
     )
 
 with col6:
+
     recherche = st.text_input(
         "Rechercher",
         placeholder="Album ou artiste..."
@@ -121,33 +184,54 @@ with col6:
 
 df_filtre = df_albums.copy()
 
+# Filtre pays
+
 if pays_selectionne != "Tous":
+
     df_filtre = df_filtre[
         df_filtre["Pays"] == pays_selectionne
     ]
 
+# Filtre style
+
 if style_selectionne != "Tous":
+
     df_filtre = df_filtre[
         df_filtre["Genre (large)"] == style_selectionne
     ]
 
+# Filtre année
+
 if annee_selectionnee != "Toutes":
+
     df_filtre = df_filtre[
         df_filtre["Annee_ecoute"] == int(annee_selectionnee)
     ]
 
 # Recherche album ou artiste
+
 if recherche.strip():
+
     masque = (
         df_filtre["spotify_album"]
         .fillna("")
         .astype(str)
-        .str.contains(recherche.strip(), case=False, na=False, regex=False)
+        .str.contains(
+            recherche.strip(),
+            case=False,
+            na=False,
+            regex=False
+        )
         |
         df_filtre["spotify_artiste"]
         .fillna("")
         .astype(str)
-        .str.contains(recherche.strip(), case=False, na=False, regex=False)
+        .str.contains(
+            recherche.strip(),
+            case=False,
+            na=False,
+            regex=False
+        )
     )
 
     df_filtre = df_filtre[masque]
@@ -159,6 +243,7 @@ if recherche.strip():
 ascending = ordre_tri == "Croissant"
 
 if critere_tri == "Date":
+
     df_filtre = df_filtre.sort_values(
         by="Date",
         ascending=ascending,
@@ -166,6 +251,7 @@ if critere_tri == "Date":
     )
 
 elif critere_tri == "Note":
+
     df_filtre = df_filtre.sort_values(
         by="Note",
         ascending=ascending,
@@ -173,6 +259,7 @@ elif critere_tri == "Note":
     )
 
 elif critere_tri == "Artiste":
+
     df_filtre = df_filtre.sort_values(
         by="spotify_artiste",
         ascending=ascending,
@@ -186,202 +273,123 @@ elif critere_tri == "Artiste":
 
 st.caption(f"{len(df_filtre)} album(s)")
 
-# ==========================
-# COULEURS DU THÈME STREAMLIT
-# ==========================
-
-couleur_texte = st.get_option("theme.textColor") or "#31333F"
-couleur_secondaire = (
-    st.get_option("theme.secondaryBackgroundColor") or "#F0F2F6"
-)
+st.divider()
 
 # ==========================
-# CONSTRUCTION DES CARTES
+# GRILLE DES ALBUMS
 # ==========================
 
-cartes = []
+NB_COLONNES = 6
 
-for _, album in df_filtre.iterrows():
+for i in range(0, len(df_filtre), NB_COLONNES):
 
-    cover_url = album.get("cover_url", "")
+    elements_ligne = df_filtre.iloc[
+        i:i + NB_COLONNES
+    ]
 
-    titre = escape(
-        str(album.get("spotify_album", "Sans titre"))
-    )
+    colonnes = st.columns(NB_COLONNES)
 
-    artiste = escape(
-        str(album.get("spotify_artiste", ""))
-    )
+    for col, (_, album) in zip(
+        colonnes,
+        elements_ligne.iterrows()
+    ):
 
-    note = album.get("Note")
+        with col:
 
-    if pd.notna(note):
-        note_affichee = f"⭐ {int(note)}/10"
-    else:
-        note_affichee = ""
+            # --------------------------
+            # POCHETTE
+            # --------------------------
 
-    # Pochette
-    if pd.notna(cover_url) and str(cover_url).strip():
+            cover_url = album.get(
+                "cover_url",
+                ""
+            )
 
-        image_html = f"""
-            <img
-                src="{escape(str(cover_url).strip(), quote=True)}"
-                alt="{titre}"
-            >
-        """
+            if (
+                pd.notna(cover_url)
+                and str(cover_url).strip()
+            ):
 
-    else:
+                st.image(
+                    str(cover_url).strip(),
+                    use_container_width=True
+                )
 
-        image_html = """
-            <div class="image-vide">
-                💿 Pas de pochette
-            </div>
-        """
+            else:
 
-    # Carte complète
-    cartes.append(f"""
-        <div class="album">
+                st.markdown(
+                    """
+                    <div style="
+                        width:100%;
+                        aspect-ratio:1/1;
+                        display:flex;
+                        align-items:center;
+                        justify-content:center;
+                        text-align:center;
+                        background-color:rgba(128,128,128,0.12);
+                        border-radius:5px;
+                        color:gray;
+                        font-size:12px;
+                    ">
+                        💿 Pas de pochette
+                    </div>
+                    """,
+                    unsafe_allow_html=True
+                )
 
-            {image_html}
+            # --------------------------
+            # TITRE
+            # --------------------------
 
-            <div class="titre">
-                {titre}
-            </div>
+            titre = escape(
+                str(album.get("spotify_album", "Sans titre"))
+            )
 
-            <div class="infos">
-                {artiste}
-                {" · " + note_affichee if note_affichee else ""}
-            </div>
+            st.markdown(
+                f"""
+                <div class="album-card" style="
+                    text-align:center;
+                    font-size:13px;
+                    font-weight:600;
+                    line-height:1.2;
+                    overflow-wrap:anywhere;
+                ">
+                    {titre}
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
 
-        </div>
-    """)
+            # --------------------------
+            # ARTISTE ET NOTE
+            # --------------------------
 
-# ==========================
-# CONSTRUCTION HTML
-# ==========================
+            artiste = escape(
+                str(album.get("spotify_artiste", ""))
+            )
 
-html_page = f"""
-<!DOCTYPE html>
-<html>
-<head>
+            note = album.get("Note")
 
-<meta name="viewport" content="width=device-width, initial-scale=1">
+            if pd.notna(note):
 
-<style>
+                note_affichee = f"⭐ {int(note)}/10"
 
-* {{
-    box-sizing: border-box;
-}}
+            else:
 
-html, body {{
-    margin: 0;
-    padding: 0;
-    font-family: sans-serif;
-    background: transparent;
-    color: {couleur_texte};
-}}
+                note_affichee = ""
 
-.grille {{
-    display: grid;
-    grid-template-columns: repeat(6, minmax(0, 1fr));
-    gap: 20px 12px;
-    width: 100%;
-}}
-
-.album {{
-    min-width: 0;
-}}
-
-.album img,
-.image-vide {{
-    display: block;
-    width: 100%;
-    aspect-ratio: 1 / 1;
-    object-fit: cover;
-    border-radius: 5px;
-}}
-
-.image-vide {{
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    text-align: center;
-    background: {couleur_secondaire};
-    color: {couleur_texte};
-    font-size: 12px;
-}}
-
-.titre {{
-    margin-top: 7px;
-    font-size: 13px;
-    font-weight: 600;
-    line-height: 1.35;
-    overflow-wrap: anywhere;
-    color: {couleur_texte};
-}}
-
-.infos {{
-    margin-top: 3px;
-    font-size: 11px;
-    line-height: 1.4;
-    overflow-wrap: anywhere;
-    color: {couleur_texte};
-    opacity: 0.7;
-}}
-
-/* Tablettes */
-
-@media (max-width: 900px) {{
-
-    .grille {{
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-    }}
-
-}}
-
-/* Téléphones */
-
-@media (max-width: 600px) {{
-
-    .grille {{
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 16px 8px;
-    }}
-
-    .titre {{
-        font-size: 12px;
-    }}
-
-    .infos {{
-        font-size: 10px;
-    }}
-
-}}
-
-</style>
-</head>
-
-<body>
-
-<div class="grille">
-    {''.join(cartes)}
-</div>
-
-</body>
-</html>
-"""
-
-# ==========================
-# AFFICHAGE
-# ==========================
-
-# Hauteur estimée pour 3 colonnes sur téléphone
-nb_lignes = (len(df_filtre) + 2) // 3
-
-hauteur = max(100, nb_lignes * 220)
-
-components.html(
-    html_page,
-    height=hauteur,
-    scrolling=False
-)
+            st.markdown(
+                f"""
+                <div style="
+                    text-align:center;
+                    font-size:11px;
+                    color:gray;
+                    line-height:1.2;
+                    overflow-wrap:anywhere;
+                ">
+                    {artiste}
+                    {" · " + note_affichee if note_affichee else ""}
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
