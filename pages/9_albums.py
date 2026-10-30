@@ -230,15 +230,16 @@ for _, album in df_filtre.iterrows():
 # Thème et couleurs Streamlit
 # ==========================
 
-couleur_texte = st.get_option("theme.textColor")
-couleur_fond = st.get_option("theme.backgroundColor")
+theme = st.get_option("theme.base")
 
-# Valeurs de secours si le thème ne définit pas ces couleurs
-if not couleur_texte:
-    couleur_texte = "#FAFAFA" if st.get_option("theme.base") == "dark" else "#31333F"
-
-if not couleur_fond:
-    couleur_fond = "#0E1117" if st.get_option("theme.base") == "dark" else "#FFFFFF"
+if theme == "dark":
+    couleur_titre = "#FFFFFF"
+    couleur_infos = "#E0E0E0"
+    couleur_fond = "#0E1117"
+else:
+    couleur_titre = "#000000"
+    couleur_infos = "#555555"
+    couleur_fond = "#FFFFFF"
 
 # ==========================
 # Construction HTML
