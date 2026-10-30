@@ -28,11 +28,11 @@ from scripts.musique.google_sheet import (
     ajouter_album_google_sheet
 )
 
-
 st.set_page_config(
-    page_title="Ajouter à la watchlist"
+    page_title="Add content",
+    page_icon="💾",
+    layout="wide"
 )
-
 
 st.title("🎬 Ajouter un film")
 
