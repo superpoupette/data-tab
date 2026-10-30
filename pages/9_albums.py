@@ -59,9 +59,48 @@ df_albums["Genre (large)"] = (
     .str.strip()
 )
 
+
 # ==========================
-# FILTRES ET TRI
+# FILTRES ET TRI RESPONSIVES
 # ==========================
+
+st.markdown(
+    """
+    <style>
+    /* Filtres sur une seule ligne sur ordinateur */
+    @media (min-width: 901px) {
+        div[data-testid="stHorizontalBlock"]:has(
+            [data-testid="stSelectbox"],
+            [data-testid="stTextInput"]
+        ) {
+            flex-wrap: nowrap !important;
+        }
+    }
+
+    /* Deux colonnes sur téléphone */
+    @media (max-width: 600px) {
+        div[data-testid="stHorizontalBlock"]:has(
+            [data-testid="stSelectbox"],
+            [data-testid="stTextInput"]
+        ) {
+            display: grid !important;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px !important;
+        }
+
+        div[data-testid="stHorizontalBlock"]:has(
+            [data-testid="stSelectbox"],
+            [data-testid="stTextInput"]
+        ) > div[data-testid="column"] {
+            width: 100% !important;
+            min-width: 0 !important;
+            flex: unset !important;
+        }
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
 
 col1, col2, col3, col4, col5, col6 = st.columns(
     [1, 1, 1, 1, 1, 1.8]
