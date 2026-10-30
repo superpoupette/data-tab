@@ -297,7 +297,7 @@ html = f"""
         font-weight: 600;
         line-height: 1.35;
         overflow-wrap: anywhere;
-        color: {couleur_texte};
+        color: {couleur_titre};
     }}
 
     .infos {{
@@ -306,7 +306,7 @@ html = f"""
         line-height: 1.4;
         opacity: 0.75;
         overflow-wrap: anywhere;
-        color: {couleur_texte};
+        color: {couleur_infos};
     }}
 
     /* Tablettes */
