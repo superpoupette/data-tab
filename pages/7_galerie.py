@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 import html
 
+import streamlit.components.v1 as components
+
 from scripts.watchlist.load_watchlist import (
     load_movies_google_sheet,
     load_series_google_sheet
@@ -150,8 +152,50 @@ df_affiches = charger_donnees()
 
 
 # ==========================
-# FILTRES ET TRI
+# FILTRES RESPONSIVES
 # ==========================
+
+st.markdown(
+    """
+    <style>
+
+    /* Ordinateur : filtres sur une seule ligne */
+    @media (min-width: 901px) {
+        div[data-testid="stHorizontalBlock"]:has(
+            [data-testid="stSelectbox"],
+            [data-testid="stTextInput"]
+        ) {
+            flex-wrap: nowrap !important;
+        }
+    }
+
+    /* Téléphone : 2 lignes de filtres */
+    @media (max-width: 600px) {
+
+        div[data-testid="stHorizontalBlock"]:has(
+            [data-testid="stSelectbox"],
+            [data-testid="stTextInput"]
+        ) {
+            display: grid !important;
+            grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+            gap: 8px !important;
+        }
+
+        div[data-testid="stHorizontalBlock"]:has(
+            [data-testid="stSelectbox"],
+            [data-testid="stTextInput"]
+        ) > div[data-testid="column"] {
+            width: 100% !important;
+            min-width: 0 !important;
+            flex: unset !important;
+        }
+    }
+
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
 
 col1, col2, col3, col4, col5 = st.columns(
     [1.3, 1.2, 1, 1.2, 2]
@@ -290,152 +334,261 @@ st.divider()
 
 
 # ==========================
-# GRILLE DES AFFICHES
+# GRILLE RESPONSIVE DES AFFICHES
 # ==========================
 
-NB_COLONNES = 8
+cartes_html = ""
 
-for i in range(0, len(df_filtre), NB_COLONNES):
+for _, element in df_filtre.iterrows():
 
-    elements_ligne = df_filtre.iloc[
-        i:i + NB_COLONNES
-    ]
+    # --------------------------
+    # AFFICHE
+    # --------------------------
 
-    colonnes = st.columns(NB_COLONNES)
+    poster_path = element.get("poster_path", "")
 
-    for col, (_, element) in zip(
-        colonnes,
-        elements_ligne.iterrows()
-    ):
+    if pd.notna(poster_path) and str(poster_path).strip():
 
-        with col:
+        poster_path = str(poster_path).strip()
 
-            # --------------------------
-            # AFFICHE
-            # --------------------------
+        # URL complète ou chemin TMDB
+        if poster_path.startswith(("https://", "http://")):
 
-            poster_path = element.get(
-                "poster_path",
-                ""
-            )
+            poster_url = poster_path
 
-            if (
-                pd.notna(poster_path)
-                and str(poster_path).strip()
-            ):
+        else:
 
-                poster_path = str(poster_path).strip()
-
-                # URL complète ou chemin TMDB
-                if poster_path.startswith(
-                    ("https://", "http://")
-                ):
-
-                    poster_url = poster_path
-
-                else:
-
-                    poster_url = (
-                        "https://image.tmdb.org/t/p/w500"
-                        + (
-                            poster_path
-                            if poster_path.startswith("/")
-                            else "/" + poster_path
-                        )
-                    )
-
-                st.image(
-                    poster_url,
-                    use_container_width=True
+            poster_url = (
+                "https://image.tmdb.org/t/p/w500"
+                + (
+                    poster_path
+                    if poster_path.startswith("/")
+                    else "/" + poster_path
                 )
-
-            else:
-
-                st.markdown(
-                    """
-                    <div style="
-                        width:100%;
-                        aspect-ratio:2/3;
-                        display:flex;
-                        align-items:center;
-                        justify-content:center;
-                        text-align:center;
-                        background-color:rgba(128,128,128,0.12);
-                        border-radius:8px;
-                        color:gray;
-                        font-size:13px;
-                    ">
-                        🎞️ Pas d'affiche
-                    </div>
-                    """,
-                    unsafe_allow_html=True
-                )
-            # --------------------------
-            # TITRE
-            # --------------------------
-            
-            titre = html.escape(
-                str(element.get("title", "Sans titre"))
-            )
-            
-            st.markdown(
-                f"""
-                <div style="
-                    text-align:center;
-                    font-size:13px;
-                    font-weight:600;
-                    line-height:1.2;
-                    margin:2px 0 0 0;
-                    padding:0;
-                    overflow-wrap:anywhere;
-                ">
-                    {titre}
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
-            
-            # --------------------------
-            # DATE DE VISIONNAGE + NOTE
-            # --------------------------
-            
-            date_vue = element.get("date_affichage")
-            note = element.get("note_affichage")
-            
-            # Date
-            if pd.notna(date_vue):
-                date_affichee = pd.Timestamp(
-                    date_vue
-                ).strftime("%d/%m/%Y")
-            else:
-                date_affichee = "Non visionné"
-            
-            # Note
-            if pd.notna(note) and str(note).strip():
-                try:
-                    note_affichee = f"⭐ {float(note):g}/5"
-                except (ValueError, TypeError):
-                    note_affichee = ""
-            else:
-                note_affichee = ""
-            
-            # Affichage compact
-            st.markdown(
-                f"""
-                <div style="
-                    text-align:center;
-                    font-size:11px;
-                    color:gray;
-                    line-height:1.2;
-                    margin:0;
-                    padding:0;
-                    overflow-wrap:anywhere;
-                ">
-                    {date_affichee}
-                    {" " + note_affichee if note_affichee else ""}
-                </div>
-                """,
-                unsafe_allow_html=True
             )
 
+        affiche_html = f"""
+            <img
+                src="{html.escape(poster_url, quote=True)}"
+                class="poster"
+                loading="lazy"
+            >
+        """
 
+    else:
+
+        affiche_html = """
+            <div class="pas-affiche">
+                🎞️ Pas d'affiche
+            </div>
+        """
+
+    # --------------------------
+    # TITRE
+    # --------------------------
+
+    titre = html.escape(
+        str(element.get("title", "Sans titre"))
+    )
+
+    # --------------------------
+    # DATE
+    # --------------------------
+
+    date_vue = element.get("date_affichage")
+
+    if pd.notna(date_vue):
+
+        date_affichee = pd.Timestamp(
+            date_vue
+        ).strftime("%d/%m/%Y")
+
+    else:
+
+        date_affichee = "Non visionné"
+
+    # --------------------------
+    # NOTE
+    # --------------------------
+
+    note = element.get("note_affichage")
+
+    if pd.notna(note) and str(note).strip():
+
+        try:
+            note_affichee = f"⭐ {float(note):g}/5"
+        except (ValueError, TypeError):
+            note_affichee = ""
+
+    else:
+
+        note_affichee = ""
+
+    informations = html.escape(
+        date_affichee
+        + (f"  {note_affichee}" if note_affichee else "")
+    )
+
+    # --------------------------
+    # CARTE COMPLÈTE
+    # --------------------------
+
+    cartes_html += f"""
+        <div class="carte">
+            {affiche_html}
+
+            <div class="titre">
+                {titre}
+            </div>
+
+            <div class="informations">
+                {informations}
+            </div>
+        </div>
+    """
+
+
+# ==========================
+# HTML ET CSS RESPONSIVES
+# ==========================
+
+html_page = f"""
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+
+* {{
+    box-sizing: border-box;
+}}
+
+html, body {{
+    margin: 0;
+    padding: 0;
+    background: transparent;
+    font-family: sans-serif;
+}}
+
+.grille {{
+    display: grid;
+    grid-template-columns: repeat(8, minmax(0, 1fr));
+    gap: 18px 12px;
+    width: 100%;
+}}
+
+.carte {{
+    min-width: 0;
+    text-align: center;
+    overflow: hidden;
+}}
+
+.poster {{
+    display: block;
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    object-fit: cover;
+    border-radius: 8px;
+}}
+
+.pas-affiche {{
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    background-color: rgba(128,128,128,0.12);
+    border-radius: 8px;
+    color: gray;
+    font-size: 13px;
+    padding: 5px;
+}}
+
+.titre {{
+    color: white;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 1.2;
+    margin-top: 4px;
+    overflow-wrap: anywhere;
+}}
+
+.informations {{
+    color: white;
+    opacity: 0.75;
+    text-align: center;
+    font-size: 11px;
+    line-height: 1.2;
+    margin-top: 3px;
+    overflow-wrap: anywhere;
+}}
+
+/* Tablette */
+@media (max-width: 900px) {{
+    .grille {{
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+    }}
+}}
+
+/* Téléphone : 3 affiches par ligne */
+@media (max-width: 600px) {{
+    .grille {{
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 16px 8px;
+    }}
+
+    .titre {{
+        font-size: 12px;
+    }}
+
+    .informations {{
+        font-size: 10px;
+    }}
+}}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="grille">
+    {cartes_html}
+</div>
+
+</body>
+</html>
+"""
+
+
+# ==========================
+# AFFICHAGE
+# ==========================
+
+# Estimation de la hauteur de la grille
+nb_elements = len(df_filtre)
+
+if nb_elements > 0:
+
+    nb_lignes = (nb_elements + 7) // 8
+
+    hauteur = max(
+        100,
+        nb_lignes * 250
+    )
+
+else:
+
+    hauteur = 100
+    st.info("Aucun élément ne correspond à ces filtres.")
+
+
+components.html(
+    html_page,
+    height=hauteur,
+    scrolling=False
+)
