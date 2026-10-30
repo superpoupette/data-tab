@@ -11,11 +11,12 @@ from scripts.musique.google_sheet import charger_musique
 # ==========================
 
 st.set_page_config(
-    page_title="Tous mes albums",
+    page_title="Albums",
+    page_icon="💿",
     layout="wide"
 )
 
-st.title("💿 Tous mes albums")
+st.title("💿 Albums")
 
 # ==========================
 # CHARGEMENT DES DONNÉES
