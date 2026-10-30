@@ -13,7 +13,12 @@ from scripts.danse.google_sheet import (
     add_practice_time
 )
 
-st.set_page_config(page_title="Today")
+st.set_page_config(
+    page_title="Today",
+    page_icon="☀️",
+    layout="wide"
+)
+
 
 st.title("Données du jour")
 
