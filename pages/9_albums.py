@@ -1,4 +1,4 @@
-﻿import streamlit as st
+import streamlit as st
 import pandas as pd
 import streamlit.components.v1 as components
 from html import escape
@@ -21,6 +21,7 @@ df_albums["Date"] = pd.to_datetime(
     df_albums["Date"],
     errors="coerce"
 )
+
 df_albums["Annee_ecoute"] = df_albums["Date"].dt.year
 
 df_albums["Note"] = (
@@ -53,25 +54,20 @@ df_albums["Genre (large)"] = (
 # Filtres et tri
 # ==========================
 
-col1, col2, col3, col4, col5, col6 = st.columns([1, 1, 1, 1, 1, 1.8])
+col1, col2, col3, col4, col5, col6 = st.columns(
+    [1, 1, 1, 1, 1, 1.8]
+)
 
 with col1:
     critere_tri = st.selectbox(
         "Trier par",
-        [
-            "Date",
-            "Note",
-            "Artiste"
-        ]
+        ["Date", "Note", "Artiste"]
     )
 
 with col2:
     ordre_tri = st.selectbox(
         "Ordre",
-        [
-            "Décroissant",
-            "Croissant"
-        ]
+        ["Décroissant", "Croissant"]
     )
 
 with col3:
@@ -135,7 +131,7 @@ if annee_selectionnee != "Toutes":
         df_filtre["Annee_ecoute"] == int(annee_selectionnee)
     ]
 
-# Recherche dans le titre OU l'artiste
+# Recherche album ou artiste
 if recherche:
     masque = (
         df_filtre["spotify_album"]
@@ -181,10 +177,7 @@ elif critere_tri == "Artiste":
 # Nombre d'albums
 # ==========================
 
-st.caption(
-    f"{len(df_filtre)} album(s)"
-)
-
+st.caption(f"{len(df_filtre)} album(s)")
 
 # ==========================
 # Grille responsive des albums
@@ -212,17 +205,44 @@ for _, album in df_filtre.iterrows():
         note_affichee = "⭐ Sans note"
 
     # Carte
-    cartes.append(f"""
-        <div class="album">
+    if cover_url:
+        image_html = f"""
             <img
                 src="{escape(cover_url, quote=True)}"
                 alt="{nom_album}"
                 loading="lazy"
             >
+        """
+    else:
+        image_html = """
+            <div class="image-vide"></div>
+        """
+
+    cartes.append(f"""
+        <div class="album">
+            {image_html}
             <div class="titre">{nom_album}</div>
             <div class="infos">{artiste} · {note_affichee}</div>
         </div>
     """)
+
+# ==========================
+# Thème et couleurs Streamlit
+# ==========================
+
+couleur_texte = st.get_option("theme.textColor")
+couleur_fond = st.get_option("theme.backgroundColor")
+
+# Valeurs de secours si le thème ne définit pas ces couleurs
+if not couleur_texte:
+    couleur_texte = "#FAFAFA" if st.get_option("theme.base") == "dark" else "#31333F"
+
+if not couleur_fond:
+    couleur_fond = "#0E1117" if st.get_option("theme.base") == "dark" else "#FFFFFF"
+
+# ==========================
+# Construction HTML
+# ==========================
 
 html = f"""
 <!DOCTYPE html>
@@ -231,14 +251,17 @@ html = f"""
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
 <style>
+
     * {{
         box-sizing: border-box;
     }}
 
-    body {{
+    html, body {{
         margin: 0;
         padding: 0;
         font-family: sans-serif;
+        color: {couleur_texte};
+        background: transparent;
     }}
 
     .grille {{
@@ -250,14 +273,21 @@ html = f"""
 
     .album {{
         min-width: 0;
+        color: {couleur_texte};
     }}
 
-    .album img {{
+    .album img,
+    .image-vide {{
         display: block;
         width: 100%;
         aspect-ratio: 1 / 1;
         object-fit: cover;
         border-radius: 5px;
+    }}
+
+    .image-vide {{
+        background: {couleur_fond};
+        opacity: 0.15;
     }}
 
     .titre {{
@@ -266,6 +296,7 @@ html = f"""
         font-weight: 600;
         line-height: 1.35;
         overflow-wrap: anywhere;
+        color: {couleur_texte};
     }}
 
     .infos {{
@@ -274,9 +305,11 @@ html = f"""
         line-height: 1.4;
         opacity: 0.75;
         overflow-wrap: anywhere;
+        color: {couleur_texte};
     }}
 
     /* Tablettes */
+
     @media (max-width: 900px) {{
         .grille {{
             grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -284,6 +317,7 @@ html = f"""
     }}
 
     /* Téléphones */
+
     @media (max-width: 600px) {{
         .grille {{
             grid-template-columns: repeat(3, minmax(0, 1fr));
@@ -298,19 +332,27 @@ html = f"""
             font-size: 10px;
         }}
     }}
+
 </style>
 </head>
 
 <body>
+
     <div class="grille">
         {''.join(cartes)}
     </div>
+
 </body>
 </html>
 """
 
-# Hauteur approximative du composant
+# ==========================
+# Affichage
+# ==========================
+
+# Hauteur estimée : 3 colonnes sur téléphone
 nb_lignes = (len(df_filtre) + 2) // 3
+
 hauteur = max(100, nb_lignes * 220)
 
 components.html(
