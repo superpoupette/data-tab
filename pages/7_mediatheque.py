@@ -14,12 +14,12 @@ from scripts.watchlist.load_watchlist import (
 # ==========================
 
 st.set_page_config(
-    page_title="Toutes mes affiches",
+    page_title="Mediatheque",
     page_icon="🍿",
     layout="wide"
 )
 
-st.title("🍿 Toutes mes affiches")
+st.title("🍿 Médiathèque")
 
 
 # ==========================
@@ -569,16 +569,17 @@ html, body {{
 # AFFICHAGE
 # ==========================
 
-# Estimation de la hauteur de la grille
 nb_elements = len(df_filtre)
 
 if nb_elements > 0:
 
-    nb_lignes = (nb_elements + 7) // 8
+    # Hauteur calculée avec 3 affiches par ligne
+    # pour éviter que les dernières lignes soient coupées
+    nb_lignes_mobile = (nb_elements + 2) // 3
 
     hauteur = max(
-        100,
-        nb_lignes * 250
+        300,
+        nb_lignes_mobile * 260 + 50
     )
 
 else:
