@@ -1,6 +1,7 @@
 ﻿import streamlit as st
 import pandas as pd
-
+import streamlit.components.v1 as components
+from html import escape
 from scripts.musique.google_sheet import charger_musique
 
 st.set_page_config(
