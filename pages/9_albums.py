@@ -261,7 +261,7 @@ html = f"""
         margin: 0;
         padding: 0;
         font-family: sans-serif;
-        color: {couleur_texte};
+        color: {couleur_titre};
         background: transparent;
     }}
 
@@ -274,7 +274,7 @@ html = f"""
 
     .album {{
         min-width: 0;
-        color: {couleur_texte};
+        color: {couleur_titre};
     }}
 
     .album img,
