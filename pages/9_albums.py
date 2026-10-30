@@ -186,44 +186,134 @@ st.caption(
 
 
 # ==========================
-# Grille des albums
+# Grille responsive des albums
 # ==========================
 
-NB_COLONNES = 6
+cartes = []
 
-for i in range(0, len(df_filtre), NB_COLONNES):
+for _, album in df_filtre.iterrows():
 
-    albums_ligne = df_filtre.iloc[
-        i:i + NB_COLONNES
-    ]
+    # Pochette
+    cover_url = (
+        str(album["cover_url"])
+        if pd.notna(album["cover_url"])
+        else ""
+    )
 
-    cols = st.columns(NB_COLONNES)
+    # Nom de l'album et artiste
+    nom_album = escape(str(album["spotify_album"]))
+    artiste = escape(str(album["spotify_artiste"]))
 
-    for col, (_, album) in zip(
-        cols,
-        albums_ligne.iterrows()
-    ):
+    # Note
+    if pd.notna(album["Note"]):
+        note_affichee = f"⭐ {int(album['Note'])}/10"
+    else:
+        note_affichee = "⭐ Sans note"
 
-        with col:
+    # Carte
+    cartes.append(f"""
+        <div class="album">
+            <img
+                src="{escape(cover_url, quote=True)}"
+                alt="{nom_album}"
+                loading="lazy"
+            >
+            <div class="titre">{nom_album}</div>
+            <div class="infos">{artiste} · {note_affichee}</div>
+        </div>
+    """)
 
-            # Pochette
-            if (
-                pd.notna(album["cover_url"])
-                and album["cover_url"]
-            ):
-                st.image(
-                    album["cover_url"],
-                    use_container_width=True
-                )
+html = f"""
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
 
-            # Nom de l'album
-            if pd.notna(album["Note"]):
-                note_affichee = f"⭐ {int(album['Note'])}/10"
-            else:
-                note_affichee = "⭐ Sans note"
+<style>
+    * {{
+        box-sizing: border-box;
+    }}
 
-            st.markdown(
-                f"""**{album['spotify_album']}**  
-            <small>{album['spotify_artiste']} · {note_affichee}</small>""",
-                unsafe_allow_html=True,
-            )
+    body {{
+        margin: 0;
+        padding: 0;
+        font-family: sans-serif;
+    }}
+
+    .grille {{
+        display: grid;
+        grid-template-columns: repeat(6, minmax(0, 1fr));
+        gap: 20px 12px;
+        width: 100%;
+    }}
+
+    .album {{
+        min-width: 0;
+    }}
+
+    .album img {{
+        display: block;
+        width: 100%;
+        aspect-ratio: 1 / 1;
+        object-fit: cover;
+        border-radius: 5px;
+    }}
+
+    .titre {{
+        margin-top: 7px;
+        font-size: 13px;
+        font-weight: 600;
+        line-height: 1.35;
+        overflow-wrap: anywhere;
+    }}
+
+    .infos {{
+        margin-top: 3px;
+        font-size: 11px;
+        line-height: 1.4;
+        opacity: 0.75;
+        overflow-wrap: anywhere;
+    }}
+
+    /* Tablettes */
+    @media (max-width: 900px) {{
+        .grille {{
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+        }}
+    }}
+
+    /* Téléphones */
+    @media (max-width: 600px) {{
+        .grille {{
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 16px 8px;
+        }}
+
+        .titre {{
+            font-size: 12px;
+        }}
+
+        .infos {{
+            font-size: 10px;
+        }}
+    }}
+</style>
+</head>
+
+<body>
+    <div class="grille">
+        {''.join(cartes)}
+    </div>
+</body>
+</html>
+"""
+
+# Hauteur approximative du composant
+nb_lignes = (len(df_filtre) + 2) // 3
+hauteur = max(100, nb_lignes * 220)
+
+components.html(
+    html,
+    height=hauteur,
+    scrolling=False
+)
