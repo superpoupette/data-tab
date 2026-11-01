@@ -5,7 +5,12 @@ import pandas as pd
 from scripts.importation_spotify import charger_historique_spotify
 from scripts.musique.google_sheet import charger_musique
 
-st.set_page_config(page_title="Musique", layout="wide")
+
+st.set_page_config(
+    page_title="Musique",
+    page_icon="🎵",
+    layout="wide"
+)
 
 st.title("🎵 Spotify Dashboard")
 
