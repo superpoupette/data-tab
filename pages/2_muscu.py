@@ -1,6 +1,11 @@
 ﻿import streamlit as st
 import altair as alt
 from scripts.data_loader import load_hevy
+from scripts.objectifs import (
+    pompes_2026,
+    ajouter_pompes,
+    retirer_pompes
+)
 
 st.set_page_config(
     page_title="Muscu",
@@ -9,7 +14,50 @@ st.set_page_config(
 )
 st.title("Musculation")
 
+
+
 workouts, sessions = load_hevy()
+
+# ==========================
+# Compteur de pompes
+# ==========================
+
+nb_pompes = pompes_2026()
+
+col1, col2, col3 = st.columns([1, 2, 1])
+
+with col2:
+    st.markdown(
+        f"""
+        <div style="
+            text-align:center;
+            font-size:22px;
+            font-weight:600;
+            margin-bottom:10px;
+        ">
+            💪 {nb_pompes} / 1000 pompes
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
+
+    progression = min(nb_pompes / 1000, 1)
+
+    st.progress(progression)
+
+    bouton1, bouton2 = st.columns(2)
+
+    with bouton1:
+        if st.button("➖", use_container_width=True):
+            retirer_pompes()
+            st.rerun()
+
+    with bouton2:
+        if st.button("➕", use_container_width=True):
+            ajouter_pompes()
+            st.rerun()
+
+st.divider()
 
 # Indicateurs principaux
 
