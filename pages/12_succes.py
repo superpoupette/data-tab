@@ -11,6 +11,12 @@ DOSSIER_IMAGES = BASE_DIR / "images" / "succes"
 
 from google.oauth2.service_account import Credentials
 
+st.set_page_config(
+    page_title="Succes",
+    page_icon="⭐",
+    layout="wide"
+)
+
 
 # --------------------------------------------------
 # Configuration Google Sheets

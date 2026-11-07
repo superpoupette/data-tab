@@ -12,7 +12,7 @@ from scripts.musique.google_sheet import charger_musique
 
 st.set_page_config(
     page_title="Albums",
-    page_icon="💿",
+    page_icon="🎵",
     layout="wide"
 )
 

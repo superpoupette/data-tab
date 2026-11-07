@@ -1,6 +1,7 @@
 ﻿import streamlit as st
 import altair as alt
 from scripts.data_loader import load_hevy
+from scripts.objectifs import pompes_2026
 
 st.set_page_config(
     page_title="Muscu",
@@ -9,8 +10,13 @@ st.set_page_config(
 )
 st.title("Musculation")
 
+
+
 workouts, sessions = load_hevy()
 
+nb_pompes = pompes_2026()
+
+st.metric("💪 Total de pompes en 2026", nb_pompes)
 # Indicateurs principaux
 
 col1, col2, col3, col4 = st.columns(4)
@@ -45,26 +51,125 @@ with col4:
 st.subheader("Temps total d'entraînement par mois")
 
 # Recréation propre du mois
-sessions["mois"] = sessions["start_time"].dt.to_period("M").astype(str)
 
-temps_par_mois = (
-    sessions
-    .groupby("mois", as_index=False)["duree_minutes"]
-    .sum()
+st.subheader("Temps total d'entraînement")
+
+# Années disponibles dans les données
+annees = sorted(
+    sessions["start_time"].dt.year.dropna().unique(),
+    reverse=True
 )
 
-temps_par_mois["heures"] = temps_par_mois["duree_minutes"] / 60
+# Liste déroulante
+options = ["Total"] + [str(int(a)) for a in annees]
 
-chart = alt.Chart(temps_par_mois).mark_line(point=True).encode(
-    x=alt.X("mois:O", title="Mois", sort="ascending"),
-    y=alt.Y("heures:Q", title="Temps total (heures)"),
-    tooltip=[
-        alt.Tooltip("mois:O", title="Mois"),
-        alt.Tooltip("heures:Q", title="Heures", format=".1f")
-    ]
+selection = st.selectbox(
+    "Période",
+    options,
+    index=0
 )
 
-st.altair_chart(chart, use_container_width=True)
+if selection == "Total":
+
+    # Chaque mois reste indépendant, toutes années confondues
+    sessions_graph = sessions.copy()
+
+    sessions_graph["mois"] = (
+        sessions_graph["start_time"]
+        .dt.to_period("M")
+        .astype(str)
+    )
+
+    temps_graph = (
+        sessions_graph
+        .groupby("mois", as_index=False)["duree_minutes"]
+        .sum()
+        .sort_values("mois")
+    )
+
+    temps_graph["heures"] = temps_graph["duree_minutes"] / 60
+
+    chart = alt.Chart(temps_graph).mark_line(
+        point=True
+    ).encode(
+        x=alt.X(
+            "mois:O",
+            title="Mois",
+            sort="ascending"
+        ),
+        y=alt.Y(
+            "heures:Q",
+            title="Temps total (heures)"
+        ),
+        tooltip=[
+            alt.Tooltip("mois:O", title="Mois"),
+            alt.Tooltip(
+                "heures:Q",
+                title="Heures",
+                format=".1f"
+            )
+        ]
+    )
+
+else:
+
+    # Filtrage sur l'année sélectionnée
+    annee = int(selection)
+
+    sessions_annee = sessions[
+        sessions["start_time"].dt.year == annee
+    ].copy()
+
+    # Regroupement par semaine (lundi au dimanche)
+    sessions_annee["semaine"] = (
+        sessions_annee["start_time"]
+        .dt.to_period("W-SUN")
+        .dt.start_time
+    )
+
+    temps_graph = (
+        sessions_annee
+        .groupby("semaine", as_index=False)["duree_minutes"]
+        .sum()
+        .sort_values("semaine")
+    )
+
+    temps_graph["heures"] = temps_graph["duree_minutes"] / 60
+
+    chart = alt.Chart(temps_graph).mark_line(
+        point=True
+    ).encode(
+        x=alt.X(
+            "semaine:T",
+            title="Semaine",
+            axis=alt.Axis(
+                format="%d/%m",
+                labelAngle=-45
+            )
+        ),
+        y=alt.Y(
+            "heures:Q",
+            title="Temps total (heures)"
+        ),
+        tooltip=[
+            alt.Tooltip(
+                "semaine:T",
+                title="Début de semaine",
+                format="%d/%m/%Y"
+            ),
+            alt.Tooltip(
+                "heures:Q",
+                title="Heures",
+                format=".1f"
+            )
+        ]
+    )
+
+st.altair_chart(
+    chart,
+    use_container_width=True
+)
+
 # Répartition musculaire
 volume_muscles = (
     workouts
