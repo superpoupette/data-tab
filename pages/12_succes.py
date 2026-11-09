@@ -465,9 +465,9 @@ st.markdown(
         border: none !important;
         border-radius: 14px !important;
 
-        height: 300px !important;
-        min-height: 300px !important;
-        max-height: 300px !important;
+        height: 320px !important;
+        min-height: 320px !important;
+        max-height: 320px !important;
 
         padding: 14px !important;
         margin-bottom: 12px;
