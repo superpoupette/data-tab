@@ -557,7 +557,7 @@ st.markdown(
         overflow-wrap: anywhere;
         word-break: break-word;
 
-        margin-top: 2px;
+        margin-top: 0px;
         padding: 2px 0;
 
         box-sizing: border-box;
