@@ -240,7 +240,7 @@ df_evolution = df_filtre.copy()
 
 df_evolution["Total"] = (
     df_evolution[activites]
-    .sum(axis=1)
+    .sum(axis=1) / 60
 )
 
 
@@ -324,7 +324,7 @@ if annees_selection == "Toutes":
         color_discrete_map=couleurs_annees,
         labels={
             "Mois_nom": "Mois",
-            "Total": "Temps (minutes)",
+            "Total": "Temps (heures)",
             "Année": "Année"
         }
     )
@@ -373,7 +373,7 @@ else:
         markers=True,
         labels={
             "Semaine": "Semaine",
-            "Total": "Temps (minutes)"
+            "Total": "Temps (heures)"
         }
     )
 
