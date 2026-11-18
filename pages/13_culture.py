@@ -1,6 +1,7 @@
 import gspread
 import pandas as pd
 import streamlit as st
+from google.oauth2.service_account import Credentials
 
 # ==========================
 # CONFIGURATION
@@ -45,9 +46,12 @@ def load_succes_google_sheet():
 
     return pd.DataFrame(data)
 
+# --------------------------------------------------
+# Affichage données
+# --------------------------------------------------
 
-
+tableau = load_succes_google_sheet()
 st.dataframe(
-    data,
+    tableau,
     use_container_width=True
 )
