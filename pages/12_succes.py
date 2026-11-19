@@ -26,11 +26,11 @@ st.set_page_config(
 # Configuration Google Sheets
 # --------------------------------------------------
 
-SHEET_ID = "1rec6RNx7eViF3XxYovrVdGmsu22PXP0GoLDNVc0JNJg"
+SHEET_ID_SUCCES = "1rec6RNx7eViF3XxYovrVdGmsu22PXP0GoLDNVc0JNJg"
 
 
 @st.cache_resource
-def get_sheet():
+def get_sheet_succes():
 
     credentials = Credentials.from_service_account_info(
         st.secrets["gcp_service_account"],
@@ -41,18 +41,17 @@ def get_sheet():
 
     client = gspread.authorize(credentials)
 
-    return client.open_by_key(SHEET_ID).sheet1
+    return client.open_by_key(SHEET_ID_SUCCES).sheet1
 
 
 @st.cache_data(ttl=300)
 def load_succes_google_sheet():
 
-    sheet = get_sheet()
+    sheet = get_sheet_succes()
 
     data = sheet.get_all_records()
 
     return pd.DataFrame(data)
-
 
 # --------------------------------------------------
 # Images par défaut selon la catégorie
