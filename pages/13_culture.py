@@ -8,9 +8,9 @@ import json
 import math
 
 
-# --------------------------------------------------
+# ==================================================
 # CONFIGURATION
-# --------------------------------------------------
+# ==================================================
 
 SHEET_ID = "11_RcYunE4kKJmF1Jo6g1MfoAy3di-S0j7BFDHWTdPh0"
 
@@ -28,41 +28,50 @@ COLONNES = [
 ]
 
 
-# --------------------------------------------------
+# ==================================================
 # CONNEXION GOOGLE SHEETS
-# --------------------------------------------------
+# ==================================================
 
 @st.cache_resource
 def get_sheet_culture():
+
     credentials = st.secrets["gcp_service_account"]
+
     client = gspread.service_account_from_dict(credentials)
+
     spreadsheet = client.open_by_key(SHEET_ID)
+
     return spreadsheet.sheet1
 
 
 @st.cache_data(ttl=300)
 def load_culture_google_sheet():
+
     sheet = get_sheet_culture()
+
     data = sheet.get_all_records()
+
     df = pd.DataFrame(data)
 
+    # Garantit la présence de toutes les colonnes
     for colonne in COLONNES:
+
         if colonne not in df.columns:
             df[colonne] = ""
 
     return df[COLONNES]
 
 
-# --------------------------------------------------
+# ==================================================
 # CHARGEMENT DES DONNÉES
-# --------------------------------------------------
+# ==================================================
 
 df = load_culture_google_sheet()
 
 
-# --------------------------------------------------
+# ==================================================
 # COULEURS DES CATÉGORIES
-# --------------------------------------------------
+# ==================================================
 
 COULEURS_CATEGORIES = {
     "biologie": "#8EDE5B",
@@ -75,25 +84,24 @@ COULEUR_DEFAUT = "#666875"
 
 
 def obtenir_couleur(categorie):
+
     return COULEURS_CATEGORIES.get(
         str(categorie).strip().lower(),
         COULEUR_DEFAUT
     )
 
 
-# --------------------------------------------------
-# FONCTION DE NETTOYAGE DES DONNÉES
-# --------------------------------------------------
+# ==================================================
+# FONCTIONS UTILITAIRES
+# ==================================================
 
 def valeur_texte(valeur):
+
     if pd.isna(valeur):
         return ""
+
     return str(valeur).strip()
 
-
-# --------------------------------------------------
-# LECTURE DE LA COLONNE LIENS
-# --------------------------------------------------
 
 def extraire_liens(valeur):
     """
@@ -115,15 +123,19 @@ def extraire_liens(valeur):
 
     # Essai de lecture d'une liste JSON
     if texte.startswith("[") and texte.endswith("]"):
+
         try:
+
             resultat = json.loads(texte)
 
             if isinstance(resultat, list):
+
                 return [
                     str(element).strip()
                     for element in resultat
                     if str(element).strip()
                 ]
+
         except (json.JSONDecodeError, TypeError):
             pass
 
@@ -137,18 +149,20 @@ def extraire_liens(valeur):
     ]
 
 
-# --------------------------------------------------
+# ==================================================
 # CONSTRUCTION DES CONNEXIONS
-# --------------------------------------------------
+# ==================================================
 
 def construire_connexions(dataframe):
 
     titres = {}
 
     for index, ligne in dataframe.iterrows():
+
         titre = valeur_texte(ligne["Titre"])
 
         if titre:
+
             cle = titre.casefold()
 
             if cle not in titres:
@@ -186,14 +200,16 @@ def construire_connexions(dataframe):
 connexions = construire_connexions(df)
 
 
-# --------------------------------------------------
-# CSS GÉNÉRAL
-# --------------------------------------------------
+# ==================================================
+# CSS
+# ==================================================
 
 st.markdown("""
 <style>
 
-/* ---------------- CARTES ---------------- */
+/* ==================================================
+   CARTES DU MODE FICHES
+   ================================================== */
 
 div[class*="st-key-wiki_"] {
     background-color: #202129;
@@ -304,20 +320,16 @@ div[class*="st-key-wiki_"] [data-testid="stVerticalBlock"] {
     margin: 0;
 }
 
-/* ---------------- CONNEXIONS ---------------- */
 
-.connexion-titre {
-    font-size: 25px;
-    font-weight: 700;
-    text-align: center;
-    margin-bottom: 8px;
-}
+/* ==================================================
+   MODE CONNEXIONS
+   ================================================== */
 
 .connexion-sous-titre {
     font-size: 13px;
     color: #999999;
     text-align: center;
-    margin-bottom: 20px;
+    margin-bottom: 15px;
 }
 
 .connexion-info {
@@ -329,20 +341,27 @@ div[class*="st-key-wiki_"] [data-testid="stVerticalBlock"] {
     font-size: 13px;
 }
 
+/* Liste des fiches */
+div[class*="st-key-selection_fiche_"] button {
+    text-align: left !important;
+}
+
 </style>
 """, unsafe_allow_html=True)
 
 
-# --------------------------------------------------
+# ==================================================
 # EN-TÊTE ET CHOIX DE L'AFFICHAGE
-# --------------------------------------------------
+# ==================================================
 
 col_titre, col_mode = st.columns([3, 2])
 
 with col_titre:
+
     st.title("Wikicollection")
 
 with col_mode:
+
     mode = st.radio(
         "Affichage",
         ["Fiches", "Connexions"],
@@ -380,6 +399,7 @@ if mode == "Fiches":
             categorie1 = valeur_texte(ligne["Categorie1"])
             image = valeur_texte(ligne["Image"])
 
+            # Couleur du bandeau
             couleur_bandeau = obtenir_couleur(categorie1)
 
             # Sécurisation HTML
@@ -423,6 +443,7 @@ if mode == "Fiches":
 
                     # Image
                     if image.startswith(("https://", "http://")):
+
                         st.markdown(
                             f'<img class="wiki-image" '
                             f'src="{html.escape(image, quote=True)}">',
@@ -450,6 +471,7 @@ if mode == "Fiches":
                         )
 
                     else:
+
                         bouton_wiki = ""
 
                     # Bouton à gauche et date à droite
@@ -472,6 +494,7 @@ elif mode == "Connexions":
 
     # Initialisation de la fiche sélectionnée
     if "fiche_selectionnee" not in st.session_state:
+
         st.session_state.fiche_selectionnee = (
             df.index[0] if len(df) > 0 else None
         )
@@ -481,11 +504,13 @@ elif mode == "Connexions":
         st.session_state.fiche_selectionnee not in df.index
         and len(df) > 0
     ):
+
         st.session_state.fiche_selectionnee = df.index[0]
 
     # Deux zones :
-    # graphique à gauche, liste des titres à droite
+    # Graphique à gauche, liste des titres à droite
     col_graphique, col_liste = st.columns([4, 1.5])
+
 
     # --------------------------------------------------
     # GRAPHIQUE DES CONNEXIONS
@@ -504,6 +529,7 @@ elif mode == "Connexions":
             fiche = df.loc[index_selectionne]
 
             titre_selectionne = valeur_texte(fiche["Titre"])
+
             categorie_selectionnee = valeur_texte(
                 fiche["Categorie1"]
             )
@@ -519,13 +545,46 @@ elif mode == "Connexions":
                 unsafe_allow_html=True
             )
 
-            # Récupération des fiches connectées
+            # Fiches connectées
             indices_lies = sorted(
                 connexions.get(index_selectionne, set()),
-                key=lambda i: valeur_texte(df.loc[i, "Titre"]).casefold()
+                key=lambda i: valeur_texte(
+                    df.loc[i, "Titre"]
+                ).casefold()
             )
 
-            # Construction du graphique Graphviz
+
+            # --------------------------------------------------
+            # CRÉATION DES NŒUDS
+            # --------------------------------------------------
+
+            def creer_noeud(titre, couleur, taille=10):
+
+                titre_html = html.escape(
+                    titre,
+                    quote=False
+                )
+
+                return (
+                    '<<TABLE BORDER="0" CELLBORDER="0" '
+                    'CELLSPACING="0" CELLPADDING="0" '
+                    'BGCOLOR="#202129">'
+                    '<TR>'
+                    f'<TD WIDTH="5" BGCOLOR="{couleur}"></TD>'
+                    '<TD CELLPADDING="10" BGCOLOR="#202129">'
+                    f'<FONT COLOR="#FFFFFF" POINT-SIZE="{taille}">'
+                    f'{titre_html}'
+                    '</FONT>'
+                    '</TD>'
+                    '</TR>'
+                    '</TABLE>>'
+                )
+
+
+            # --------------------------------------------------
+            # CONSTRUCTION DU GRAPHIQUE
+            # --------------------------------------------------
+
             lignes_graphique = [
                 "graph Connexions {",
                 'layout=neato;',
@@ -533,39 +592,54 @@ elif mode == "Connexions":
                 'splines=true;',
                 'bgcolor="transparent";',
                 'outputorder=edgesfirst;',
-                'node [shape=box, style="rounded,filled", '
-                'fontname="Arial", fontsize=11, margin="0.18,0.12"];',
-                'edge [color="#777777", penwidth=1.8];'
+                'pad=0.5;',
+                'sep="+20";',
+                'node [shape=plain, fontname="Arial"];',
+                'edge [color="#555963", penwidth=1.2];'
             ]
 
-            def dot_texte(texte):
-                return json.dumps(str(texte), ensure_ascii=False)
 
-            # Nœud central
+            # --------------------------------------------------
+            # FICHE CENTRALE
+            # --------------------------------------------------
+
             lignes_graphique.append(
-                f'centre [label={dot_texte(titre_selectionne)}, '
-                f'fillcolor={dot_texte(couleur_centrale)}, '
-                f'color="#FFFFFF", penwidth=3, '
-                f'fontcolor="#202129", fontsize=14, '
-                f'pos="0,0!", pin=true];'
+                'centre ['
+                f'label={creer_noeud(titre_selectionne, couleur_centrale, 11)}, '
+                'pos="0,0!", '
+                'pin=true'
+                '];'
             )
 
-            # Nœuds autour du centre
+
+            # --------------------------------------------------
+            # FICHES AUTOUR DU CENTRE
+            # --------------------------------------------------
+
             nombre = len(indices_lies)
-            rayon = 2.7
+
+            rayon = 3.2
 
             for numero, index_lie in enumerate(indices_lies):
 
                 fiche_liee = df.loc[index_lie]
-                titre_lie = valeur_texte(fiche_liee["Titre"])
+
+                titre_lie = valeur_texte(
+                    fiche_liee["Titre"]
+                )
+
                 categorie_liee = valeur_texte(
                     fiche_liee["Categorie1"]
                 )
 
-                couleur_liee = obtenir_couleur(categorie_liee)
+                couleur_liee = obtenir_couleur(
+                    categorie_liee
+                )
 
-                # Répartition circulaire autour du centre
-                angle = (2 * math.pi * numero / max(nombre, 1)) - math.pi / 2
+                # Positionnement circulaire
+                angle = (
+                    2 * math.pi * numero / max(nombre, 1)
+                ) - math.pi / 2
 
                 x = rayon * math.cos(angle)
                 y = rayon * math.sin(angle)
@@ -573,12 +647,14 @@ elif mode == "Connexions":
                 identifiant = f"fiche_{numero}"
 
                 lignes_graphique.append(
-                    f'{identifiant} [label={dot_texte(titre_lie)}, '
-                    f'fillcolor={dot_texte(couleur_liee)}, '
-                    f'color="#777777", fontcolor="#202129", '
-                    f'pos="{x:.3f},{y:.3f}!", pin=true];'
+                    f'{identifiant} ['
+                    f'label={creer_noeud(titre_lie, couleur_liee, 10)}, '
+                    f'pos="{x:.3f},{y:.3f}!", '
+                    'pin=true'
+                    '];'
                 )
 
+                # Liaison avec la fiche centrale
                 lignes_graphique.append(
                     f'centre -- {identifiant};'
                 )
@@ -586,6 +662,11 @@ elif mode == "Connexions":
             lignes_graphique.append("}")
 
             graphique = "\n".join(lignes_graphique)
+
+
+            # --------------------------------------------------
+            # AFFICHAGE DU GRAPHIQUE
+            # --------------------------------------------------
 
             if indices_lies:
 
@@ -612,6 +693,7 @@ elif mode == "Connexions":
                     f'</div>',
                     unsafe_allow_html=True
                 )
+
 
     # --------------------------------------------------
     # LISTE DES TITRES À DROITE
@@ -642,4 +724,5 @@ elif mode == "Connexions":
                 ):
 
                     st.session_state.fiche_selectionnee = index
+
                     st.rerun()
