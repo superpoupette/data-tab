@@ -67,7 +67,7 @@ df = load_culture_google_sheet()
 # --------------------------------------------------
 
 COULEURS_CATEGORIES = {
-    "biologie": "#B8E879",
+    "biologie": "#8EDE5B",
     "géographie": "#73ABF5",
     "geographie": "#73ABF5",
     "personne": "#F5D5AE",
