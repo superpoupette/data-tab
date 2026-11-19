@@ -3,6 +3,10 @@ import streamlit as st
 import gspread
 import pandas as pd
 import html
+import re
+import json
+import math
+
 
 # --------------------------------------------------
 # CONFIGURATION
@@ -31,23 +35,17 @@ COLONNES = [
 @st.cache_resource
 def get_sheet_culture():
     credentials = st.secrets["gcp_service_account"]
-
     client = gspread.service_account_from_dict(credentials)
-
     spreadsheet = client.open_by_key(SHEET_ID)
-
     return spreadsheet.sheet1
 
 
 @st.cache_data(ttl=300)
 def load_culture_google_sheet():
     sheet = get_sheet_culture()
-
     data = sheet.get_all_records()
-
     df = pd.DataFrame(data)
 
-    # Garantit la présence de toutes les colonnes
     for colonne in COLONNES:
         if colonne not in df.columns:
             df[colonne] = ""
@@ -76,14 +74,127 @@ COULEURS_CATEGORIES = {
 COULEUR_DEFAUT = "#666875"
 
 
+def obtenir_couleur(categorie):
+    return COULEURS_CATEGORIES.get(
+        str(categorie).strip().lower(),
+        COULEUR_DEFAUT
+    )
+
+
 # --------------------------------------------------
-# CSS
+# FONCTION DE NETTOYAGE DES DONNÉES
+# --------------------------------------------------
+
+def valeur_texte(valeur):
+    if pd.isna(valeur):
+        return ""
+    return str(valeur).strip()
+
+
+# --------------------------------------------------
+# LECTURE DE LA COLONNE LIENS
+# --------------------------------------------------
+
+def extraire_liens(valeur):
+    """
+    Récupère les titres présents dans la colonne Liens.
+
+    Séparateurs acceptés :
+    - virgule
+    - point-virgule
+    - retour à la ligne
+    - barre verticale
+
+    Accepte également une liste au format JSON.
+    """
+
+    texte = valeur_texte(valeur)
+
+    if not texte:
+        return []
+
+    # Essai de lecture d'une liste JSON
+    if texte.startswith("[") and texte.endswith("]"):
+        try:
+            resultat = json.loads(texte)
+
+            if isinstance(resultat, list):
+                return [
+                    str(element).strip()
+                    for element in resultat
+                    if str(element).strip()
+                ]
+        except (json.JSONDecodeError, TypeError):
+            pass
+
+    # Séparation des titres
+    elements = re.split(r"[;,\n|]+", texte)
+
+    return [
+        element.strip().strip('"').strip("'")
+        for element in elements
+        if element.strip()
+    ]
+
+
+# --------------------------------------------------
+# CONSTRUCTION DES CONNEXIONS
+# --------------------------------------------------
+
+def construire_connexions(dataframe):
+
+    titres = {}
+
+    for index, ligne in dataframe.iterrows():
+        titre = valeur_texte(ligne["Titre"])
+
+        if titre:
+            cle = titre.casefold()
+
+            if cle not in titres:
+                titres[cle] = index
+
+    connexions = {
+        index: set()
+        for index in dataframe.index
+    }
+
+    # Lecture des liens déclarés par chaque fiche
+    for index, ligne in dataframe.iterrows():
+
+        liens = extraire_liens(ligne["Liens"])
+
+        for titre_lie in liens:
+
+            cle = titre_lie.casefold()
+
+            if cle not in titres:
+                continue
+
+            index_lie = titres[cle]
+
+            if index_lie == index:
+                continue
+
+            # Connexion dans les deux sens
+            connexions[index].add(index_lie)
+            connexions[index_lie].add(index)
+
+    return connexions
+
+
+connexions = construire_connexions(df)
+
+
+# --------------------------------------------------
+# CSS GÉNÉRAL
 # --------------------------------------------------
 
 st.markdown("""
 <style>
 
-/* Carte */
+/* ---------------- CARTES ---------------- */
+
 div[class*="st-key-wiki_"] {
     background-color: #202129;
     border-radius: 14px;
@@ -95,7 +206,6 @@ div[class*="st-key-wiki_"] {
     box-sizing: border-box;
 }
 
-/* Espacement interne */
 div[class*="st-key-wiki_"] [data-testid="stVerticalBlock"] {
     gap: 0rem !important;
 }
@@ -158,7 +268,7 @@ div[class*="st-key-wiki_"] [data-testid="stVerticalBlock"] {
     -webkit-box-orient: vertical;
 }
 
-/* Ligne du bas : bouton et date */
+/* Ligne du bas */
 .wiki-bas {
     display: flex;
     justify-content: space-between;
@@ -194,123 +304,342 @@ div[class*="st-key-wiki_"] [data-testid="stVerticalBlock"] {
     margin: 0;
 }
 
+/* ---------------- CONNEXIONS ---------------- */
+
+.connexion-titre {
+    font-size: 25px;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+.connexion-sous-titre {
+    font-size: 13px;
+    color: #999999;
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.connexion-info {
+    background-color: #202129;
+    border-radius: 10px;
+    padding: 12px;
+    text-align: center;
+    color: #aaaaaa;
+    font-size: 13px;
+}
+
 </style>
 """, unsafe_allow_html=True)
 
 
 # --------------------------------------------------
-# AFFICHAGE DES CARTES
+# EN-TÊTE ET CHOIX DE L'AFFICHAGE
 # --------------------------------------------------
 
-st.title("Wikicollection")
+col_titre, col_mode = st.columns([3, 2])
 
-# 4 colonnes
-colonnes = st.columns(4, gap="medium")
+with col_titre:
+    st.title("Wikicollection")
 
-for debut in range(0, len(df), 4):
+with col_mode:
+    mode = st.radio(
+        "Affichage",
+        ["Fiches", "Connexions"],
+        horizontal=True,
+        label_visibility="collapsed",
+        key="mode_wikicollection"
+    )
 
-    # Nouvelle ligne de 4 cartes
-    colonnes = st.columns(4, gap="medium")
 
-    for index, colonne in enumerate(colonnes):
+# ==================================================
+# MODE 1 : FICHES
+# ==================================================
 
-        position = debut + index
+if mode == "Fiches":
 
-        if position >= len(df):
-            break
+    for debut in range(0, len(df), 4):
 
-        ligne = df.iloc[position]
+        colonnes = st.columns(4, gap="medium")
 
-        # Récupération des données
-        date = str(ligne["Date"]) if pd.notna(ligne["Date"]) else ""
-        lien = str(ligne["Lien"]) if pd.notna(ligne["Lien"]) else ""
-        titre = str(ligne["Titre"]) if pd.notna(ligne["Titre"]) else ""
-        soustitre = str(ligne["Soustitre"]) if pd.notna(ligne["Soustitre"]) else ""
-        resume = str(ligne["Resume"]) if pd.notna(ligne["Resume"]) else ""
-        categorie1 = str(ligne["Categorie1"]) if pd.notna(ligne["Categorie1"]) else ""
-        image = str(ligne["Image"]) if pd.notna(ligne["Image"]) else ""
+        for index, colonne in enumerate(colonnes):
 
-        # Couleur du bandeau selon Categorie1
-        couleur_bandeau = COULEURS_CATEGORIES.get(
-            categorie1.strip().lower(),
-            COULEUR_DEFAUT
-        )
+            position = debut + index
 
-        # Sécurisation des textes HTML
-        titre_securise = html.escape(titre)
-        soustitre_securise = html.escape(soustitre)
-        resume_securise = html.escape(resume)
-        date_securisee = html.escape(date)
+            if position >= len(df):
+                break
 
-        # Vérification du lien
-        lien_securise = html.escape(lien.strip(), quote=True)
+            ligne = df.iloc[position]
 
-        with colonne:
+            # Récupération des données
+            date = valeur_texte(ligne["Date"])
+            lien = valeur_texte(ligne["Lien"])
+            titre = valeur_texte(ligne["Titre"])
+            soustitre = valeur_texte(ligne["Soustitre"])
+            resume = valeur_texte(ligne["Resume"])
+            categorie1 = valeur_texte(ligne["Categorie1"])
+            image = valeur_texte(ligne["Image"])
 
-            with st.container(key=f"wiki_{position}"):
+            couleur_bandeau = obtenir_couleur(categorie1)
 
-                # Bandeau coloré
-                st.markdown(
-                    f'<div class="wiki-bandeau" '
-                    f'style="background-color: {couleur_bandeau};">'
-                    f'</div>',
-                    unsafe_allow_html=True
-                )
+            # Sécurisation HTML
+            titre_securise = html.escape(titre)
+            soustitre_securise = html.escape(soustitre)
+            resume_securise = html.escape(resume)
+            date_securisee = html.escape(date)
 
-                # Titre
-                st.markdown(
-                    f'<div class="wiki-titre">'
-                    f'{titre_securise}'
-                    f'</div>',
-                    unsafe_allow_html=True
-                )
+            lien_securise = html.escape(
+                lien.strip(),
+                quote=True
+            )
 
-                # Sous-titre
-                st.markdown(
-                    f'<div class="wiki-soustitre">'
-                    f'{soustitre_securise}'
-                    f'</div>',
-                    unsafe_allow_html=True
-                )
+            with colonne:
 
-                # Image
-                if image.strip().startswith(("https://", "http://")):
+                with st.container(key=f"wiki_{position}"):
+
+                    # Bandeau coloré
                     st.markdown(
-                        f'<img class="wiki-image" '
-                        f'src="{html.escape(image.strip(), quote=True)}">',
+                        f'<div class="wiki-bandeau" '
+                        f'style="background-color: {couleur_bandeau};">'
+                        f'</div>',
                         unsafe_allow_html=True
                     )
 
-                # Résumé
-                st.markdown(
-                    f'<div class="wiki-resume">'
-                    f'{resume_securise}'
-                    f'</div>',
-                    unsafe_allow_html=True
-                )
-
-                # Bouton Wiki
-                if lien.strip().startswith(("https://", "http://")):
-
-                    bouton_wiki = (
-                        f'<a class="wiki-bouton" '
-                        f'href="{lien_securise}" '
-                        f'target="_blank" '
-                        f'rel="noopener noreferrer">'
-                        f'↗ Wiki'
-                        f'</a>'
+                    # Titre
+                    st.markdown(
+                        f'<div class="wiki-titre">'
+                        f'{titre_securise}'
+                        f'</div>',
+                        unsafe_allow_html=True
                     )
 
-                else:
-                    bouton_wiki = ""
+                    # Sous-titre
+                    st.markdown(
+                        f'<div class="wiki-soustitre">'
+                        f'{soustitre_securise}'
+                        f'</div>',
+                        unsafe_allow_html=True
+                    )
 
-                # Bouton à gauche et date à droite
+                    # Image
+                    if image.startswith(("https://", "http://")):
+                        st.markdown(
+                            f'<img class="wiki-image" '
+                            f'src="{html.escape(image, quote=True)}">',
+                            unsafe_allow_html=True
+                        )
+
+                    # Résumé
+                    st.markdown(
+                        f'<div class="wiki-resume">'
+                        f'{resume_securise}'
+                        f'</div>',
+                        unsafe_allow_html=True
+                    )
+
+                    # Bouton Wiki
+                    if lien.startswith(("https://", "http://")):
+
+                        bouton_wiki = (
+                            f'<a class="wiki-bouton" '
+                            f'href="{lien_securise}" '
+                            f'target="_blank" '
+                            f'rel="noopener noreferrer">'
+                            f'↗ Wiki'
+                            f'</a>'
+                        )
+
+                    else:
+                        bouton_wiki = ""
+
+                    # Bouton à gauche et date à droite
+                    st.markdown(
+                        f'<div class="wiki-bas">'
+                        f'{bouton_wiki}'
+                        f'<div class="wiki-date">'
+                        f'{date_securisee}'
+                        f'</div>'
+                        f'</div>',
+                        unsafe_allow_html=True
+                    )
+
+
+# ==================================================
+# MODE 2 : CONNEXIONS
+# ==================================================
+
+elif mode == "Connexions":
+
+    # Initialisation de la fiche sélectionnée
+    if "fiche_selectionnee" not in st.session_state:
+        st.session_state.fiche_selectionnee = (
+            df.index[0] if len(df) > 0 else None
+        )
+
+    # Vérification de la sélection
+    if (
+        st.session_state.fiche_selectionnee not in df.index
+        and len(df) > 0
+    ):
+        st.session_state.fiche_selectionnee = df.index[0]
+
+    # Deux zones :
+    # graphique à gauche, liste des titres à droite
+    col_graphique, col_liste = st.columns([4, 1.5])
+
+    # --------------------------------------------------
+    # GRAPHIQUE DES CONNEXIONS
+    # --------------------------------------------------
+
+    with col_graphique:
+
+        if len(df) == 0:
+
+            st.info("Aucune fiche disponible.")
+
+        else:
+
+            index_selectionne = st.session_state.fiche_selectionnee
+
+            fiche = df.loc[index_selectionne]
+
+            titre_selectionne = valeur_texte(fiche["Titre"])
+            categorie_selectionnee = valeur_texte(
+                fiche["Categorie1"]
+            )
+
+            couleur_centrale = obtenir_couleur(
+                categorie_selectionnee
+            )
+
+            st.markdown(
+                '<div class="connexion-sous-titre">'
+                'Explore les relations entre les fiches'
+                '</div>',
+                unsafe_allow_html=True
+            )
+
+            # Récupération des fiches connectées
+            indices_lies = sorted(
+                connexions.get(index_selectionne, set()),
+                key=lambda i: valeur_texte(df.loc[i, "Titre"]).casefold()
+            )
+
+            # Construction du graphique Graphviz
+            lignes_graphique = [
+                "graph Connexions {",
+                'layout=neato;',
+                'overlap=false;',
+                'splines=true;',
+                'bgcolor="transparent";',
+                'outputorder=edgesfirst;',
+                'node [shape=box, style="rounded,filled", '
+                'fontname="Arial", fontsize=11, margin="0.18,0.12"];',
+                'edge [color="#777777", penwidth=1.8];'
+            ]
+
+            def dot_texte(texte):
+                return json.dumps(str(texte), ensure_ascii=False)
+
+            # Nœud central
+            lignes_graphique.append(
+                f'centre [label={dot_texte(titre_selectionne)}, '
+                f'fillcolor={dot_texte(couleur_centrale)}, '
+                f'color="#FFFFFF", penwidth=3, '
+                f'fontcolor="#202129", fontsize=14, '
+                f'pos="0,0!", pin=true];'
+            )
+
+            # Nœuds autour du centre
+            nombre = len(indices_lies)
+            rayon = 2.7
+
+            for numero, index_lie in enumerate(indices_lies):
+
+                fiche_liee = df.loc[index_lie]
+                titre_lie = valeur_texte(fiche_liee["Titre"])
+                categorie_liee = valeur_texte(
+                    fiche_liee["Categorie1"]
+                )
+
+                couleur_liee = obtenir_couleur(categorie_liee)
+
+                # Répartition circulaire autour du centre
+                angle = (2 * math.pi * numero / max(nombre, 1)) - math.pi / 2
+
+                x = rayon * math.cos(angle)
+                y = rayon * math.sin(angle)
+
+                identifiant = f"fiche_{numero}"
+
+                lignes_graphique.append(
+                    f'{identifiant} [label={dot_texte(titre_lie)}, '
+                    f'fillcolor={dot_texte(couleur_liee)}, '
+                    f'color="#777777", fontcolor="#202129", '
+                    f'pos="{x:.3f},{y:.3f}!", pin=true];'
+                )
+
+                lignes_graphique.append(
+                    f'centre -- {identifiant};'
+                )
+
+            lignes_graphique.append("}")
+
+            graphique = "\n".join(lignes_graphique)
+
+            if indices_lies:
+
+                st.graphviz_chart(
+                    graphique,
+                    use_container_width=True
+                )
+
                 st.markdown(
-                    f'<div class="wiki-bas">'
-                    f'{bouton_wiki}'
-                    f'<div class="wiki-date">'
-                    f'{date_securisee}'
-                    f'</div>'
+                    f'<div class="connexion-info">'
+                    f'{len(indices_lies)} fiche(s) connectée(s) à '
+                    f'<strong>{html.escape(titre_selectionne)}</strong>'
                     f'</div>',
                     unsafe_allow_html=True
                 )
+
+            else:
+
+                st.markdown(
+                    f'<div class="connexion-info">'
+                    f'<strong>{html.escape(titre_selectionne)}</strong>'
+                    f'<br><br>'
+                    f'Aucune connexion trouvée pour cette fiche.'
+                    f'</div>',
+                    unsafe_allow_html=True
+                )
+
+    # --------------------------------------------------
+    # LISTE DES TITRES À DROITE
+    # --------------------------------------------------
+
+    with col_liste:
+
+        st.markdown("### Toutes les fiches")
+
+        with st.container(height=650):
+
+            for index, ligne in df.iterrows():
+
+                titre = valeur_texte(ligne["Titre"])
+
+                if not titre:
+                    continue
+
+                est_selectionne = (
+                    index == st.session_state.fiche_selectionnee
+                )
+
+                if st.button(
+                    titre,
+                    key=f"selection_fiche_{index}",
+                    type="primary" if est_selectionne else "secondary",
+                    use_container_width=True
+                ):
+
+                    st.session_state.fiche_selectionnee = index
+                    st.rerun()
