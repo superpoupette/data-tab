@@ -19,11 +19,11 @@ st.title("🧠 Wikicollection")
 # Configuration Google Sheets
 # --------------------------------------------------
 
-SHEET_ID = "11_RcYunE4kKJmF1Jo6g1MfoAy3di-S0j7BFDHWTdPh0"
+SHEET_ID_CULTURE = "11_RcYunE4kKJmF1Jo6g1MfoAy3di-S0j7BFDHWTdPh0"
 
 
 @st.cache_resource
-def get_sheet():
+def get_sheet_culture():
 
     credentials = Credentials.from_service_account_info(
         st.secrets["gcp_service_account"],
@@ -34,13 +34,13 @@ def get_sheet():
 
     client = gspread.authorize(credentials)
 
-    return client.open_by_key(SHEET_ID).sheet1
+    return client.open_by_key(SHEET_ID_CULTURE).sheet1
 
 
 @st.cache_data(ttl=300)
-def load_succes_google_sheet():
+def load_culture_google_sheet():
 
-    sheet = get_sheet()
+    sheet = get_sheet_culture()
 
     data = sheet.get_all_records()
 
