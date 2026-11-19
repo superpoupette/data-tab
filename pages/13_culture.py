@@ -67,10 +67,10 @@ df = load_culture_google_sheet()
 # --------------------------------------------------
 
 COULEURS_CATEGORIES = {
-    "biologie": "#3BA66B",
-    "géographie": "#3185D8",
-    "geographie": "#3185D8",
-    "personne": "#9564C8",
+    "biologie": "#B8E879",
+    "géographie": "#73ABF5",
+    "geographie": "#73ABF5",
+    "personne": "#F5D5AE",
 }
 
 COULEUR_DEFAUT = "#666875"
@@ -202,7 +202,7 @@ div[class*="st-key-wiki_"] [data-testid="stVerticalBlock"] {
 # AFFICHAGE DES CARTES
 # --------------------------------------------------
 
-st.title("Culture / Wikicollection")
+st.title("Wikicollection")
 
 # 4 colonnes
 colonnes = st.columns(4, gap="medium")
