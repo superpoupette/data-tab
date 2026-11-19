@@ -50,7 +50,7 @@ def load_culture_google_sheet():
 # Affichage données
 # --------------------------------------------------
 
-tableau = load_succes_google_sheet()
+tableau = load_culture_google_sheet()
 st.dataframe(
     tableau,
     use_container_width=True
