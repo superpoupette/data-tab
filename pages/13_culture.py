@@ -97,111 +97,117 @@ st.markdown(
     """
     <style>
 
+    
     /* Conteneur des cartes */
-
+    
     div[class*="st-key-wiki_"] {
-
+    
         background-color: #202129;
         border-radius: 14px;
         padding: 12px;
-
+    
         height: 440px;
         min-height: 440px;
         max-height: 440px;
-
+    
         overflow: hidden;
         box-sizing: border-box;
     }
-
+    
     /* Titre */
-
+    
     .wiki-titre {
-
+    
         font-size: 17px;
         font-weight: 700;
         text-align: center;
-
+    
         height: 48px;
         line-height: 24px;
-
+    
         display: -webkit-box;
         -webkit-box-orient: vertical;
         -webkit-line-clamp: 2;
-
+    
         overflow: hidden;
         overflow-wrap: anywhere;
-
-        margin-bottom: 4px;
+    
+        margin-bottom: 0px;
     }
-
+    
     /* Sous-titre */
-
+    
     .wiki-soustitre {
-
+    
         font-size: 13px;
         color: #b0b0b0;
         text-align: center;
-
+    
         height: 38px;
         line-height: 19px;
-
+    
         display: -webkit-box;
         -webkit-box-orient: vertical;
         -webkit-line-clamp: 2;
-
+    
         overflow: hidden;
         overflow-wrap: anywhere;
-
-        margin-bottom: 8px;
+    
+        margin-top: 0px;
+        margin-bottom: 3px;
     }
-
+    
     /* Image */
-
+    
     div[class*="st-key-wiki_"] [data-testid="stImage"] {
-
+    
         height: 155px;
         min-height: 155px;
         max-height: 155px;
-
+    
         overflow: hidden;
         border-radius: 8px;
+    
+        margin: 0px !important;
     }
-
+    
     div[class*="st-key-wiki_"] [data-testid="stImage"] img {
-
+    
         width: 100%;
         height: 155px;
-
+    
         object-fit: cover;
     }
-
+    
     /* Résumé */
-
+    
     .wiki-resume {
-
+    
         font-size: 13px;
         line-height: 19px;
-
-        height: 76px;
-        max-height: 76px;
-
+    
+        height: 115px;
+        max-height: 115px;
+    
         overflow: hidden;
-
+    
         display: -webkit-box;
         -webkit-box-orient: vertical;
-        -webkit-line-clamp: 4;
+        -webkit-line-clamp: 6;
     }
-
+    
     /* Date */
-
+    
     .wiki-date {
-
+    
         font-size: 12px;
         color: #999999;
         text-align: right;
-
-        margin-top: 5px;
+    
+        margin-top: 2px;
+        margin-bottom: -5px;
     }
+
 
     </style>
     """,
