@@ -1,6 +1,8 @@
+
 import gspread
 import pandas as pd
 import streamlit as st
+import html
 from google.oauth2.service_account import Credentials
 
 # ==========================
@@ -14,6 +16,7 @@ st.set_page_config(
 )
 
 st.title("🧠 Wikicollection")
+
 
 # --------------------------------------------------
 # Configuration Google Sheets
@@ -46,11 +49,13 @@ def load_culture_google_sheet():
 
     return pd.DataFrame(data)
 
+
 # --------------------------------------------------
-# Affichage données
+# Affichage des données
 # --------------------------------------------------
 
 tableau = load_culture_google_sheet()
+
 st.dataframe(
     tableau,
     use_container_width=True
@@ -58,7 +63,7 @@ st.dataframe(
 
 
 # ==========================
-# AFFICHAGE DES CARTES
+# COLONNES ATTENDUES
 # ==========================
 
 COLONNES = [
@@ -67,8 +72,9 @@ COLONNES = [
     "Titre",
     "Soustitre",
     "Resume",
-    "Categorie",
-    "Souscategorie",
+    "Categorie1",
+    "Categorie2",
+    "Categorie3",
     "Liens",
     "Image",
 ]
@@ -97,123 +103,122 @@ st.markdown(
     """
     <style>
 
-    
     /* Conteneur des cartes */
-    
+
     div[class*="st-key-wiki_"] {
-    
+
         background-color: #202129;
         border-radius: 14px;
         padding: 12px;
-    
+
         height: 440px;
         min-height: 440px;
         max-height: 440px;
-    
+
         overflow: hidden;
         box-sizing: border-box;
     }
-    /* Réduction de l'espace entre les éléments de la carte */
+
+    /* Réduction de l'espace entre les éléments */
 
     div[class*="st-key-wiki_"] [data-testid="stVerticalBlock"] {
         gap: 0rem !important;
     }
-    
+
     /* Titre */
 
     .wiki-titre {
-    
+
         font-size: 17px;
-        font-weight: 700; /* Gras */
+        font-weight: 700;
         text-align: center;
-    
+
         height: 48px;
         line-height: 24px;
-    
+
         display: -webkit-box;
         -webkit-box-orient: vertical;
         -webkit-line-clamp: 2;
-    
+
         overflow: hidden;
         overflow-wrap: anywhere;
-    
+
         margin-bottom: -10px !important;
     }
-    
+
     /* Sous-titre */
-    
+
     .wiki-soustitre {
-    
-        font-size: 13px; /* Plus petit */
-        font-weight: 400; /* Normal */
+
+        font-size: 13px;
+        font-weight: 400;
         color: #b0b0b0;
         text-align: center;
-    
+
         height: 38px;
         line-height: 19px;
-    
+
         display: -webkit-box;
         -webkit-box-orient: vertical;
         -webkit-line-clamp: 2;
-    
+
         overflow: hidden;
         overflow-wrap: anywhere;
-    
+
         margin-top: 0px !important;
         margin-bottom: 3px !important;
     }
-    
+
     /* Image */
-    
+
     div[class*="st-key-wiki_"] [data-testid="stImage"] {
-    
+
         height: 155px;
         min-height: 155px;
         max-height: 155px;
-    
+
         overflow: hidden;
         border-radius: 8px;
-    
+
         margin: 0px !important;
     }
-    
+
     div[class*="st-key-wiki_"] [data-testid="stImage"] img {
-    
+
         width: 100%;
         height: 155px;
-    
+
         object-fit: cover;
     }
-    
+
     /* Résumé */
-    
+
     .wiki-resume {
-    
+
         font-size: 13px;
         line-height: 19px;
-    
+
         height: 115px;
         max-height: 115px;
-    
+
         overflow: hidden;
-    
+
         display: -webkit-box;
         -webkit-box-orient: vertical;
         -webkit-line-clamp: 6;
     }
-    
+
     /* Date */
-    
+
     .wiki-date {
-    
+
         font-size: 12px;
         color: #999999;
         text-align: right;
-    
+
         margin-top: 2px;
         margin-bottom: -5px;
     }
-
 
     </style>
     """,
@@ -260,7 +265,9 @@ else:
 
             with colonnes[index]:
 
+                # ----------------------------------
                 # Récupération des informations
+                # ----------------------------------
 
                 titre = str(
                     element.get("Titre") or "Sans titre"
@@ -274,13 +281,35 @@ else:
                     element.get("Resume") or ""
                 )
 
+                categorie1 = str(
+                    element.get("Categorie1") or ""
+                ).strip()
+
+                categorie2 = str(
+                    element.get("Categorie2") or ""
+                ).strip()
+
+                categorie3 = str(
+                    element.get("Categorie3") or ""
+                ).strip()
+
+                lien = str(
+                    element.get("Lien") or ""
+                ).strip()
+
+                liens = str(
+                    element.get("Liens") or ""
+                ).strip()
+
                 image = str(
                     element.get("Image") or ""
                 ).strip()
 
                 date = element.get("Date")
 
+                # ----------------------------------
                 # Conversion de la date
+                # ----------------------------------
 
                 if pd.notna(date):
 
@@ -291,16 +320,22 @@ else:
                     )
 
                     if pd.notna(date_convertie):
+
                         date = date_convertie.strftime(
                             "%d/%m/%Y"
                         )
+
                     else:
+
                         date = str(date)
 
                 else:
+
                     date = ""
 
+                # ----------------------------------
                 # Carte
+                # ----------------------------------
 
                 with st.container(
                     key=f"wiki_{debut + index}",
@@ -310,7 +345,7 @@ else:
 
                     st.markdown(
                         f'<div class="wiki-titre">'
-                        f'{titre}</div>',
+                        f'{html.escape(titre)}</div>',
                         unsafe_allow_html=True
                     )
 
@@ -318,7 +353,7 @@ else:
 
                     st.markdown(
                         f'<div class="wiki-soustitre">'
-                        f'{soustitre}</div>',
+                        f'{html.escape(soustitre)}</div>',
                         unsafe_allow_html=True
                     )
 
@@ -349,7 +384,7 @@ else:
 
                     st.markdown(
                         f'<div class="wiki-resume">'
-                        f'{resume}</div>',
+                        f'{html.escape(resume)}</div>',
                         unsafe_allow_html=True
                     )
 
@@ -357,7 +392,6 @@ else:
 
                     st.markdown(
                         f'<div class="wiki-date">'
-                        f'📅 {date}</div>',
+                        f'📅 {html.escape(date)}</div>',
                         unsafe_allow_html=True
                     )
-
