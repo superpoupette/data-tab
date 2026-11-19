@@ -113,48 +113,23 @@ st.markdown(
         overflow: hidden;
         box-sizing: border-box;
     }
+    /* Réduction de l'espace entre les éléments de la carte */
+
+    div[class*="st-key-wiki_"] [data-testid="stVerticalBlock"] {
+        gap: 0rem !important;
+    }
     
     /* Titre */
     
     .wiki-titre {
-    
-        font-size: 17px;
-        font-weight: 700;
-        text-align: center;
-    
-        height: 48px;
-        line-height: 24px;
-    
-        display: -webkit-box;
-        -webkit-box-orient: vertical;
-        -webkit-line-clamp: 2;
-    
-        overflow: hidden;
-        overflow-wrap: anywhere;
-    
-        margin-bottom: 0px;
+        margin-bottom: -8px !important;
     }
     
     /* Sous-titre */
     
     .wiki-soustitre {
-    
-        font-size: 13px;
-        color: #b0b0b0;
-        text-align: center;
-    
-        height: 38px;
-        line-height: 19px;
-    
-        display: -webkit-box;
-        -webkit-box-orient: vertical;
-        -webkit-line-clamp: 2;
-    
-        overflow: hidden;
-        overflow-wrap: anywhere;
-    
-        margin-top: 0px;
-        margin-bottom: 3px;
+        margin-top: 0px !important;
+        margin-bottom: 3px !important;
     }
     
     /* Image */
