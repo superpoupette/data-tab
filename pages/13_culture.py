@@ -120,14 +120,45 @@ st.markdown(
     }
     
     /* Titre */
-    
+
     .wiki-titre {
+    
+        font-size: 17px;
+        font-weight: 700; /* Gras */
+        text-align: center;
+    
+        height: 48px;
+        line-height: 24px;
+    
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+    
+        overflow: hidden;
+        overflow-wrap: anywhere;
+    
         margin-bottom: -8px !important;
     }
     
     /* Sous-titre */
     
     .wiki-soustitre {
+    
+        font-size: 11px; /* Plus petit */
+        font-weight: 400; /* Normal */
+        color: #b0b0b0;
+        text-align: center;
+    
+        height: 38px;
+        line-height: 19px;
+    
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+    
+        overflow: hidden;
+        overflow-wrap: anywhere;
+    
         margin-top: 0px !important;
         margin-bottom: 3px !important;
     }
