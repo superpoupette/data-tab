@@ -137,14 +137,14 @@ st.markdown(
         overflow: hidden;
         overflow-wrap: anywhere;
     
-        margin-bottom: -8px !important;
+        margin-bottom: -10px !important;
     }
     
     /* Sous-titre */
     
     .wiki-soustitre {
     
-        font-size: 11px; /* Plus petit */
+        font-size: 13px; /* Plus petit */
         font-weight: 400; /* Normal */
         color: #b0b0b0;
         text-align: center;
