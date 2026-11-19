@@ -297,7 +297,7 @@ for debut in range(0, len(df), 4):
                         f'href="{lien_securise}" '
                         f'target="_blank" '
                         f'rel="noopener noreferrer">'
-                        f'↗ Voir la fiche Wiki'
+                        f'↗ Wiki'
                         f'</a>'
                     )
 
