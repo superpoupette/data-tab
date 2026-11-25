@@ -844,6 +844,21 @@ if "documentary_results" in st.session_state:
                 value=3,
                 key="documentary_rating"
             )
+        col1, col2 = st.columns(2)
+
+        with col1:
+            documentary_theme = st.text_input(
+                "Thème",
+                placeholder="Ex : Nature, Histoire, Société...",
+                key="documentary_theme"
+            )
+        
+        with col2:
+            documentary_platform = st.text_input(
+                "Plateforme",
+                placeholder="Ex : Arte, Netflix, YouTube...",
+                key="documentary_platform"
+            )
 
         if st.button(
             "🎥 Ajouter le documentaire",
