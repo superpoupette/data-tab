@@ -747,148 +747,223 @@ if "album_infos" in st.session_state:
 # =====================================================
 
 st.divider()
-
 st.title("🎥 Ajouter un documentaire")
 
-
-documentary_query = st.text_input(
-    "Rechercher un documentaire",
-    placeholder="Ex : Planète Terre",
-    key="documentary_query"
+mode_documentaire = st.radio(
+    "Comment souhaitez-vous ajouter le documentaire ?",
+    ["Rechercher dans TMDB", "Saisie manuelle"],
+    horizontal=True,
+    key="documentary_mode"
 )
 
 
-if st.button(
-    "🔎 Rechercher",
-    key="search_documentary"
-):
+# =====================================================
+# MODE 1 : RECHERCHE TMDB
+# =====================================================
 
-    st.session_state["documentary_results"] = (
-        search_documentaries_tmdb(
-            documentary_query
-        )
+if mode_documentaire == "Rechercher dans TMDB":
+
+    documentary_query = st.text_input(
+        "Rechercher un documentaire",
+        placeholder="Ex : Planète Terre",
+        key="documentary_query"
     )
 
+    if st.button("🔎 Rechercher", key="search_documentary"):
 
-if "documentary_results" in st.session_state:
-
-    results = st.session_state["documentary_results"]
-
-    if len(results) > 0:
-
-        choix = st.selectbox(
-            "Choisir le documentaire",
-            [
-                f"{doc['title']} ({doc['year']})"
-                for doc in results
-            ],
-            key="documentary_select"
+        st.session_state["documentary_results"] = (
+            search_documentaries_tmdb(documentary_query)
         )
 
-        selected = results[
-            [
-                f"{doc['title']} ({doc['year']})"
-                for doc in results
-            ].index(choix)
-        ]
+    if "documentary_results" in st.session_state:
 
-        col1, col2 = st.columns([1, 3])
+        results = st.session_state["documentary_results"]
 
-        with col1:
+        if len(results) > 0:
 
-            if selected["poster_path"]:
-
-                st.image(
-                    selected["poster_path"],
-                    use_container_width=True
-                )
-
-        with col2:
-
-            st.subheader(selected["title"])
-
-            st.caption(selected["year"])
-
-            st.write(
-                selected["overview"]
+            choix = st.selectbox(
+                "Choisir le documentaire",
+                [
+                    f"{doc['title']} ({doc['year']})"
+                    for doc in results
+                ],
+                key="documentary_select"
             )
 
-        st.divider()
+            selected = results[
+                [
+                    f"{doc['title']} ({doc['year']})"
+                    for doc in results
+                ].index(choix)
+            ]
+
+            col1, col2 = st.columns([1, 3])
+
+            with col1:
+                if selected["poster_path"]:
+                    st.image(
+                        selected["poster_path"],
+                        use_container_width=True
+                    )
+
+            with col2:
+                st.subheader(selected["title"])
+                st.caption(selected["year"])
+                st.write(selected["overview"])
+
+            st.divider()
+
+            col1, col2 = st.columns(2)
+
+            with col1:
+                documentary_date = st.date_input(
+                    "Date de visionnage",
+                    key="documentary_date"
+                )
+
+                documentary_theme = st.text_input(
+                    "Thème",
+                    placeholder="Ex : Nature, Histoire, Société...",
+                    key="documentary_theme"
+                )
+
+            with col2:
+                documentary_rating = st.select_slider(
+                    "Ma note",
+                    options=[
+                        0, 0.5, 1, 1.5, 2, 2.5,
+                        3, 3.5, 4, 4.5, 5
+                    ],
+                    value=3,
+                    key="documentary_rating"
+                )
+
+                documentary_platform = st.text_input(
+                    "Plateforme",
+                    placeholder="Ex : Arte, Netflix, YouTube...",
+                    key="documentary_platform"
+                )
+
+            if st.button(
+                "🎥 Ajouter le documentaire",
+                key="add_documentary",
+                use_container_width=True
+            ):
+
+                documentary = get_movie_details_tmdb(selected["id"])
+
+                documentary["theme"] = documentary_theme
+                documentary["platform"] = documentary_platform
+
+                add_documentary_google_sheet(
+                    documentary,
+                    documentary_date.strftime("%Y-%m-%d"),
+                    documentary_rating
+                )
+
+                st.success("Documentaire ajouté !")
+                st.session_state.pop("documentary_results", None)
+                st.rerun()
+
+        else:
+            st.warning("Aucun documentaire trouvé.")
+
+
+# =====================================================
+# MODE 2 : SAISIE MANUELLE
+# =====================================================
+
+else:
+
+    st.subheader("✍️ Informations du documentaire")
+
+    with st.form("manual_documentary_form"):
+
+        documentary_title = st.text_input(
+            "Titre *",
+            placeholder="Titre du documentaire"
+        )
 
         col1, col2 = st.columns(2)
 
         with col1:
+            documentary_year = st.text_input(
+                "Année",
+                placeholder="Ex : 2024"
+            )
 
             documentary_date = st.date_input(
-                "Date de visionnage",
-                key="documentary_date"
+                "Date de visionnage"
+            )
+
+            documentary_theme = st.text_input(
+                "Thème",
+                placeholder="Ex : Nature, Histoire, Société..."
             )
 
         with col2:
-
             documentary_rating = st.select_slider(
                 "Ma note",
                 options=[
-                    0,
-                    0.5,
-                    1,
-                    1.5,
-                    2,
-                    2.5,
-                    3,
-                    3.5,
-                    4,
-                    4.5,
-                    5
+                    0, 0.5, 1, 1.5, 2, 2.5,
+                    3, 3.5, 4, 4.5, 5
                 ],
-                value=3,
-                key="documentary_rating"
+                value=3
             )
-        col1, col2 = st.columns(2)
 
-        with col1:
-            documentary_theme = st.text_input(
-                "Thème",
-                placeholder="Ex : Nature, Histoire, Société...",
-                key="documentary_theme"
-            )
-        
-        with col2:
             documentary_platform = st.text_input(
                 "Plateforme",
-                placeholder="Ex : Arte, Netflix, YouTube...",
-                key="documentary_platform"
+                placeholder="Ex : Arte, Netflix, YouTube..."
             )
 
-        if st.button(
-            "🎥 Ajouter le documentaire",
-            key="add_documentary",
-            use_container_width=True
-        ):
-
-            documentary = get_movie_details_tmdb(
-                selected["id"]
-            )
-
-            documentary["theme"] = documentary_theme
-            documentary["platform"] = documentary_platform
-
-            add_documentary_google_sheet(
-                documentary,
-                documentary_date.strftime("%Y-%m-%d"),
-                documentary_rating
-                
-            )
-
-            st.success(
-                "Documentaire ajouté !"
-            )
-
-            st.rerun()
-
-    else:
-
-        st.warning(
-            "Aucun documentaire trouvé."
+        documentary_director = st.text_input(
+            "Réalisateur"
         )
+
+        documentary_country = st.text_input(
+            "Pays"
+        )
+
+        documentary_overview = st.text_area(
+            "Synopsis"
+        )
+
+        documentary_poster = st.text_input(
+            "URL de l'affiche (facultatif)"
+        )
+
+        submitted = st.form_submit_button(
+            "🎥 Ajouter le documentaire",
+            use_container_width=True
+        )
+
+        if submitted:
+
+            if not documentary_title.strip():
+                st.error("Le titre du documentaire est obligatoire.")
+
+            else:
+
+                documentary = {
+                    "title": documentary_title,
+                    "year": documentary_year,
+                    "director": documentary_director,
+                    "theme": documentary_theme,
+                    "platform": documentary_platform,
+                    "country": documentary_country,
+                    "overview": documentary_overview,
+                    "poster_path": documentary_poster,
+                    "tmdb_rating": "",
+                    "imdb_id": "",
+                    "tvdb_id": ""
+                }
+
+                add_documentary_google_sheet(
+                    documentary,
+                    documentary_date.strftime("%Y-%m-%d"),
+                    documentary_rating
+                )
+
+                st.success("Documentaire ajouté manuellement !")
+                st.rerun()
 
