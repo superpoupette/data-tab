@@ -4,16 +4,17 @@ import pandas as pd
 
 from scripts.watchlist.google_sheet import (
     add_movie_google_sheet,
+    add_documentary_google_sheet,
     add_series_google_sheet,
     load_google_sheet,
     update_series_google_sheet,
     save_google_sheet
 )
 
-
 from scripts.watchlist.tmdb import (
     search_movies_tmdb,
     get_movie_details_tmdb,
+    search_documentaries_tmdb,
     search_series_tmdb,
     get_series_details_tmdb
 )
@@ -738,3 +739,137 @@ if "album_infos" in st.session_state:
             )
 
             st.rerun()
+
+
+
+# =====================================================
+# AJOUTER UN DOCUMENTAIRE
+# =====================================================
+
+st.divider()
+
+st.title("🎥 Ajouter un documentaire")
+
+
+documentary_query = st.text_input(
+    "Rechercher un documentaire",
+    placeholder="Ex : Planète Terre",
+    key="documentary_query"
+)
+
+
+if st.button(
+    "🔎 Rechercher",
+    key="search_documentary"
+):
+
+    st.session_state["documentary_results"] = (
+        search_documentaries_tmdb(
+            documentary_query
+        )
+    )
+
+
+if "documentary_results" in st.session_state:
+
+    results = st.session_state["documentary_results"]
+
+    if len(results) > 0:
+
+        choix = st.selectbox(
+            "Choisir le documentaire",
+            [
+                f"{doc['title']} ({doc['year']})"
+                for doc in results
+            ],
+            key="documentary_select"
+        )
+
+        selected = results[
+            [
+                f"{doc['title']} ({doc['year']})"
+                for doc in results
+            ].index(choix)
+        ]
+
+        col1, col2 = st.columns([1, 3])
+
+        with col1:
+
+            if selected["poster_path"]:
+
+                st.image(
+                    selected["poster_path"],
+                    use_container_width=True
+                )
+
+        with col2:
+
+            st.subheader(selected["title"])
+
+            st.caption(selected["year"])
+
+            st.write(
+                selected["overview"]
+            )
+
+        st.divider()
+
+        col1, col2 = st.columns(2)
+
+        with col1:
+
+            documentary_date = st.date_input(
+                "Date de visionnage",
+                key="documentary_date"
+            )
+
+        with col2:
+
+            documentary_rating = st.select_slider(
+                "Ma note",
+                options=[
+                    0,
+                    0.5,
+                    1,
+                    1.5,
+                    2,
+                    2.5,
+                    3,
+                    3.5,
+                    4,
+                    4.5,
+                    5
+                ],
+                value=3,
+                key="documentary_rating"
+            )
+
+        if st.button(
+            "🎥 Ajouter le documentaire",
+            key="add_documentary",
+            use_container_width=True
+        ):
+
+            documentary = get_movie_details_tmdb(
+                selected["id"]
+            )
+
+            add_documentary_google_sheet(
+                documentary,
+                documentary_date.strftime("%Y-%m-%d"),
+                documentary_rating
+            )
+
+            st.success(
+                "Documentaire ajouté !"
+            )
+
+            st.rerun()
+
+    else:
+
+        st.warning(
+            "Aucun documentaire trouvé."
+        )
+
