@@ -120,8 +120,8 @@ def add_movie_google_sheet(movie, watched_at, rating):
         str(movie.get("style", "")),
         str(movie.get("country", "")),
         str(movie.get("overview", "")),
-        movie.get("poster_path", ""),
-        movie.get("tmdb_rating", "")
+        str(movie.get("poster_path", "")),
+        str(movie.get("tmdb_rating", ""))
     ]
 
     sheet.append_row(
