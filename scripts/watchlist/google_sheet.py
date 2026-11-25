@@ -159,9 +159,9 @@ def add_documentary_google_sheet(documentary, watched_at, rating):
         "country": str(documentary.get("country", "")),
         "overview": str(documentary.get("overview", "")),
         "poster_path": documentary.get("poster_path", ""),
-        "tmdb_rating": documentary.get("tmdb_rating", "")
+        "tmdb_rating": documentary.get("tmdb_rating", ""),
         "theme": documentary.get("theme", ""),
-        "platform": documentary.get("platform", ""),
+        "platform": documentary.get("platform", "")
     }
 
     # Construction de la ligne selon l'ordre réel des colonnes
