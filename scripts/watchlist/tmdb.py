@@ -201,7 +201,40 @@ def get_series_details_tmdb(series_id):
             ""
         )
     }
+def search_documentaries_tmdb(query):
 
+    url = "https://api.themoviedb.org/3/search/movie"
+
+    params = {
+        "api_key": TMDB_API_KEY,
+        "query": query,
+        "language": "fr-FR"
+    }
+
+    response = requests.get(url, params=params)
+
+    if response.status_code != 200:
+        return []
+
+    results = response.json().get("results", [])
+
+    documentaries = []
+
+    for movie in results:
+        documentaries.append({
+            "id": movie["id"],
+            "title": movie.get("title", ""),
+            "year": movie.get("release_date", "")[:4],
+            "overview": movie.get("overview", ""),
+            "poster_path": (
+                "https://image.tmdb.org/t/p/w200" + movie["poster_path"]
+                if movie.get("poster_path")
+                else ""
+            )
+        })
+
+    return documentaries[:10]
+    
 def add_tmdb_info(movies):
 
     infos = []
