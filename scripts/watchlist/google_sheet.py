@@ -132,6 +132,49 @@ def add_movie_google_sheet(movie, watched_at, rating):
     load_google_sheet.clear()
 
 
+def add_documentary_google_sheet(documentary, watched_at, rating):
+
+    sheet = get_worksheet("documentaires")
+
+    # Récupération des en-têtes de colonnes
+    headers = sheet.row_values(1)
+
+    if not headers:
+        raise ValueError(
+            "L'onglet documentaires doit contenir ses en-têtes en première ligne."
+        )
+
+    # Données du documentaire
+    documentary_data = {
+        "tvdb_id": str(documentary.get("tvdb_id", "")),
+        "imdb_id": str(documentary.get("imdb_id", "")),
+        "title": str(documentary.get("title", "")),
+        "year": str(documentary.get("year", "")),
+        "director": str(documentary.get("director", "")),
+        "watched_at": watched_at,
+        "rating": rating,
+        "type": "documentaire",
+        "status": "watched",
+        "style": str(documentary.get("style", "")),
+        "country": str(documentary.get("country", "")),
+        "overview": str(documentary.get("overview", "")),
+        "poster_path": documentary.get("poster_path", ""),
+        "tmdb_rating": documentary.get("tmdb_rating", "")
+    }
+
+    # Construction de la ligne selon l'ordre réel des colonnes
+    row = [
+        documentary_data.get(header, "")
+        for header in headers
+    ]
+
+    sheet.append_row(
+        row,
+        value_input_option="USER_ENTERED"
+    )
+
+    load_google_sheet.clear()
+
 # =====================================================
 # Séries
 # =====================================================
