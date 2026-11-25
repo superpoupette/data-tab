@@ -870,10 +870,14 @@ if "documentary_results" in st.session_state:
                 selected["id"]
             )
 
+            documentary["theme"] = documentary_theme
+            documentary["platform"] = documentary_platform
+
             add_documentary_google_sheet(
                 documentary,
                 documentary_date.strftime("%Y-%m-%d"),
                 documentary_rating
+                
             )
 
             st.success(
