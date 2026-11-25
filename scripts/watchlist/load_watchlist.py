@@ -154,3 +154,42 @@ def load_series_google_sheet():
             series[col] = convertir_nombre(series[col])
 
     return series
+
+# ==========================
+# CHARGEMENT DES DOCU
+# ==========================
+def load_documentaires_google_sheet():
+
+    client = charger_client_google_sheets()
+
+    sheet = (
+        client
+        .open_by_key(SHEET_ID)
+        .worksheet("documentaires")
+    )
+
+    documentaires = charger_feuille_en_dataframe(sheet)
+
+    if documentaires.empty:
+        return documentaires
+
+    # --------------------------
+    # Conversion des dates
+    # --------------------------
+
+    if "watched_at" in documentaires.columns:
+        documentaires["watched_at"] = pd.to_datetime(
+            documentaires["watched_at"].astype("string").str.strip().str.lstrip("'"),
+            format="%Y-%m-%d",
+            errors="coerce"
+        )
+
+    # --------------------------
+    # Conversion des nombres
+    # --------------------------
+
+    for col in ["rating", "tmdb_rating"]:
+        if col in documentaires.columns:
+            documentaires[col] = convertir_nombre(documentaires[col])
+
+    return documentaires
