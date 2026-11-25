@@ -6,7 +6,8 @@ import streamlit.components.v1 as components
 
 from scripts.watchlist.load_watchlist import (
     load_movies_google_sheet,
-    load_series_google_sheet
+    load_series_google_sheet,
+    load_documentaires_google_sheet
 )
 
 # ==========================
@@ -31,8 +32,12 @@ def charger_donnees():
 
     movies = load_movies_google_sheet().copy()
     series_all = load_series_google_sheet().copy()
+    documentaires = load_documentaires_google_sheet().copy()
 
-    # Normalisation des types
+    # ==========================
+    # NORMALISATION DES TYPES
+    # ==========================
+
     if "type" not in series_all.columns:
         series_all["type"] = "series"
 
@@ -44,30 +49,54 @@ def charger_donnees():
         .str.lower()
     )
 
-    # Ajout du type pour les films
+    # Type des films
     movies["type"] = "movie"
 
-    # Harmonisation des dates
+    # Type des documentaires
+    documentaires["type"] = "documentaire"
+
+    # ==========================
+    # HARMONISATION DES DATES
+    # ==========================
+
     for df, colonnes in [
         (movies, ["watched_at"]),
-        (series_all, ["last_watch"])
+        (series_all, ["last_watch"]),
+        (documentaires, ["watched_at"])
     ]:
+
         for colonne in colonnes:
+
             if colonne in df.columns:
+
                 df[colonne] = pd.to_datetime(
                     df[colonne],
                     errors="coerce"
                 )
 
-    # Harmonisation des notes des films
+    # ==========================
+    # HARMONISATION DES NOTES
+    # ==========================
+
     if "rating" in movies.columns:
+
         movies["rating"] = pd.to_numeric(
             movies["rating"],
             errors="coerce"
         )
 
-    # Colonnes communes
-    for df in [movies, series_all]:
+    if "rating" in documentaires.columns:
+
+        documentaires["rating"] = pd.to_numeric(
+            documentaires["rating"],
+            errors="coerce"
+        )
+
+    # ==========================
+    # COLONNES COMMUNES
+    # ==========================
+
+    for df in [movies, series_all, documentaires]:
 
         for colonne in [
             "title",
@@ -75,6 +104,7 @@ def charger_donnees():
             "poster_path",
             "style"
         ]:
+
             if colonne not in df.columns:
                 df[colonne] = ""
 
@@ -85,12 +115,19 @@ def charger_donnees():
                 .str.strip()
             )
 
-    # Colonnes propres aux films
+    # ==========================
+    # COLONNES PROPRES AUX FILMS
+    # ==========================
+
     if "watched_at" not in movies.columns:
         movies["watched_at"] = pd.NaT
 
     if "rating" not in movies.columns:
         movies["rating"] = pd.NA
+
+    # ==========================
+    # COLONNES PROPRES AUX SÉRIES
+    # ==========================
 
     if "watched_at" not in series_all.columns:
         series_all["watched_at"] = pd.NaT
@@ -98,30 +135,59 @@ def charger_donnees():
     if "last_watch" not in series_all.columns:
         series_all["last_watch"] = pd.NaT
 
-    # Harmonisation des dates d'affichage
+    # ==========================
+    # COLONNES PROPRES AUX DOCUMENTAIRES
+    # ==========================
+
+    if "watched_at" not in documentaires.columns:
+        documentaires["watched_at"] = pd.NaT
+
+    if "rating" not in documentaires.columns:
+        documentaires["rating"] = pd.NA
+
+    # ==========================
+    # HARMONISATION DES DATES
+    # ==========================
+
     movies["date_affichage"] = movies["watched_at"]
     series_all["date_affichage"] = series_all["last_watch"]
+    documentaires["date_affichage"] = documentaires["watched_at"]
 
-    # Harmonisation des notes
+    # ==========================
+    # HARMONISATION DES NOTES
+    # ==========================
+
     movies["note_affichage"] = movies["rating"]
     series_all["note_affichage"] = pd.NA
+    documentaires["note_affichage"] = documentaires["rating"]
 
-    # Harmonisation des statuts
+    # ==========================
+    # HARMONISATION DES STATUTS
+    # ==========================
+
     movies["statut_affichage"] = movies["status"]
     series_all["statut_affichage"] = series_all["status"]
+    documentaires["statut_affichage"] = documentaires["status"]
 
-    # Fusion des films, séries et animés
+    # ==========================
+    # FUSION DES DONNÉES
+    # ==========================
+
     df = pd.concat(
-        [movies, series_all],
+        [movies, series_all, documentaires],
         ignore_index=True,
         sort=False
     )
 
-    # Libellés des types
+    # ==========================
+    # LIBELLÉS DES TYPES
+    # ==========================
+
     types = {
         "movie": "Film",
         "series": "Série",
-        "anime": "Animé"
+        "anime": "Animé",
+        "documentaire": "Documentaire"
     }
 
     df["type_affichage"] = (
@@ -130,7 +196,10 @@ def charger_donnees():
         .fillna("Autre")
     )
 
-    # Libellés des statuts
+    # ==========================
+    # LIBELLÉS DES STATUTS
+    # ==========================
+
     statuts = {
         "watched": "Vu",
         "to_watch": "À voir",
@@ -230,7 +299,8 @@ with col3:
             "Tous",
             "Film",
             "Série",
-            "Animé"
+            "Animé",
+            "Documentaire"
         ]
     )
 
@@ -252,7 +322,7 @@ with col5:
 
     recherche = st.text_input(
         "Rechercher",
-        placeholder="Titre d'un film, d'une série ou d'un animé..."
+        placeholder="Titre d'un film, d'une série ou d'un documentaire..."
     )
 
 
