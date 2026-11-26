@@ -123,16 +123,16 @@ def recuperer_note(serie):
 # MENU PRINCIPAL
 # =====================================================
 
-st.title("➕ Ajouter du contenu")
+st.title("Ajouter du contenu")
 
 type_contenu = st.selectbox(
     "Quel type de contenu souhaitez-vous gérer ?",
     [
         "Sélectionner un type de contenu",
-        "🎬 Film",
-        "🎥 Documentaire",
-        "📺 Série",
-        "💿 Album"
+        "Film",
+        "Documentaire",
+        "Série",
+        "Album"
     ],
     key="type_contenu"
 )
@@ -144,7 +144,7 @@ st.divider()
 # FILM
 # =====================================================
 
-if type_contenu == "🎬 Film":
+if type_contenu == "Film":
 
     st.header("🎬 Ajouter un film")
 
@@ -210,7 +210,7 @@ if type_contenu == "🎬 Film":
 # DOCUMENTAIRE
 # =====================================================
 
-elif type_contenu == "🎥 Documentaire":
+elif type_contenu == "Documentaire":
 
     st.header("🎥 Ajouter un documentaire")
 
@@ -310,7 +310,7 @@ elif type_contenu == "🎥 Documentaire":
 
     else:
 
-        st.subheader("✍️ Informations du documentaire")
+        st.subheader("Informations du documentaire")
 
         with st.form("manual_documentary_form"):
 
@@ -387,7 +387,7 @@ elif type_contenu == "🎥 Documentaire":
 # SÉRIE
 # =====================================================
 
-elif type_contenu == "📺 Série":
+elif type_contenu == "Série":
 
     st.header("📺 Gestion des séries")
 
@@ -658,7 +658,7 @@ elif type_contenu == "📺 Série":
 # ALBUM
 # =====================================================
 
-elif type_contenu == "💿 Album":
+elif type_contenu == "Album":
 
     st.header("💿 Ajouter un album")
 
@@ -737,7 +737,7 @@ elif type_contenu == "💿 Album":
             )
 
             if st.button(
-                "💿 Ajouter l'album",
+                "Ajouter l'album",
                 use_container_width=True
             ):
                 infos["Date"] = date.strftime("%Y-%m-%d")
