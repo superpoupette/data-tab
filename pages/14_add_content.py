@@ -834,21 +834,6 @@ elif type_contenu == "Danse":
 
                 ligne = danses_en_cours.loc[choix_index]
 
-                col1, col2 = st.columns(2)
-
-                with col1:
-                    st.write(f"**Artiste :** {ligne['artiste']}")
-                    st.write(f"**Titre :** {ligne['titre']}")
-
-                with col2:
-                    if "style" in ligne.index:
-                        st.write(f"**Style :** {ligne['style']}")
-
-                    if "choregraphe" in ligne.index:
-                        st.write(
-                            f"**Chorégraphe :** {ligne['choregraphe']}"
-                        )
-
                 duree_danse = st.number_input(
                     "Durée de pratique (min)",
                     min_value=0,
