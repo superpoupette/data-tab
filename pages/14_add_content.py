@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 
-
 from scripts.watchlist.google_sheet import (
     add_movie_google_sheet,
     add_documentary_google_sheet,
@@ -19,951 +18,735 @@ from scripts.watchlist.tmdb import (
     get_series_details_tmdb
 )
 
-
 from scripts.musique.spotify_api import (
     enrichir_album_depuis_url
 )
-
 
 from scripts.musique.google_sheet import (
     ajouter_album_google_sheet
 )
 
+
+# =====================================================
+# CONFIGURATION
+# =====================================================
+
 st.set_page_config(
-    page_title="Add content",
+    page_title="Ajouter du contenu",
     page_icon="💾",
     layout="wide"
 )
 
-st.title("🎬 Ajouter un film")
+NOTES = [i / 2 for i in range(11)]
 
+STATUTS = [
+    "continuing",
+    "up_to_date",
+    "stopped",
+    "to_watch"
+]
 
-movie_query = st.text_input(
-    "Rechercher un film",
-    placeholder="Ex : Interstellar",
-    key="movie_query"
-)
 
-if st.button(
-    "🔎 Rechercher",
-    key="search_movie"
-):
+def afficher_resultats(results, label, key):
+    """Affiche les résultats TMDB et retourne le contenu choisi."""
 
-    st.session_state["movie_results"] = search_movies_tmdb(
-        movie_query
-    )
-
-if "movie_results" in st.session_state:
-
-    results = st.session_state["movie_results"]
-
-    if len(results) > 0:
-
-        choix = st.selectbox(
-            "Choisir le film",
-            [
-                f"{movie['title']} ({movie['year']})"
-                for movie in results
-            ],
-            key="movie_select"
-        )
-
-        selected = results[
-            [
-                f"{movie['title']} ({movie['year']})"
-                for movie in results
-            ].index(choix)
-        ]
-
-        col1, col2 = st.columns([1, 3])
-
-        with col1:
-
-            if selected["poster_path"]:
-
-                st.image(
-                    selected["poster_path"],
-                    use_container_width=True
-                )
-
-        with col2:
-
-            st.subheader(selected["title"])
-
-            st.caption(selected["year"])
-
-            st.write(
-                selected["overview"]
-            )
-
-        st.divider()
-
-        col1, col2 = st.columns(2)
-
-        with col1:
-
-            movie_date = st.date_input(
-                "Date de visionnage",
-                key="movie_date"
-            )
-            
-
-        with col2:
-
-            movie_rating = st.select_slider(
-                "Ma note",
-                options=[
-                    0,
-                    0.5,
-                    1,
-                    1.5,
-                    2,
-                    2.5,
-                    3,
-                    3.5,
-                    4,
-                    4.5,
-                    5
-                ],
-                value=3,
-                key="movie_rating"
-            )
-
-        if st.button(
-            "🎬 Ajouter le film",
-            key="add_movie",
-            use_container_width=True
-        ):
-
-            movie = get_movie_details_tmdb(
-                selected["id"]
-            )
-
-            add_movie_google_sheet(
-                movie,
-                movie_date.strftime("%Y-%m-%d"),
-                movie_rating
-            )
-
-            st.success("Film ajouté !")
-
-    else:
-
-        st.warning(
-            "Aucun film trouvé."
-        )
-
-
-
-
-
-st.title("📺 Ajouter une série")
-
-query = st.text_input(
-    "Rechercher une série",
-    placeholder="Ex : Breaking Bad",
-    key="series_query"
-)
-
-if st.button(
-    "🔎 Rechercher",
-    key="search_series"
-):
-
-    st.session_state["series_results"] = (
-        search_series_tmdb(query)
-    )
-
-if "series_results" in st.session_state:
-
-    results = st.session_state["series_results"]
-
-    if results:
-
-        choix = st.selectbox(
-            "Choisir la série",
-            [
-                f"{s['title']} ({s['year']})"
-                for s in results
-            ],
-            key="series_select"
-        )
-
-        selected = results[
-            [
-                f"{s['title']} ({s['year']})"
-                for s in results
-            ].index(choix)
-        ]
-
-        col1, col2 = st.columns([1,3])
-
-        with col1:
-
-            if selected["poster_path"]:
-
-                st.image(
-                    selected["poster_path"],
-                    use_container_width=True
-                )
-
-        with col2:
-
-            st.subheader(
-                selected["title"]
-            )
-
-            st.caption(
-                selected["year"]
-            )
-
-            st.write(
-                selected["overview"]
-            )
-
-        st.divider()
-
-        if st.button(
-            "📺 Ajouter la série",
-            key="add_series",
-            use_container_width=True
-        ):
-
-            serie = get_series_details_tmdb(
-                selected["id"]
-            )
-
-            add_series_google_sheet(
-                serie
-            )
-
-            st.success(
-                "Série ajoutée !"
-            )
-
-
-
-# =====================================================
-# Ajouter un épisode vu sur une série existante
-# =====================================================
-
-st.divider()
-
-st.title("📺 Mise à jour d'une série")
-
-
-series_df = load_google_sheet(
-    "series"
-)
-
-
-series_df["progress"] = pd.to_numeric(
-    series_df["progress"],
-    errors="coerce"
-).fillna(0)
-
-series_df["episodes"] = pd.to_numeric(
-    series_df["episodes"],
-    errors="coerce"
-).fillna(0)
-
-# uniquement séries TV en cours
-
-series_continuing = series_df[
-    (series_df["type"] == "series")
-    &
-    (series_df["status"] == "continuing")
-].copy()
-
-
-
-if len(series_continuing) == 0:
-
-    st.info(
-        "Aucune série en cours."
-    )
-
-
-else:
-
+    if not results:
+        st.warning("Aucun résultat trouvé.")
+        return None
 
     choix = st.selectbox(
-        "Choisir une série",
-        series_continuing["title"].tolist(),
-        key="update_series_select"
+        label,
+        options=list(range(len(results))),
+        format_func=lambda i: (
+            f"{results[i]['title']} ({results[i]['year']})"
+        ),
+        key=key
     )
 
+    selected = results[choix]
 
-    serie_index = series_continuing[
-        series_continuing["title"] == choix
-    ].index[0]
-
-
-    serie = series_df.loc[
-        serie_index
-    ]
-
-
-    st.write(
-        f"Épisodes vus actuellement : {serie['progress']}"
-    )
-
-
-    col1, col2 = st.columns(2)
-
+    col1, col2 = st.columns([1, 3])
 
     with col1:
-
-        episode = st.number_input(
-            "Dernier épisode vu",
-            min_value=0,
-            value=int(
-                serie["progress"]
-                if pd.notna(serie["progress"])
-                else 0
-            ),
-            step=1
-        )
-
+        if selected.get("poster_path"):
+            st.image(
+                selected["poster_path"],
+                use_container_width=True
+            )
 
     with col2:
+        st.subheader(selected["title"])
+        st.caption(selected["year"])
+        st.write(selected.get("overview", ""))
 
-        date_watch = st.date_input(
-            "Date du visionnage",
-            key="episode_date"
-        )
+    st.divider()
 
-
-    statut = st.selectbox(
-        "Statut",
-        [
-            "continuing",
-            "up_to_date",
-            "stopped",
-            "watch_later"
-        ],
-        index=[
-            "continuing",
-            "up_to_date",
-            "stopped",
-            "watch_later"
-        ].index(
-            serie["status"]
-        )
-        if serie["status"] in [
-            "continuing",
-            "up_to_date",
-            "stopped",
-            "watch_later"
-        ]
-        else 0
-    )
+    return selected
 
 
-    ancienne_note = pd.to_numeric(
+def charger_series():
+    """Charge les séries depuis Google Sheets."""
+
+    df = load_google_sheet("series")
+
+    if not df.empty:
+        df["progress"] = pd.to_numeric(
+            df["progress"],
+            errors="coerce"
+        ).fillna(0)
+
+        df["episodes"] = pd.to_numeric(
+            df["episodes"],
+            errors="coerce"
+        ).fillna(0)
+
+    return df
+
+
+def recuperer_note(serie):
+    """Retourne une note compatible avec le slider."""
+
+    note = pd.to_numeric(
         serie.get("rating"),
         errors="coerce"
     )
 
-    if pd.isna(ancienne_note):
-        ancienne_note = 0
+    if pd.isna(note):
+        return 0
 
+    note = float(note)
 
-    rating = st.select_slider(
-        "Ma note",
-        options=[
-            0,
-            0.5,
-            1,
-            1.5,
-            2,
-            2.5,
-            3,
-            3.5,
-            4,
-            4.5,
-            5
-        ],
-        value=float(
-            ancienne_note
-        )
-    )
-
-
-
-    if st.button(
-        "💾 Mettre à jour la série",
-        use_container_width=True
-    ):
-
-
-        series_df.loc[
-            serie_index,
-            "progress"
-        ] = int(episode)
-
-
-        series_df.loc[
-            serie_index,
-            "last_watch"
-        ] = date_watch.strftime(
-            "%Y-%m-%d"
-        )
-
-
-        series_df.loc[
-            serie_index,
-            "status"
-        ] = statut
-
-        series_df["rating"] = pd.to_numeric(
-            series_df["rating"],
-            errors="coerce"
-        )
-
-        series_df.loc[
-            serie_index,
-            "rating"
-        ] = rating
-
-
-        
-        update_series_google_sheet(
-            series_df
-        )
-
-
-        st.success(
-            "Série mise à jour !"
-        )
-
-        st.rerun()
+    return note if note in NOTES else 0
 
 
 # =====================================================
-# MODIFIER UNE SERIE
+# MENU PRINCIPAL
 # =====================================================
+
+st.title("➕ Ajouter du contenu")
+
+type_contenu = st.selectbox(
+    "Quel type de contenu souhaitez-vous gérer ?",
+    [
+        "Sélectionner un type de contenu",
+        "🎬 Film",
+        "🎥 Documentaire",
+        "📺 Série",
+        "💿 Album"
+    ],
+    key="type_contenu"
+)
 
 st.divider()
 
-st.header("✏️ Modifier une série")
-
-
-series_df = load_google_sheet(
-    "series"
-)
-
-
-if not series_df.empty:
-
-
-    # Liste complète des séries
-    serie_choices = (
-        series_df["title"]
-        .dropna()
-        .sort_values()
-        .tolist()
-    )
-
-
-    # Recherche
-    search_serie = st.text_input(
-        "🔎 Rechercher une série",
-        placeholder="Ex : breaking",
-        key="edit_series_search"
-    )
-
-
-    # Filtrage
-    if search_serie:
-
-        filtered_series = [
-            serie
-            for serie in serie_choices
-            if search_serie.lower() in serie.lower()
-        ]
-
-    else:
-
-        filtered_series = serie_choices[:20]  # évite d'afficher 500 lignes
-
-
-    # Sélection
-    selected_title = st.selectbox(
-        "Choisir une série",
-        filtered_series,
-        key="edit_series_select"
-    )
-
-
-    serie_index = series_df[
-        series_df["title"] == selected_title
-    ].index[0]
-
-
-    serie = series_df.loc[
-        serie_index
-    ]
-
-
-    st.write(
-        f"Modification de : **{serie['title']}**"
-    )
-
-
-    col1, col2 = st.columns(2)
-
-
-    with col1:
-
-        current_status = serie.get(
-            "status",
-            ""
-        )
-
-        statuses = [
-            "continuing",
-            "up_to_date",
-            "to_watch",
-            "stopped"
-        ]
-
-
-        new_status = st.selectbox(
-            "Statut",
-            statuses,
-            index=(
-                statuses.index(current_status)
-                if current_status in statuses
-                else 0
-            ),
-            key="edit_status"
-        )
-
-
-    with col2:
-
-        current_rating = serie.get(
-            "rating",
-            0
-        )
-
-
-        if pd.isna(current_rating):
-            current_rating = 0
-
-
-        new_rating = st.select_slider(
-            "Note",
-            options=[
-                0,
-                0.5,
-                1,
-                1.5,
-                2,
-                2.5,
-                3,
-                3.5,
-                4,
-                4.5,
-                5
-            ],
-            value=float(current_rating),
-            key="edit_rating"
-        )
-
-
-    if st.button(
-        "💾 Enregistrer les modifications",
-        use_container_width=True,
-        key="save_series_edit"
-    ):
-
-
-        series_df.loc[
-            serie_index,
-            "status"
-        ] = new_status
-
-
-        series_df.loc[
-            serie_index,
-            "rating"
-        ] = new_rating
-
-
-        # sauvegarde
-        save_google_sheet(
-            series_df,
-            "series"
-        )
-
-
-        st.success(
-            "Série modifiée !"
-        )
-
-        st.rerun()
-
-else:
-
-    st.info(
-        "Aucune série disponible."
-    )
-
-
-st.divider()
-
-st.header("➕ Ajouter un album")
-
-
-lien_spotify = st.text_input(
-    "Lien Spotify de l'album",
-    placeholder="https://open.spotify.com/album/..."
-)
-
-
-if st.button(
-    "🔎 Charger l'album"
-):
-
-    infos = enrichir_album_depuis_url(
-        lien_spotify
-    )
-
-    st.session_state["album_infos"] = infos
-
-
-
-if "album_infos" in st.session_state:
-
-    infos = st.session_state["album_infos"]
-
-
-    if infos:
-
-
-        col1, col2 = st.columns([1,3])
-
-
-        with col1:
-
-            st.image(
-                infos["cover_url"],
-                use_container_width=True
-            )
-
-
-        with col2:
-
-            st.subheader(
-                infos["spotify_album"]
-            )
-
-            st.write(
-                infos["spotify_artiste"]
-            )
-
-            st.write(
-                infos["spotify_date_sortie"]
-            )
-
-            st.write(
-                f"{infos['nb_titres']} titres"
-            )
-
-
-        col1, col2 = st.columns(2)
-
-        with col1:
-
-            genre = st.selectbox(
-                "Genre",
-                [
-                    "Pop",
-                    "Rock",
-                    "Rap",
-                    "Kpop",
-                    "Jpop",
-                    "RnB",
-                    "Indie",
-                    "Electro/techno",
-                    "Variété",
-                    "Autre"                    
-                ]
-            )
-
-
-        with col2:
-
-            pays = st.text_input(
-                "Pays",
-                placeholder="Ex : France, USA, Corée..."
-            )
-
-
-        note = st.select_slider(
-            "Note",
-            options=list(range(0, 11)),
-            value=5
-        )
-
-
-        date = st.date_input(
-            "Date d'ajout"
-        )
-
-
-        if st.button(
-            "💿 Ajouter l'album"
-        ):
-
-
-            infos["Date"] = (
-                date.strftime("%Y-%m-%d")
-            )
-
-            infos["Genre (large)"] = genre
-            infos["Pays"] = pays
-
-            infos["Note"] = note
-
-
-            ajouter_album_google_sheet(
-                infos
-            )
-
-
-            st.success(
-                "Album ajouté !"
-            )
-
-            st.rerun()
-
-
 
 # =====================================================
-# AJOUTER UN DOCUMENTAIRE
+# FILM
 # =====================================================
 
-st.divider()
-st.title("🎥 Ajouter un documentaire")
+if type_contenu == "🎬 Film":
 
-mode_documentaire = st.radio(
-    "Comment souhaitez-vous ajouter le documentaire ?",
-    ["Rechercher dans TMDB", "Saisie manuelle"],
-    horizontal=True,
-    key="documentary_mode"
-)
+    st.header("🎬 Ajouter un film")
 
-
-# =====================================================
-# MODE 1 : RECHERCHE TMDB
-# =====================================================
-
-if mode_documentaire == "Rechercher dans TMDB":
-
-    documentary_query = st.text_input(
-        "Rechercher un documentaire",
-        placeholder="Ex : Planète Terre",
-        key="documentary_query"
+    movie_query = st.text_input(
+        "Rechercher un film",
+        placeholder="Ex : Interstellar",
+        key="movie_query"
     )
 
-    if st.button("🔎 Rechercher", key="search_documentary"):
+    if st.button("🔎 Rechercher", key="search_movie"):
+        if movie_query.strip():
+            st.session_state["movie_results"] = (
+                search_movies_tmdb(movie_query)
+            )
+        else:
+            st.warning("Saisissez un titre.")
 
-        st.session_state["documentary_results"] = (
-            search_documentaries_tmdb(documentary_query)
+    if "movie_results" in st.session_state:
+
+        selected = afficher_resultats(
+            st.session_state["movie_results"],
+            "Choisir le film",
+            "movie_select"
         )
 
-    if "documentary_results" in st.session_state:
-
-        results = st.session_state["documentary_results"]
-
-        if len(results) > 0:
-
-            choix = st.selectbox(
-                "Choisir le documentaire",
-                [
-                    f"{doc['title']} ({doc['year']})"
-                    for doc in results
-                ],
-                key="documentary_select"
-            )
-
-            selected = results[
-                [
-                    f"{doc['title']} ({doc['year']})"
-                    for doc in results
-                ].index(choix)
-            ]
-
-            col1, col2 = st.columns([1, 3])
-
-            with col1:
-                if selected["poster_path"]:
-                    st.image(
-                        selected["poster_path"],
-                        use_container_width=True
-                    )
-
-            with col2:
-                st.subheader(selected["title"])
-                st.caption(selected["year"])
-                st.write(selected["overview"])
-
-            st.divider()
+        if selected:
 
             col1, col2 = st.columns(2)
 
             with col1:
-                documentary_date = st.date_input(
+                movie_date = st.date_input(
                     "Date de visionnage",
-                    key="documentary_date"
+                    key="movie_date"
                 )
 
-                documentary_theme = st.text_input(
-                    "Thème",
-                    placeholder="Ex : Nature, Histoire, Société...",
-                    key="documentary_theme"
+            with col2:
+                movie_rating = st.select_slider(
+                    "Ma note",
+                    options=NOTES,
+                    value=3,
+                    key="movie_rating"
                 )
+
+            if st.button(
+                "🎬 Ajouter le film",
+                key="add_movie",
+                use_container_width=True
+            ):
+                movie = get_movie_details_tmdb(
+                    selected["id"]
+                )
+
+                add_movie_google_sheet(
+                    movie,
+                    movie_date.strftime("%Y-%m-%d"),
+                    movie_rating
+                )
+
+                st.success("Film ajouté !")
+
+
+# =====================================================
+# DOCUMENTAIRE
+# =====================================================
+
+elif type_contenu == "🎥 Documentaire":
+
+    st.header("🎥 Ajouter un documentaire")
+
+    mode_documentaire = st.radio(
+        "Comment souhaitez-vous ajouter le documentaire ?",
+        ["Rechercher dans TMDB", "Saisie manuelle"],
+        horizontal=True,
+        key="documentary_mode"
+    )
+
+    # -------------------------------------------------
+    # Recherche TMDB
+    # -------------------------------------------------
+
+    if mode_documentaire == "Rechercher dans TMDB":
+
+        documentary_query = st.text_input(
+            "Rechercher un documentaire",
+            placeholder="Ex : Planète Terre",
+            key="documentary_query"
+        )
+
+        if st.button(
+            "🔎 Rechercher",
+            key="search_documentary"
+        ):
+            if documentary_query.strip():
+                st.session_state["documentary_results"] = (
+                    search_documentaries_tmdb(documentary_query)
+                )
+            else:
+                st.warning("Saisissez un titre.")
+
+        if "documentary_results" in st.session_state:
+
+            selected = afficher_resultats(
+                st.session_state["documentary_results"],
+                "Choisir le documentaire",
+                "documentary_select"
+            )
+
+            if selected:
+
+                col1, col2 = st.columns(2)
+
+                with col1:
+                    documentary_date = st.date_input(
+                        "Date de visionnage",
+                        key="documentary_date"
+                    )
+
+                    documentary_theme = st.text_input(
+                        "Thème",
+                        key="documentary_theme"
+                    )
+
+                with col2:
+                    documentary_rating = st.select_slider(
+                        "Ma note",
+                        options=NOTES,
+                        value=3,
+                        key="documentary_rating"
+                    )
+
+                    documentary_platform = st.text_input(
+                        "Plateforme",
+                        key="documentary_platform"
+                    )
+
+                if st.button(
+                    "🎥 Ajouter le documentaire",
+                    key="add_documentary",
+                    use_container_width=True
+                ):
+                    documentary = get_movie_details_tmdb(
+                        selected["id"]
+                    )
+
+                    documentary["theme"] = documentary_theme
+                    documentary["platform"] = documentary_platform
+
+                    add_documentary_google_sheet(
+                        documentary,
+                        documentary_date.strftime("%Y-%m-%d"),
+                        documentary_rating
+                    )
+
+                    st.session_state.pop(
+                        "documentary_results", None
+                    )
+
+                    st.success("Documentaire ajouté !")
+
+    # -------------------------------------------------
+    # Saisie manuelle
+    # -------------------------------------------------
+
+    else:
+
+        st.subheader("✍️ Informations du documentaire")
+
+        with st.form("manual_documentary_form"):
+
+            documentary_title = st.text_input("Titre *")
+
+            col1, col2 = st.columns(2)
+
+            with col1:
+                documentary_year = st.text_input(
+                    "Année",
+                    placeholder="Ex : 2024"
+                )
+
+                documentary_date = st.date_input(
+                    "Date de visionnage"
+                )
+
+                documentary_theme = st.text_input("Thème")
 
             with col2:
                 documentary_rating = st.select_slider(
                     "Ma note",
-                    options=[
-                        0, 0.5, 1, 1.5, 2, 2.5,
-                        3, 3.5, 4, 4.5, 5
-                    ],
-                    value=3,
-                    key="documentary_rating"
+                    options=NOTES,
+                    value=3
                 )
 
                 documentary_platform = st.text_input(
-                    "Plateforme",
-                    placeholder="Ex : Arte, Netflix, YouTube...",
-                    key="documentary_platform"
+                    "Plateforme"
                 )
 
-            if st.button(
+            documentary_director = st.text_input("Réalisateur")
+            documentary_country = st.text_input("Pays")
+            documentary_overview = st.text_area("Synopsis")
+
+            documentary_poster = st.text_input(
+                "URL de l'affiche (facultatif)"
+            )
+
+            submitted = st.form_submit_button(
                 "🎥 Ajouter le documentaire",
-                key="add_documentary",
                 use_container_width=True
-            ):
+            )
 
-                documentary = get_movie_details_tmdb(selected["id"])
+            if submitted:
 
-                documentary["theme"] = documentary_theme
-                documentary["platform"] = documentary_platform
+                if not documentary_title.strip():
+                    st.error("Le titre est obligatoire.")
 
-                add_documentary_google_sheet(
-                    documentary,
-                    documentary_date.strftime("%Y-%m-%d"),
-                    documentary_rating
+                else:
+                    documentary = {
+                        "title": documentary_title,
+                        "year": documentary_year,
+                        "director": documentary_director,
+                        "theme": documentary_theme,
+                        "platform": documentary_platform,
+                        "country": documentary_country,
+                        "overview": documentary_overview,
+                        "poster_path": documentary_poster,
+                        "tmdb_rating": "",
+                        "imdb_id": "",
+                        "tvdb_id": ""
+                    }
+
+                    add_documentary_google_sheet(
+                        documentary,
+                        documentary_date.strftime("%Y-%m-%d"),
+                        documentary_rating
+                    )
+
+                    st.success("Documentaire ajouté !")
+
+
+# =====================================================
+# SÉRIE
+# =====================================================
+
+elif type_contenu == "📺 Série":
+
+    st.header("📺 Gestion des séries")
+
+    action_serie = st.radio(
+        "Que souhaitez-vous faire ?",
+        [
+            "Ajouter une série",
+            "Mettre à jour un épisode",
+            "Modifier une série"
+        ],
+        key="action_serie"
+    )
+
+    st.divider()
+
+    # -------------------------------------------------
+    # Ajouter une série
+    # -------------------------------------------------
+
+    if action_serie == "Ajouter une série":
+
+        query = st.text_input(
+            "Rechercher une série",
+            placeholder="Ex : Breaking Bad",
+            key="series_query"
+        )
+
+        if st.button(
+            "🔎 Rechercher",
+            key="search_series"
+        ):
+            if query.strip():
+                st.session_state["series_results"] = (
+                    search_series_tmdb(query)
                 )
+            else:
+                st.warning("Saisissez un titre.")
 
-                st.success("Documentaire ajouté !")
-                st.session_state.pop("documentary_results", None)
-                st.rerun()
+        if "series_results" in st.session_state:
+
+            selected = afficher_resultats(
+                st.session_state["series_results"],
+                "Choisir la série",
+                "series_select"
+            )
+
+            if selected:
+
+                if st.button(
+                    "📺 Ajouter la série",
+                    key="add_series",
+                    use_container_width=True
+                ):
+                    serie = get_series_details_tmdb(
+                        selected["id"]
+                    )
+
+                    add_series_google_sheet(serie)
+
+                    st.success("Série ajoutée !")
+
+    # -------------------------------------------------
+    # Mettre à jour un épisode
+    # -------------------------------------------------
+
+    elif action_serie == "Mettre à jour un épisode":
+
+        st.subheader("Mettre à jour une série")
+
+        series_df = charger_series()
+
+        if series_df.empty:
+            st.info("Aucune série disponible.")
 
         else:
-            st.warning("Aucun documentaire trouvé.")
+            series_continuing = series_df[
+                (series_df["type"] == "series")
+                & (series_df["status"] == "continuing")
+            ].copy()
 
-
-# =====================================================
-# MODE 2 : SAISIE MANUELLE
-# =====================================================
-
-else:
-
-    st.subheader("✍️ Informations du documentaire")
-
-    with st.form("manual_documentary_form"):
-
-        documentary_title = st.text_input(
-            "Titre *",
-            placeholder="Titre du documentaire"
-        )
-
-        col1, col2 = st.columns(2)
-
-        with col1:
-            documentary_year = st.text_input(
-                "Année",
-                placeholder="Ex : 2024"
-            )
-
-            documentary_date = st.date_input(
-                "Date de visionnage"
-            )
-
-            documentary_theme = st.text_input(
-                "Thème",
-                placeholder="Ex : Nature, Histoire, Société..."
-            )
-
-        with col2:
-            documentary_rating = st.select_slider(
-                "Ma note",
-                options=[
-                    0, 0.5, 1, 1.5, 2, 2.5,
-                    3, 3.5, 4, 4.5, 5
-                ],
-                value=3
-            )
-
-            documentary_platform = st.text_input(
-                "Plateforme",
-                placeholder="Ex : Arte, Netflix, YouTube..."
-            )
-
-        documentary_director = st.text_input(
-            "Réalisateur"
-        )
-
-        documentary_country = st.text_input(
-            "Pays"
-        )
-
-        documentary_overview = st.text_area(
-            "Synopsis"
-        )
-
-        documentary_poster = st.text_input(
-            "URL de l'affiche (facultatif)"
-        )
-
-        submitted = st.form_submit_button(
-            "🎥 Ajouter le documentaire",
-            use_container_width=True
-        )
-
-        if submitted:
-
-            if not documentary_title.strip():
-                st.error("Le titre du documentaire est obligatoire.")
+            if series_continuing.empty:
+                st.info("Aucune série en cours.")
 
             else:
-
-                documentary = {
-                    "title": documentary_title,
-                    "year": documentary_year,
-                    "director": documentary_director,
-                    "theme": documentary_theme,
-                    "platform": documentary_platform,
-                    "country": documentary_country,
-                    "overview": documentary_overview,
-                    "poster_path": documentary_poster,
-                    "tmdb_rating": "",
-                    "imdb_id": "",
-                    "tvdb_id": ""
-                }
-
-                add_documentary_google_sheet(
-                    documentary,
-                    documentary_date.strftime("%Y-%m-%d"),
-                    documentary_rating
+                serie_index = st.selectbox(
+                    "Choisir une série",
+                    options=series_continuing.index.tolist(),
+                    format_func=lambda i: (
+                        series_continuing.loc[i, "title"]
+                    ),
+                    key="update_series_select"
                 )
 
-                st.success("Documentaire ajouté manuellement !")
-                st.rerun()
+                serie = series_df.loc[serie_index]
 
+                st.write(
+                    f"Épisodes vus actuellement : "
+                    f"{int(serie['progress'])}"
+                )
+
+                col1, col2 = st.columns(2)
+
+                with col1:
+                    episode = st.number_input(
+                        "Dernier épisode vu",
+                        min_value=0,
+                        value=int(serie["progress"]),
+                        step=1,
+                        key=f"episode_{serie_index}"
+                    )
+
+                with col2:
+                    date_watch = st.date_input(
+                        "Date du visionnage",
+                        key="episode_date"
+                    )
+
+                statuts_update = [
+                    "continuing",
+                    "up_to_date",
+                    "stopped",
+                    "to_watch"
+                ]
+
+                current_status = serie["status"]
+
+                statut = st.selectbox(
+                    "Statut",
+                    statuts_update,
+                    index=(
+                        statuts_update.index(current_status)
+                        if current_status in statuts_update
+                        else 0
+                    ),
+                    key=f"update_status_{serie_index}"
+                )
+
+                rating = st.select_slider(
+                    "Ma note",
+                    options=NOTES,
+                    value=recuperer_note(serie),
+                    key=f"update_rating_{serie_index}"
+                )
+
+                if st.button(
+                    "💾 Mettre à jour la série",
+                    use_container_width=True
+                ):
+                    series_df.loc[
+                        serie_index, "progress"
+                    ] = int(episode)
+
+                    series_df.loc[
+                        serie_index, "last_watch"
+                    ] = date_watch.strftime("%Y-%m-%d")
+
+                    series_df.loc[
+                        serie_index, "status"
+                    ] = statut
+
+                    series_df.loc[
+                        serie_index, "rating"
+                    ] = rating
+
+                    update_series_google_sheet(series_df)
+
+                    st.success("Série mise à jour !")
+
+    # -------------------------------------------------
+    # Modifier une série
+    # -------------------------------------------------
+
+    elif action_serie == "Modifier une série":
+
+        st.subheader("✏️ Modifier une série")
+
+        series_df = charger_series()
+
+        if series_df.empty:
+            st.info("Aucune série disponible.")
+
+        else:
+            search_serie = st.text_input(
+                "🔎 Rechercher une série",
+                placeholder="Ex : Breaking",
+                key="edit_series_search"
+            )
+
+            filtered = series_df[
+                series_df["title"].notna()
+            ].copy()
+
+            if search_serie.strip():
+                filtered = filtered[
+                    filtered["title"].str.contains(
+                        search_serie.strip(),
+                        case=False,
+                        na=False,
+                        regex=False
+                    )
+                ]
+
+            filtered = filtered.sort_values("title")
+
+            if not search_serie.strip():
+                filtered = filtered.head(20)
+
+            if filtered.empty:
+                st.info("Aucune série correspondante.")
+
+            else:
+                serie_index = st.selectbox(
+                    "Choisir une série",
+                    options=filtered.index.tolist(),
+                    format_func=lambda i: (
+                        filtered.loc[i, "title"]
+                    ),
+                    key="edit_series_select"
+                )
+
+                serie = series_df.loc[serie_index]
+
+                st.write(f"Modification de : **{serie['title']}**")
+
+                col1, col2 = st.columns(2)
+
+                with col1:
+                    current_status = serie.get("status", "")
+
+                    new_status = st.selectbox(
+                        "Statut",
+                        STATUTS,
+                        index=(
+                            STATUTS.index(current_status)
+                            if current_status in STATUTS
+                            else 0
+                        ),
+                        key=f"edit_status_{serie_index}"
+                    )
+
+                with col2:
+                    new_rating = st.select_slider(
+                        "Note",
+                        options=NOTES,
+                        value=recuperer_note(serie),
+                        key=f"edit_rating_{serie_index}"
+                    )
+
+                if st.button(
+                    "💾 Enregistrer les modifications",
+                    key="save_series_edit",
+                    use_container_width=True
+                ):
+                    series_df.loc[
+                        serie_index, "status"
+                    ] = new_status
+
+                    series_df.loc[
+                        serie_index, "rating"
+                    ] = new_rating
+
+                    save_google_sheet(series_df, "series")
+
+                    st.success("Série modifiée !")
+
+
+# =====================================================
+# ALBUM
+# =====================================================
+
+elif type_contenu == "💿 Album":
+
+    st.header("💿 Ajouter un album")
+
+    lien_spotify = st.text_input(
+        "Lien Spotify de l'album",
+        placeholder="https://open.spotify.com/album/...",
+        key="spotify_url"
+    )
+
+    if st.button("🔎 Charger l'album"):
+
+        if lien_spotify.strip():
+            infos = enrichir_album_depuis_url(lien_spotify)
+            st.session_state["album_infos"] = infos
+        else:
+            st.warning("Saisissez un lien Spotify.")
+
+    if "album_infos" in st.session_state:
+
+        infos = st.session_state["album_infos"]
+
+        if infos:
+
+            col1, col2 = st.columns([1, 3])
+
+            with col1:
+                if infos.get("cover_url"):
+                    st.image(
+                        infos["cover_url"],
+                        use_container_width=True
+                    )
+
+            with col2:
+                st.subheader(infos["spotify_album"])
+                st.write(infos["spotify_artiste"])
+                st.write(infos["spotify_date_sortie"])
+                st.write(f"{infos['nb_titres']} titres")
+
+            col1, col2 = st.columns(2)
+
+            with col1:
+                genre = st.selectbox(
+                    "Genre",
+                    [
+                        "Pop",
+                        "Rock",
+                        "Rap",
+                        "Kpop",
+                        "Jpop",
+                        "RnB",
+                        "Indie",
+                        "Electro/techno",
+                        "Variété",
+                        "Autre"
+                    ],
+                    key="album_genre"
+                )
+
+            with col2:
+                pays = st.text_input(
+                    "Pays",
+                    placeholder="Ex : France, USA, Corée",
+                    key="album_pays"
+                )
+
+            note = st.select_slider(
+                "Note",
+                options=list(range(11)),
+                value=5,
+                key="album_note"
+            )
+
+            date = st.date_input(
+                "Date d'ajout",
+                key="album_date"
+            )
+
+            if st.button(
+                "💿 Ajouter l'album",
+                use_container_width=True
+            ):
+                infos["Date"] = date.strftime("%Y-%m-%d")
+                infos["Genre (large)"] = genre
+                infos["Pays"] = pays
+                infos["Note"] = note
+
+                ajouter_album_google_sheet(infos)
+
+                st.session_state.pop("album_infos", None)
+
+                st.success("Album ajouté !")
