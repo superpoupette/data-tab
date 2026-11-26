@@ -26,6 +26,12 @@ from scripts.musique.google_sheet import (
     ajouter_album_google_sheet
 )
 
+from scripts.danse.google_sheet import (
+    add_danse_google_sheet,
+    load_danse_google_sheet,
+    add_practice_time
+)
+
 
 # =====================================================
 # CONFIGURATION
@@ -46,6 +52,22 @@ STATUTS = [
     "to_watch"
 ]
 
+STYLES_DANSE = [
+    "Urban",
+    "Kpop girl",
+    "Kpop boy",
+    "Jazz",
+    "Lyrical",
+    "Street Jazz",
+    "Dancehall",
+    "Waacking/voguing",
+    "Heels"
+]
+
+
+# =====================================================
+# FONCTIONS UTILITAIRES
+# =====================================================
 
 def afficher_resultats(results, label, key):
     """Affiche les résultats TMDB et retourne le contenu choisi."""
@@ -132,7 +154,8 @@ type_contenu = st.selectbox(
         "Film",
         "Documentaire",
         "Série",
-        "Album"
+        "Album",
+        "Danse"
     ],
     key="type_contenu"
 )
@@ -203,6 +226,7 @@ if type_contenu == "Film":
                     movie_rating
                 )
 
+                st.session_state.pop("movie_results", None)
                 st.success("Film ajouté !")
 
 
@@ -447,6 +471,7 @@ elif type_contenu == "Série":
 
                     add_series_google_sheet(serie)
 
+                    st.session_state.pop("series_results", None)
                     st.success("Série ajoutée !")
 
     # -------------------------------------------------
@@ -505,21 +530,14 @@ elif type_contenu == "Série":
                         key="episode_date"
                     )
 
-                statuts_update = [
-                    "continuing",
-                    "up_to_date",
-                    "stopped",
-                    "to_watch"
-                ]
-
                 current_status = serie["status"]
 
                 statut = st.selectbox(
                     "Statut",
-                    statuts_update,
+                    STATUTS,
                     index=(
-                        statuts_update.index(current_status)
-                        if current_status in statuts_update
+                        STATUTS.index(current_status)
+                        if current_status in STATUTS
                         else 0
                     ),
                     key=f"update_status_{serie_index}"
@@ -534,6 +552,7 @@ elif type_contenu == "Série":
 
                 if st.button(
                     "💾 Mettre à jour la série",
+                    key="update_series",
                     use_container_width=True
                 ):
                     series_df.loc[
@@ -610,7 +629,9 @@ elif type_contenu == "Série":
 
                 serie = series_df.loc[serie_index]
 
-                st.write(f"Modification de : **{serie['title']}**")
+                st.write(
+                    f"Modification de : **{serie['title']}**"
+                )
 
                 col1, col2 = st.columns(2)
 
@@ -668,8 +689,10 @@ elif type_contenu == "Album":
         key="spotify_url"
     )
 
-    if st.button("🔎 Charger l'album"):
-
+    if st.button(
+        "🔎 Charger l'album",
+        key="load_album"
+    ):
         if lien_spotify.strip():
             infos = enrichir_album_depuis_url(lien_spotify)
             st.session_state["album_infos"] = infos
@@ -738,6 +761,7 @@ elif type_contenu == "Album":
 
             if st.button(
                 "Ajouter l'album",
+                key="add_album",
                 use_container_width=True
             ):
                 infos["Date"] = date.strftime("%Y-%m-%d")
@@ -750,3 +774,182 @@ elif type_contenu == "Album":
                 st.session_state.pop("album_infos", None)
 
                 st.success("Album ajouté !")
+
+
+# =====================================================
+# DANSE
+# =====================================================
+
+elif type_contenu == "Danse":
+
+    st.header("💃 Gestion de la danse")
+
+    action_danse = st.radio(
+        "Que souhaitez-vous faire ?",
+        [
+            "Ajouter du temps de pratique",
+            "Ajouter une chorégraphie"
+        ],
+        key="action_danse"
+    )
+
+    st.divider()
+
+    # -------------------------------------------------
+    # Ajouter du temps de pratique
+    # -------------------------------------------------
+
+    if action_danse == "Ajouter du temps de pratique":
+
+        st.subheader("Chorégraphies en cours")
+
+        danses = load_danse_google_sheet()
+
+        if danses.empty:
+            st.info("Aucune chorégraphie enregistrée.")
+
+        else:
+            danses_en_cours = danses[
+                danses["statut"] == "en cours"
+            ].copy()
+
+            if danses_en_cours.empty:
+                st.info("Aucune chorégraphie en cours.")
+
+            else:
+                danses_en_cours["label"] = (
+                    danses_en_cours["artiste"].fillna("").astype(str)
+                    + " - "
+                    + danses_en_cours["titre"].fillna("").astype(str)
+                )
+
+                choix_index = st.selectbox(
+                    "Chorégraphie travaillée",
+                    options=danses_en_cours.index.tolist(),
+                    format_func=lambda i: (
+                        danses_en_cours.loc[i, "label"]
+                    ),
+                    key="danse_select"
+                )
+
+                ligne = danses_en_cours.loc[choix_index]
+
+                col1, col2 = st.columns(2)
+
+                with col1:
+                    st.write(f"**Artiste :** {ligne['artiste']}")
+                    st.write(f"**Titre :** {ligne['titre']}")
+
+                with col2:
+                    if "style" in ligne.index:
+                        st.write(f"**Style :** {ligne['style']}")
+
+                    if "choregraphe" in ligne.index:
+                        st.write(
+                            f"**Chorégraphe :** {ligne['choregraphe']}"
+                        )
+
+                duree_danse = st.number_input(
+                    "Durée de pratique (min)",
+                    min_value=0,
+                    step=5,
+                    key="danse_practice_duration"
+                )
+
+                if st.button(
+                    "💃 Ajouter le temps de pratique",
+                    key="add_danse_practice",
+                    use_container_width=True
+                ):
+                    if duree_danse <= 0:
+                        st.warning(
+                            "La durée doit être supérieure à 0 minute."
+                        )
+
+                    else:
+                        succes = add_practice_time(
+                            ligne["artiste"],
+                            ligne["titre"],
+                            duree_danse
+                        )
+
+                        if succes:
+                            st.success(
+                                f"{duree_danse} minutes ajoutées à "
+                                f"{ligne['artiste']} - {ligne['titre']} !"
+                            )
+
+                        else:
+                            st.error(
+                                "Impossible de trouver la chorégraphie."
+                            )
+
+    # -------------------------------------------------
+    # Ajouter une chorégraphie
+    # -------------------------------------------------
+
+    elif action_danse == "Ajouter une chorégraphie":
+
+        st.subheader("Nouvelle chorégraphie")
+
+        with st.form("nouvelle_choregraphie_form"):
+
+            col1, col2, col3 = st.columns(3)
+
+            with col1:
+                new_artiste = st.text_input(
+                    "Artiste *",
+                    key="new_artiste"
+                )
+
+            with col2:
+                new_titre = st.text_input(
+                    "Titre *",
+                    key="new_titre"
+                )
+
+            with col3:
+                new_choregraphe = st.text_input(
+                    "Chorégraphe",
+                    key="new_choregraphe"
+                )
+
+            col4, col5 = st.columns(2)
+
+            with col4:
+                new_style = st.selectbox(
+                    "Style",
+                    STYLES_DANSE,
+                    key="new_style"
+                )
+
+            with col5:
+                new_duree = st.number_input(
+                    "Durée de la chorégraphie (s)",
+                    min_value=0,
+                    step=10,
+                    key="new_duree"
+                )
+
+            submitted = st.form_submit_button(
+                "➕ Ajouter la chorégraphie",
+                use_container_width=True
+            )
+
+            if submitted:
+
+                if not new_artiste.strip() or not new_titre.strip():
+                    st.error(
+                        "L'artiste et le titre sont obligatoires."
+                    )
+
+                else:
+                    add_danse_google_sheet(
+                        artiste=new_artiste.strip(),
+                        titre=new_titre.strip(),
+                        choregraphe=new_choregraphe.strip(),
+                        style=new_style,
+                        duree=new_duree
+                    )
+
+                    st.success("Chorégraphie ajoutée !")
